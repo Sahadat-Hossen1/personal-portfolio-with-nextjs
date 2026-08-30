@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import JsonLd from "@/components/JsonLd";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -12,25 +13,80 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const baseUrl = "https://sahadathossen.dev";
+
 export const metadata: Metadata = {
-  title: "Sahadat Hossen — Full Stack MERN Developer",
+  metadataBase: new URL(baseUrl),
+  title: {
+    default: "Sahadat Hossen — Full Stack MERN Developer",
+    template: "%s | Sahadat Hossen",
+  },
   description:
-    "Personal portfolio of Sahadat Hossen, a Full Stack MERN Developer specializing in building scalable web applications with MongoDB, Express.js, React, and Node.js.",
+    "Personal portfolio of Sahadat Hossen, a Full Stack MERN Developer specializing in building scalable web applications with MongoDB, Express.js, React, Node.js, Next.js, and TypeScript.",
   keywords: [
+    "Sahadat Hossen",
     "Full Stack Developer",
-    "MERN Stack",
+    "MERN Stack Developer",
     "React Developer",
-    "Node.js",
-    "MongoDB",
-    "Next.js",
-    "Web Development",
+    "Next.js Developer",
+    "Node.js Engineer",
+    "MongoDB Architect",
+    "TypeScript Developer",
+    "Web Application Developer",
+    "Freelance Developer Dhaka",
+    "Remote MERN Stack Developer",
   ],
-  authors: [{ name: "Sahadat Hossen" }],
+  authors: [{ name: "Sahadat Hossen", url: baseUrl }],
+  creator: "Sahadat Hossen",
+  publisher: "Sahadat Hossen",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     title: "Sahadat Hossen — Full Stack MERN Developer",
     description:
-      "Building scalable, beautiful web apps with the MERN stack and modern tooling.",
+      "Building scalable, high-performance web applications with MongoDB, Express.js, React, Node.js, Next.js, and TypeScript.",
+    url: baseUrl,
+    siteName: "Sahadat Hossen Portfolio",
+    images: [
+      {
+        url: "/profile.jpg",
+        width: 800,
+        height: 800,
+        alt: "Sahadat Hossen — Full Stack MERN Developer",
+      },
+    ],
+    locale: "en_US",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Sahadat Hossen — Full Stack MERN Developer",
+    description:
+      "Building scalable, high-performance web applications with MongoDB, Express, React, Node.js, Next.js, and TypeScript.",
+    images: ["/profile.jpg"],
+    creator: "@SahadatHossen",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/profile.jpg",
   },
 };
 
@@ -40,9 +96,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
     >
+      <head>
+        <JsonLd />
+      </head>
       <body className="min-h-full flex flex-col bg-background text-foreground">
         {children}
       </body>
     </html>
   );
 }
+
