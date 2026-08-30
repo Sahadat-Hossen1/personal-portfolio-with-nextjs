@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import Image from "next/image";
 import { ExternalLink, Star } from "lucide-react";
 import { Github } from "@/components/icons";
+import { trackProjectClick } from "@/lib/gtm";
 
 type Project = {
   id: string;
@@ -112,7 +113,7 @@ export default function ProjectsSection() {
           }
         });
       },
-      { threshold: 0.05 }
+      { threshold: 0.08 }
     );
     if (sectionRef.current) observer.observe(sectionRef.current);
     return () => observer.disconnect();
@@ -127,18 +128,8 @@ export default function ProjectsSection() {
       ref={sectionRef}
       className="py-24 lg:py-32 px-4 relative overflow-hidden"
     >
-      {/* Background */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(ellipse at 50% 0%, rgba(6, 182, 212, 0.05) 0%, transparent 60%)",
-        }}
-        aria-hidden="true"
-      />
-
       <div className="max-w-6xl mx-auto">
-        {/* Section Label */}
+        {/* Section label */}
         <div className="reveal flex items-center gap-3 mb-4">
           <span className="text-primary text-sm font-mono font-semibold tracking-widest uppercase">
             03. Projects
@@ -147,92 +138,106 @@ export default function ProjectsSection() {
         </div>
 
         <h2 className="reveal reveal-delay-1 text-3xl sm:text-4xl lg:text-5xl font-black text-foreground mb-4">
-          Things I&apos;ve <span className="gradient-text">built & tracked</span>
+          Things I&apos;ve <span className="gradient-text">built</span>
         </h2>
-        <p className="reveal reveal-delay-2 text-muted-foreground max-w-xl mb-14">
-          A selection of full-stack web applications built with clean code and integrated with precise web analytics tracking.
+        <p className="reveal reveal-delay-2 text-muted-foreground max-w-xl mb-16">
+          A selection of recent full-stack applications, developer tools, and client projects built with modern web technologies.
         </p>
 
-        {/* Featured (Large) Cards with Images */}
-        <div className="grid lg:grid-cols-2 gap-8 mb-10">
+        {/* Featured Projects Grid */}
+        <div className="space-y-12 mb-16">
           {featured.map((project, i) => (
             <article
               key={project.id}
               id={project.id}
-              className={`reveal reveal-delay-${i + 2} group relative glass rounded-3xl overflow-hidden border border-white/5 hover:border-primary/30 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl flex flex-col`}
+              className={`reveal reveal-delay-${i + 1} group glass rounded-3xl overflow-hidden border border-white/5 hover:border-primary/30 transition-all duration-500 grid md:grid-cols-12 gap-0 shadow-2xl hover:shadow-indigo-500/10`}
             >
-              {/* Image Preview Container */}
-              <div className="relative w-full h-56 sm:h-64 overflow-hidden bg-slate-900 border-b border-white/5">
+              {/* Image Column */}
+              <div
+                className={`md:col-span-7 relative min-h-[260px] sm:min-h-[320px] overflow-hidden bg-slate-900 ${
+                  i % 2 === 1 ? "md:order-2" : ""
+                }`}
+              >
                 <Image
                   src={project.image}
                   alt={project.title}
                   fill
                   className="object-cover object-top transition-transform duration-700 group-hover:scale-105"
-                  sizes="(max-width: 768px) 100vw, 50vw"
+                  sizes="(max-width: 768px) 100vw, 60vw"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
-                
-                <div className="absolute top-4 left-4 w-10 h-10 rounded-xl glass flex items-center justify-center text-xl border border-white/10 backdrop-blur-md">
-                  {project.emoji}
+                <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent md:hidden" />
+                <div className="absolute top-4 left-4 flex items-center gap-2">
+                  <span className="glass px-3 py-1 rounded-full text-xs font-semibold text-primary border border-primary/20 backdrop-blur-md">
+                    Featured Project
+                  </span>
                 </div>
-
-                {project.stars && (
-                  <div className="absolute top-4 right-4 flex items-center gap-1.5 px-3 py-1 rounded-full glass border border-white/10 text-amber-400 text-xs font-semibold backdrop-blur-md">
-                    <Star size={12} className="fill-amber-400" />
-                    {project.stars}
-                  </div>
-                )}
               </div>
 
-              <div className="p-6 sm:p-7 flex flex-col flex-1">
-                <h3 className="text-xl font-bold text-foreground mb-1 group-hover:text-primary transition-colors">
-                  {project.title}
-                </h3>
-                <p className="text-xs font-medium text-cyan-400 mb-3">{project.description}</p>
-
-                <p className="text-sm text-muted-foreground leading-relaxed mb-6 flex-1">
-                  {project.longDesc}
-                </p>
-
-                {/* Tags */}
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {project.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="text-xs px-2.5 py-1 rounded-lg glass border border-white/5 text-muted-foreground font-medium"
-                    >
-                      {tag}
+              {/* Info Column */}
+              <div
+                className={`md:col-span-5 p-6 sm:p-8 flex flex-col justify-between ${
+                  i % 2 === 1 ? "md:order-1" : ""
+                }`}
+              >
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-xl">{project.emoji}</span>
+                    <span className="text-xs font-semibold text-primary uppercase tracking-wider">
+                      {project.description}
                     </span>
-                  ))}
+                  </div>
+
+                  <h3 className="text-xl sm:text-2xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors">
+                    {project.title}
+                  </h3>
+
+                  <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mb-6">
+                    {project.longDesc}
+                  </p>
                 </div>
 
-                {/* Links */}
-                <div className="flex items-center gap-4 pt-2 border-t border-white/5">
-                  <a
-                    href={project.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`${project.title} GitHub`}
-                    className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    <Github size={15} /> Source Code
-                  </a>
-                  <a
-                    href={project.live}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`${project.title} live demo`}
-                    className="flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-primary/80 transition-colors ml-auto"
-                  >
-                    <ExternalLink size={14} /> Live Demo
-                  </a>
+                <div>
+                  <div className="flex flex-wrap gap-1.5 mb-6">
+                    {project.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="text-xs px-2.5 py-1 rounded-lg glass border border-white/5 text-muted-foreground font-medium"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* Links */}
+                  <div className="flex items-center gap-4 pt-2 border-t border-white/5">
+                    <a
+                      href={project.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`${project.title} GitHub`}
+                      onClick={() => trackProjectClick(project.title, "github", project.github)}
+                      className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      <Github size={15} /> Source Code
+                    </a>
+                    <a
+                      href={project.live}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`${project.title} live demo`}
+                      onClick={() => trackProjectClick(project.title, "live_demo", project.live)}
+                      className="flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-primary/80 transition-colors ml-auto"
+                    >
+                      <ExternalLink size={14} /> Live Demo
+                    </a>
+                  </div>
                 </div>
               </div>
             </article>
           ))}
         </div>
 
-        {/* Other Projects (Grid with Thumbnail Images) */}
+        {/* Other Projects (Grid) */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {others.map((project, i) => (
             <article
@@ -240,7 +245,6 @@ export default function ProjectsSection() {
               id={project.id}
               className={`reveal reveal-delay-${i + 2} group glass rounded-2xl overflow-hidden border border-white/5 hover:border-primary/25 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl flex flex-col`}
             >
-              {/* Small Thumbnail */}
               <div className="relative w-full h-36 overflow-hidden bg-slate-900 border-b border-white/5">
                 <Image
                   src={project.image}
@@ -265,6 +269,7 @@ export default function ProjectsSection() {
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={`${project.title} GitHub`}
+                      onClick={() => trackProjectClick(project.title, "github", project.github)}
                       className="text-muted-foreground hover:text-foreground transition-colors"
                     >
                       <Github size={14} />
@@ -274,6 +279,7 @@ export default function ProjectsSection() {
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={`${project.title} live`}
+                      onClick={() => trackProjectClick(project.title, "live_demo", project.live)}
                       className="text-muted-foreground hover:text-primary transition-colors"
                     >
                       <ExternalLink size={13} />

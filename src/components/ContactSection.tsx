@@ -10,11 +10,13 @@ import {
   CheckCircle2,
   Loader2,
 } from "lucide-react";
-import { Github, Linkedin, Whatsapp, Twitter } from "@/components/icons";
+import { Github, Linkedin, Whatsapp } from "@/components/icons";
+import { trackContactSubmit, trackSocialClick } from "@/lib/gtm";
 
 const socials = [
   {
     id: "contact-github",
+    platform: "github" as const,
     icon: Github,
     label: "GitHub",
     value: "github.com/Sahadat-Hossen1",
@@ -23,6 +25,7 @@ const socials = [
   },
   {
     id: "contact-linkedin",
+    platform: "linkedin" as const,
     icon: Linkedin,
     label: "LinkedIn",
     value: "linkedin.com/in/sahadathossen",
@@ -31,6 +34,7 @@ const socials = [
   },
   {
     id: "contact-whatsapp",
+    platform: "whatsapp" as const,
     icon: Whatsapp,
     label: "Whatsapp",
     value: "+01606081657",
@@ -39,6 +43,7 @@ const socials = [
   },
   {
     id: "contact-email",
+    platform: "email" as const,
     icon: Mail,
     label: "Email",
     value: "sahadat.hossen1435@gmai.com",
@@ -92,6 +97,14 @@ export default function ContactSection() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus("loading");
+
+    // Track GTM form submit event
+    trackContactSubmit({
+      name: form.name,
+      email: form.email,
+      subject: form.subject,
+    });
+
     // Simulate API call
     await new Promise((r) => setTimeout(r, 1800));
     setStatus("success");
@@ -179,6 +192,7 @@ export default function ContactSection() {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => trackSocialClick(social.platform, "contact_section", social.href)}
                   className={`flex items-center gap-4 glass rounded-xl p-4 border border-white/5 hover:border-white/10 transition-all duration-200 hover:-translate-y-0.5 group ${social.color}`}
                 >
                   <div className="w-9 h-9 rounded-lg glass flex items-center justify-center flex-shrink-0 border border-white/5 group-hover:border-white/15 transition-colors">

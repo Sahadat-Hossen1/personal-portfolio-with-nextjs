@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { MessageSquare, X, ExternalLink, Sparkles } from "lucide-react";
 import { Whatsapp, Messenger } from "@/components/icons";
+import { trackSocialClick } from "@/lib/gtm";
 
 interface FloatingChatWidgetProps {
   whatsappNumber?: string;
@@ -101,6 +102,7 @@ export default function FloatingChatWidget({
               href={whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => trackSocialClick("whatsapp", "floating_widget", whatsappUrl)}
               className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/25 hover:border-emerald-500/40 text-emerald-400 transition-all duration-200 group hover:-translate-y-0.5"
             >
               <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover:scale-105 transition-transform">
@@ -125,6 +127,7 @@ export default function FloatingChatWidget({
               href={messengerUrl}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => trackSocialClick("messenger", "floating_widget", messengerUrl)}
               className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/25 hover:border-blue-500/40 text-blue-400 transition-all duration-200 group hover:-translate-y-0.5"
             >
               <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400 group-hover:scale-105 transition-transform">

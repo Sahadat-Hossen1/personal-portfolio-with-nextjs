@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { trackSkillClick } from "@/lib/gtm";
 
 type Skill = {
   name: string;
@@ -134,10 +135,11 @@ export default function SkillsSection() {
 
         {/* Skill Cards Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-          {filteredSkills.map((skill, i) => (
+          {filteredSkills.map((skill) => (
             <div
               key={skill.name}
-              className="reveal group bg-slate-900/60 backdrop-blur-md rounded-2xl p-4 border border-slate-800/80 hover:border-slate-700 hover:bg-slate-800/50 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl flex flex-col items-center text-center cursor-default"
+              onClick={() => trackSkillClick(skill.name, skill.category)}
+              className="reveal group bg-slate-900/60 backdrop-blur-md rounded-2xl p-4 border border-slate-800/80 hover:border-slate-700 hover:bg-slate-800/50 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl flex flex-col items-center text-center cursor-pointer"
             >
               <div
                 className="text-3xl mb-3 group-hover:scale-110 transition-transform duration-300"
@@ -175,7 +177,8 @@ export default function SkillsSection() {
             {alsoFamiliarTags.map((tag) => (
               <span
                 key={tag}
-                className="text-xs px-3.5 py-1.5 rounded-full bg-slate-900/80 border border-slate-800 text-slate-400 hover:text-cyan-300 hover:border-cyan-500/30 transition-all duration-200 cursor-default"
+                onClick={() => trackSkillClick(tag, "Familiarity & Tracking")}
+                className="text-xs px-3.5 py-1.5 rounded-full bg-slate-900/80 border border-slate-800 text-slate-400 hover:text-cyan-300 hover:border-cyan-500/30 transition-all duration-200 cursor-pointer"
               >
                 {tag}
               </span>

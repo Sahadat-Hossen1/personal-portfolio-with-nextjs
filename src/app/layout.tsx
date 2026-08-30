@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import JsonLd from "@/components/JsonLd";
+import GTMProvider from "@/components/GTMProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -84,8 +85,10 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: "/favicon.ico",
-    shortcut: "/favicon.ico",
+    icon: [
+      { url: "/profile.jpg", type: "image/jpeg" },
+    ],
+    shortcut: "/profile.jpg",
     apple: "/profile.jpg",
   },
 };
@@ -100,9 +103,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <JsonLd />
       </head>
       <body className="min-h-full flex flex-col bg-background text-foreground">
+        <GTMProvider />
         {children}
       </body>
     </html>
   );
 }
+
 

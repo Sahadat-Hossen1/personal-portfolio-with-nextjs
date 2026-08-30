@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ArrowDown, Download, ExternalLink, Sparkles } from "lucide-react";
 import { Github } from "@/components/icons";
+import { trackDownloadCV, trackSocialClick } from "@/lib/gtm";
 
 const roles = [
   "Full Stack MERN Developer",
@@ -143,6 +144,11 @@ export default function HeroSection() {
     document.getElementById("about")?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const handleDownloadCV = () => {
+    trackDownloadCV("hero_section");
+    // Download action or trigger
+  };
+
   return (
     <section
       id="hero"
@@ -171,7 +177,7 @@ export default function HeroSection() {
       />
 
       {/* Floating tech badges */}
-      {floatingBadges.map((badge, i) => (
+      {floatingBadges.map((badge) => (
         <div
           key={badge.label}
           className="absolute hidden lg:flex items-center gap-1.5 glass px-3 py-1.5 rounded-full text-xs font-semibold text-white/80 pointer-events-none select-none"
@@ -246,6 +252,7 @@ export default function HeroSection() {
           </Button>
           <Button
             id="hero-download-resume"
+            onClick={handleDownloadCV}
             size="lg"
             variant="outline"
             className="group w-full sm:w-auto px-8 h-12 gradient-border border-0 text-foreground hover:text-foreground bg-transparent hover:bg-white/5 transition-all duration-300 hover:scale-[1.04] text-base font-semibold rounded-xl"
@@ -254,10 +261,11 @@ export default function HeroSection() {
             Download CV
           </Button>
           <a
-            href="https://github.com"
+            href="https://github.com/Sahadat-Hossen1"
             target="_blank"
             rel="noopener noreferrer"
             id="hero-github"
+            onClick={() => trackSocialClick("github", "hero", "https://github.com/Sahadat-Hossen1")}
             className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 h-12 text-muted-foreground hover:text-foreground glass rounded-xl transition-all duration-300 hover:scale-[1.04] text-base font-semibold border border-white/10 hover:border-white/20"
           >
             <Github size={18} />

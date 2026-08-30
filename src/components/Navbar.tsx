@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { Github, Linkedin, Twitter } from "@/components/icons";
+import { trackSocialClick, trackPageView } from "@/lib/gtm";
 
 const navLinks = [
   { label: "About", href: "#about" },
@@ -40,6 +41,7 @@ export default function Navbar() {
   const handleNavClick = (href: string) => {
     setIsOpen(false);
     const id = href.slice(1);
+    trackPageView(document.title, window.location.href, id);
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -102,10 +104,11 @@ export default function Navbar() {
           {/* Social + CTA */}
           <div className="hidden md:flex items-center gap-2">
             <a
-              href="https://github.com"
+              href="https://github.com/Sahadat-Hossen1"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="GitHub"
+              onClick={() => trackSocialClick("github", "navbar", "https://github.com/Sahadat-Hossen1")}
               className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-white/5"
             >
               <Github size={18} />
@@ -115,6 +118,7 @@ export default function Navbar() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="LinkedIn"
+              onClick={() => trackSocialClick("linkedin", "navbar", "https://linkedin.com")}
               className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-white/5"
             >
               <Linkedin size={18} />
