@@ -6,6 +6,7 @@ import ProjectsSection from "@/components/ProjectsSection";
 import ExperienceSection from "@/components/ExperienceSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
+import FloatingChatWidget from "@/components/FloatingChatWidget";
 
 export default function HomePage() {
   return (
@@ -20,6 +21,7 @@ export default function HomePage() {
         <ContactSection />
       </main>
       <Footer />
+      <FloatingChatWidget />
     </>
   );
 }
