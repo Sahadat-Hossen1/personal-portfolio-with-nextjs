@@ -114,11 +114,11 @@ export default function Navbar() {
               <Github size={18} />
             </a>
             <a
-              href="https://linkedin.com"
+              href="https://linkedin.com/in/sahadathossen"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="LinkedIn"
-              onClick={() => trackSocialClick("linkedin", "navbar", "https://linkedin.com")}
+              onClick={() => trackSocialClick("linkedin", "navbar", "https://linkedin.com/in/sahadathossen")}
               className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-white/5"
             >
               <Linkedin size={18} />
@@ -162,13 +162,34 @@ export default function Navbar() {
               </button>
             ))}
             <div className="flex items-center gap-3 px-4 pt-3 border-t border-white/5 mt-2">
-              <a href="https://github.com" target="_blank" rel="noopener noreferrer" aria-label="GitHub" className="p-2 text-muted-foreground hover:text-foreground transition-colors">
+              <a
+                href="https://github.com/Sahadat-Hossen1"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="GitHub"
+                onClick={() => trackSocialClick("github", "navbar", "https://github.com/Sahadat-Hossen1")}
+                className="p-2 text-muted-foreground hover:text-foreground transition-colors"
+              >
                 <Github size={18} />
               </a>
-              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="p-2 text-muted-foreground hover:text-foreground transition-colors">
+              <a
+                href="https://linkedin.com/in/sahadathossen"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="LinkedIn"
+                onClick={() => trackSocialClick("linkedin", "navbar", "https://linkedin.com/in/sahadathossen")}
+                className="p-2 text-muted-foreground hover:text-foreground transition-colors"
+              >
                 <Linkedin size={18} />
               </a>
-              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" aria-label="Twitter" className="p-2 text-muted-foreground hover:text-foreground transition-colors">
+              <a
+                href="https://twitter.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Twitter"
+                onClick={() => trackSocialClick("twitter", "navbar", "https://twitter.com")}
+                className="p-2 text-muted-foreground hover:text-foreground transition-colors"
+              >
                 <Twitter size={18} />
               </a>
             </div>

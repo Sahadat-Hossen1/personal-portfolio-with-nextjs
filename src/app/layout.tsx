@@ -56,9 +56,9 @@ export const metadata: Metadata = {
     siteName: "Sahadat Hossen Portfolio",
     images: [
       {
-        url: "/profile.jpg",
-        width: 800,
-        height: 800,
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
         alt: "Sahadat Hossen — Full Stack MERN Developer",
       },
     ],
@@ -70,7 +70,7 @@ export const metadata: Metadata = {
     title: "Sahadat Hossen — Full Stack MERN Developer",
     description:
       "Building scalable, high-performance web applications with MongoDB, Express, React, Node.js, Next.js, and TypeScript.",
-    images: ["/profile.jpg"],
+    images: ["/og-image.png"],
     creator: "@SahadatHossen",
   },
   robots: {

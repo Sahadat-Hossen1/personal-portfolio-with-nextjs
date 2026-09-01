@@ -12,10 +12,10 @@ const navLinks = [
 ];
 
 const socials = [
-  { icon: Github, href: "https://github.com", label: "GitHub" },
-  { icon: Linkedin, href: "https://linkedin.com", label: "LinkedIn" },
+  { icon: Github, href: "https://github.com/Sahadat-Hossen1", label: "GitHub" },
+  { icon: Linkedin, href: "https://linkedin.com/in/sahadathossen", label: "LinkedIn" },
   { icon: Twitter, href: "https://twitter.com", label: "Twitter" },
-  { icon: Mail, href: "mailto:hello@sahadathossen.dev", label: "Email" },
+  { icon: Mail, href: "mailto:sahadat.hossen1435@gmai.com", label: "Email" },
 ];
 
 export default function Footer() {

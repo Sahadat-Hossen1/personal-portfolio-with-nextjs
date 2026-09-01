@@ -34,7 +34,7 @@ export default function JsonLd() {
     ],
     sameAs: [
       "https://github.com/Sahadat-Hossen1",
-      "https://linkedin.com",
+      "https://linkedin.com/in/sahadathossen",
       "https://wa.me/8801606081657",
       "https://m.me/sahadat.hossen.1435",
     ],

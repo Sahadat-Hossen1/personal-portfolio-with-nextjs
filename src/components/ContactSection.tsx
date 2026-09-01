@@ -29,7 +29,7 @@ const socials = [
     icon: Linkedin,
     label: "LinkedIn",
     value: "linkedin.com/in/sahadathossen",
-    href: "https://linkedin.com",
+    href: "https://linkedin.com/in/sahadathossen",
     color: "hover:text-blue-400",
   },
   {

@@ -314,10 +314,11 @@ export default function ProjectsSection() {
         {/* View All on GitHub */}
         <div className="reveal text-center mt-12">
           <a
-            href="https://github.com"
+            href="https://github.com/Sahadat-Hossen1"
             target="_blank"
             rel="noopener noreferrer"
             id="projects-view-github"
+            onClick={() => trackProjectClick("View All Projects", "github", "https://github.com/Sahadat-Hossen1")}
             className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors group px-5 py-2.5 rounded-full glass border border-white/5 hover:border-white/15"
           >
             <Github size={16} />
