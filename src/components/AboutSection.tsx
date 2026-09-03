@@ -18,8 +18,44 @@ const highlights = [
   { emoji: "🎨", text: "Pixel-perfect UIs with React & Next.js" },
 ];
 
-export default function AboutSection() {
+const iconMap: Record<string, any> = {
+  Briefcase,
+  Star,
+  Coffee,
+  MapPin,
+};
+
+interface AboutSectionProps {
+  profile?: {
+    name?: string;
+    avatarUrl?: string;
+    aboutTitle?: string;
+    aboutP1?: string;
+    aboutP2?: string;
+    currentlyBuilding?: string;
+    location?: string;
+    stats?: { iconName: string; value: string; label: string }[];
+    highlights?: { emoji: string; text: string }[];
+  };
+}
+
+export default function AboutSection({ profile }: AboutSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
+
+  const title = profile?.aboutTitle || "Crafting digital experiences";
+  const avatarSrc = profile?.avatarUrl || "/profile.jpg";
+  const buildingText = profile?.currentlyBuilding || "SaaS Dashboard App";
+  const loc = profile?.location || "Dhaka, Bangladesh";
+  const p1 = profile?.aboutP1;
+  const p2 = profile?.aboutP2;
+  const activeHighlights = profile?.highlights && profile.highlights.length > 0 ? profile.highlights : highlights;
+  const activeStats = profile?.stats && profile.stats.length > 0
+    ? profile.stats.map((s) => ({
+        icon: iconMap[s.iconName] || Briefcase,
+        value: s.value,
+        label: s.label,
+      }))
+    : stats;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -61,8 +97,16 @@ export default function AboutSection() {
         </div>
 
         <h2 className="reveal reveal-delay-1 text-3xl sm:text-4xl lg:text-5xl font-black text-foreground mb-16">
-          Crafting digital{" "}
-          <span className="gradient-text">experiences</span>
+          {title.includes(" ") ? (
+            <>
+              {title.substring(0, title.lastIndexOf(" "))}{" "}
+              <span className="gradient-text">
+                {title.substring(title.lastIndexOf(" ") + 1)}
+              </span>
+            </>
+          ) : (
+            <span className="gradient-text">{title}</span>
+          )}
         </h2>
 
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
@@ -80,8 +124,8 @@ export default function AboutSection() {
             <div className="relative">
               <div className="w-64 h-64 sm:w-72 sm:h-72 rounded-3xl glass gradient-border overflow-hidden shadow-2xl group relative">
                 <Image
-                  src="/profile.jpg"
-                  alt="Sahadat Hossen"
+                  src={avatarSrc}
+                  alt={profile?.name || "Sahadat Hossen"}
                   fill
                   sizes="(max-width: 640px) 256px, 288px"
                   className="object-cover object-top group-hover:scale-105 transition-transform duration-500"
@@ -95,14 +139,14 @@ export default function AboutSection() {
                   <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                   <span className="text-xs font-semibold text-muted-foreground">Currently building:</span>
                 </div>
-                <p className="text-sm font-bold text-foreground mt-0.5">SaaS Dashboard App</p>
+                <p className="text-sm font-bold text-foreground mt-0.5">{buildingText}</p>
               </div>
 
               {/* Floating card: Location */}
               <div className="absolute -top-4 -left-6 glass rounded-2xl px-4 py-3 shadow-xl border border-white/10 animate-float-delayed">
                 <div className="flex items-center gap-2">
                   <MapPin size={13} className="text-primary" />
-                  <span className="text-sm font-semibold text-foreground">San Francisco, CA</span>
+                  <span className="text-sm font-semibold text-foreground">{loc}</span>
                 </div>
               </div>
             </div>
@@ -112,23 +156,31 @@ export default function AboutSection() {
           <div className="space-y-6">
             <div className="reveal reveal-delay-3">
               <p className="text-base sm:text-lg text-muted-foreground leading-relaxed mb-4">
-                I&apos;m a passionate{" "}
-                <span className="text-foreground font-semibold">Full Stack MERN Developer</span>{" "}
-                with 1+ years of experience building production-ready web applications.
-                I specialize in creating scalable, high-performance applications with a
-                focus on developer experience and end-user satisfaction.
+                {p1 || (
+                  <>
+                    I&apos;m a passionate{" "}
+                    <span className="text-foreground font-semibold">Full Stack MERN Developer</span>{" "}
+                    with 1+ years of experience building production-ready web applications.
+                    I specialize in creating scalable, high-performance applications with a
+                    focus on developer experience and end-user satisfaction.
+                  </>
+                )}
               </p>
               <p className="text-base text-muted-foreground leading-relaxed">
-                When I&apos;m not writing code, you&apos;ll find me contributing to open-source
-                projects, writing technical blog posts, or exploring the latest in web
-                technology. I believe great software is built at the intersection of
-                elegant code and intuitive design.
+                {p2 || (
+                  <>
+                    When I&apos;m not writing code, you&apos;ll find me contributing to open-source
+                    projects, writing technical blog posts, or exploring the latest in web
+                    technology. I believe great software is built at the intersection of
+                    elegant code and intuitive design.
+                  </>
+                )}
               </p>
             </div>
 
             {/* Highlights */}
             <div className="reveal reveal-delay-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {highlights.map((item) => (
+              {activeHighlights.map((item) => (
                 <div
                   key={item.text}
                   className="flex items-start gap-3 glass rounded-xl px-4 py-3 border border-white/5 hover:border-primary/20 transition-colors duration-300"
@@ -141,7 +193,7 @@ export default function AboutSection() {
 
             {/* Stats */}
             <div className="reveal reveal-delay-5 grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {stats.map((stat) => (
+              {activeStats.map((stat) => (
                 <div
                   key={stat.label}
                   className="glass rounded-2xl p-4 text-center border border-white/5 hover:border-primary/20 transition-all duration-300 hover:-translate-y-1 group"

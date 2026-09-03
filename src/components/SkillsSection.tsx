@@ -8,7 +8,7 @@ type Skill = {
   icon: string;
   level: number;
   color: string;
-  category: "Web Development" | "Analytics & Tracking";
+  category: string;
 };
 
 const skills: Skill[] = [
@@ -50,13 +50,25 @@ const alsoFamiliarTags = [
   "ESLint",
 ];
 
-export default function SkillsSection() {
+interface SkillsSectionProps {
+  skills?: Skill[];
+  tags?: string[];
+}
+
+export default function SkillsSection({
+  skills: propSkills,
+  tags: propTags,
+}: SkillsSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
-  const [activeTab, setActiveTab] = useState<"All" | "Web Development" | "Analytics & Tracking">("All");
+  const activeSkills = propSkills && propSkills.length > 0 ? propSkills : skills;
+  const activeTags = propTags && propTags.length > 0 ? propTags : alsoFamiliarTags;
+
+  const categories = ["All", ...Array.from(new Set(activeSkills.map((s) => s.category)))];
+  const [activeTab, setActiveTab] = useState<string>("All");
 
   const filteredSkills = activeTab === "All" 
-    ? skills 
-    : skills.filter((skill) => skill.category === activeTab);
+    ? activeSkills 
+    : activeSkills.filter((skill) => skill.category === activeTab);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -118,7 +130,7 @@ export default function SkillsSection() {
 
         {/* Category Tabs */}
         <div className="reveal flex flex-wrap gap-2 mb-10">
-          {(["All", "Web Development", "Analytics & Tracking"] as const).map((tab) => (
+          {categories.map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -174,7 +186,7 @@ export default function SkillsSection() {
             Also Familiar With & Tracking Methods
           </p>
           <div className="flex flex-wrap gap-2.5 justify-center max-w-4xl mx-auto">
-            {alsoFamiliarTags.map((tag) => (
+            {activeTags.map((tag) => (
               <span
                 key={tag}
                 onClick={() => trackSkillClick(tag, "Familiarity & Tracking")}

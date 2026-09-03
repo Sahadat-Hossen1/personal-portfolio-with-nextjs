@@ -61,8 +61,36 @@ type FormState = {
 
 type Status = "idle" | "loading" | "success" | "error";
 
-export default function ContactSection() {
+const socialIconMap: Record<string, any> = {
+  github: Github,
+  linkedin: Linkedin,
+  whatsapp: Whatsapp,
+  email: Mail,
+};
+
+interface ContactSectionProps {
+  profile?: {
+    email?: string;
+    phone?: string;
+    location?: string;
+    socials?: { platform: string; label: string; value: string; href: string }[];
+  };
+}
+
+export default function ContactSection({ profile }: ContactSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
+  const activeSocials = profile?.socials && profile.socials.length > 0
+    ? profile.socials.map((s) => ({
+        id: `contact-${s.platform}`,
+        platform: s.platform as any,
+        icon: socialIconMap[s.platform] || Mail,
+        label: s.label,
+        value: s.value,
+        href: s.href,
+        color: s.platform === "linkedin" ? "hover:text-blue-400" : s.platform === "whatsapp" ? "hover:text-green-400" : "hover:text-white",
+      }))
+    : socials;
+
   const [form, setForm] = useState<FormState>({
     name: "",
     email: "",
@@ -105,11 +133,24 @@ export default function ContactSection() {
       subject: form.subject,
     });
 
-    // Simulate API call
-    await new Promise((r) => setTimeout(r, 1800));
-    setStatus("success");
-    setForm({ name: "", email: "", subject: "", message: "" });
-    setTimeout(() => setStatus("idle"), 5000);
+    try {
+      const res = await fetch("/api/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setStatus("success");
+        setForm({ name: "", email: "", subject: "", message: "" });
+      } else {
+        setStatus("error");
+      }
+    } catch {
+      setStatus("error");
+    } finally {
+      setTimeout(() => setStatus("idle"), 5000);
+    }
   };
 
   const inputClass =
@@ -174,7 +215,7 @@ export default function ContactSection() {
                 <div>
                   <p className="text-xs text-muted-foreground">Based in</p>
                   <p className="font-semibold text-foreground text-sm">
-                    Dhaka, Bangladesh
+                    {profile?.location || "Dhaka, Bangladesh"}
                   </p>
                   <p className="text-xs text-muted-foreground">
                     Open to remote worldwide
@@ -185,7 +226,7 @@ export default function ContactSection() {
 
             {/* Socials */}
             <div className="space-y-2">
-              {socials.map((social) => (
+              {activeSocials.map((social) => (
                 <a
                   key={social.id}
                   id={social.id}

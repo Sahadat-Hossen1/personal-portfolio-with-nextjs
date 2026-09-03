@@ -18,8 +18,30 @@ const socials = [
   { icon: Mail, href: "mailto:sahadat.hossen1435@gmail.com", label: "Email" },
 ];
 
-export default function Footer() {
+const socialIconMap: Record<string, any> = {
+  github: Github,
+  linkedin: Linkedin,
+  twitter: Twitter,
+  email: Mail,
+};
+
+interface FooterProps {
+  profile?: {
+    name?: string;
+    socials?: { platform: string; label: string; href: string }[];
+  };
+}
+
+export default function Footer({ profile }: FooterProps) {
   const currentYear = new Date().getFullYear();
+  const displayName = profile?.name || "Sahadat Hossen";
+  const activeSocials = profile?.socials && profile.socials.length > 0
+    ? profile.socials.map((s) => ({
+        icon: socialIconMap[s.platform] || Mail,
+        href: s.href,
+        label: s.label,
+      }))
+    : socials;
 
   return (
     <footer className="relative border-t border-white/5 mt-8">
@@ -65,7 +87,7 @@ export default function Footer() {
 
           {/* Social icons */}
           <div className="flex items-center gap-3">
-            {socials.map((social) => (
+            {activeSocials.map((social) => (
               <a
                 key={social.label}
                 href={social.href}
@@ -79,11 +101,19 @@ export default function Footer() {
             ))}
           </div>
 
-          {/* Copyright */}
-          <p className="text-xs text-muted-foreground/60 text-center flex items-center gap-1.5">
-            © {currentYear} Sahadat Hossen. Built with{" "}
-            <Heart size={11} className="text-rose-400 fill-rose-400 inline" /> using Next.js, Tailwind CSS & shadcn
-          </p>
+          {/* Copyright & Admin Link */}
+          <div className="flex flex-col items-center gap-2 text-xs text-muted-foreground/60 text-center">
+            <p className="flex items-center gap-1.5">
+              © {currentYear} {displayName}. Built with{" "}
+              <Heart size={11} className="text-rose-400 fill-rose-400 inline" /> using Next.js, MongoDB & Tailwind CSS
+            </p>
+            <a
+              href="/admin"
+              className="text-[11px] text-muted-foreground/40 hover:text-indigo-400 transition-colors"
+            >
+              Admin Portal
+            </a>
+          </div>
         </div>
       </div>
     </footer>

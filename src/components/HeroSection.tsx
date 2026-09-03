@@ -24,7 +24,30 @@ const floatingBadges = [
   { label: "Next.js", color: "from-slate-600 to-slate-800", delay: "2.5s", top: "40%", right: "4%" },
 ];
 
-export default function HeroSection() {
+interface HeroSectionProps {
+  profile?: {
+    name?: string;
+    roles?: string[];
+    bioBlurb?: string;
+    statusText?: string;
+    statusAvailable?: boolean;
+    avatarUrl?: string;
+    cvUrl?: string;
+    floatingBadges?: typeof floatingBadges;
+    socials?: { platform: string; href: string }[];
+  };
+}
+
+export default function HeroSection({ profile }: HeroSectionProps) {
+  const activeRoles = profile?.roles && profile.roles.length > 0 ? profile.roles : roles;
+  const activeBadges = profile?.floatingBadges && profile.floatingBadges.length > 0 ? profile.floatingBadges : floatingBadges;
+  const displayName = profile?.name || "Sahadat Hossen";
+  const bioBlurb = profile?.bioBlurb || "I build scalable, performant web applications from database to deployment. Passionate about clean code, great UX, and the MERN stack.";
+  const statusText = profile?.statusText || "Available for new opportunities";
+  const isAvailable = profile?.statusAvailable ?? true;
+  const avatarSrc = profile?.avatarUrl || "/profile.jpg";
+  const githubLink = profile?.socials?.find((s) => s.platform === "github")?.href || "https://github.com/Sahadat-Hossen1";
+
   const [roleIndex, setRoleIndex] = useState(0);
   const [displayed, setDisplayed] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
@@ -33,7 +56,7 @@ export default function HeroSection() {
 
   // Typewriter effect
   useEffect(() => {
-    const current = roles[roleIndex];
+    const current = activeRoles[roleIndex % activeRoles.length] || "Developer";
     const speed = isDeleting ? 40 : 80;
 
     const timer = setTimeout(() => {
@@ -177,7 +200,7 @@ export default function HeroSection() {
       />
 
       {/* Floating tech badges */}
-      {floatingBadges.map((badge) => (
+      {activeBadges.map((badge) => (
         <div
           key={badge.label}
           className="absolute hidden lg:flex items-center gap-1.5 glass px-3 py-1.5 rounded-full text-xs font-semibold text-white/80 pointer-events-none select-none"
@@ -185,7 +208,7 @@ export default function HeroSection() {
             top: badge.top,
             left: badge.left,
             right: badge.right,
-            animation: `float 6s ease-in-out ${badge.delay} infinite`,
+            animation: `float 6s ease-in-out ${badge.delay || "0s"} infinite`,
           }}
           aria-hidden="true"
         >
@@ -202,16 +225,18 @@ export default function HeroSection() {
         <div className="inline-flex items-center gap-2.5 glass px-4 py-1.5 rounded-full text-xs font-medium border border-emerald-500/20 mb-8 animate-fade-up">
           <div className="relative w-6 h-6 rounded-full overflow-hidden border border-emerald-400/40 flex-shrink-0">
             <Image
-              src="/profile.jpg"
-              alt="Sahadat Hossen"
+              src={avatarSrc}
+              alt={displayName}
               fill
               sizes="24px"
               className="object-cover object-top"
             />
           </div>
           <div className="flex items-center gap-2 text-emerald-400">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            Available for new opportunities
+            {isAvailable && (
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            )}
+            {statusText}
             <Sparkles size={12} className="text-emerald-400/70" />
           </div>
         </div>
@@ -222,7 +247,7 @@ export default function HeroSection() {
           style={{ animationDelay: "0.1s" }}
         >
           <span className="text-foreground">Hi, I&apos;m </span>
-          <span className="gradient-text">Sahadat Hossen</span>
+          <span className="gradient-text">{displayName}</span>
         </h1>
 
         {/* Typewriter role */}
@@ -233,10 +258,7 @@ export default function HeroSection() {
 
         {/* Bio blurb */}
         <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
-          I build{" "}
-          <span className="text-foreground font-medium">scalable, performant</span>{" "}
-          web applications from database to deployment. Passionate about clean
-          code, great UX, and the MERN stack.
+          {bioBlurb}
         </p>
 
         {/* CTAs */}
@@ -261,11 +283,11 @@ export default function HeroSection() {
             Download CV
           </Button>
           <a
-            href="https://github.com/Sahadat-Hossen1"
+            href={githubLink}
             target="_blank"
             rel="noopener noreferrer"
             id="hero-github"
-            onClick={() => trackSocialClick("github", "hero", "https://github.com/Sahadat-Hossen1")}
+            onClick={() => trackSocialClick("github", "hero", githubLink)}
             className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 h-12 text-muted-foreground hover:text-foreground glass rounded-xl transition-all duration-300 hover:scale-[1.04] text-base font-semibold border border-white/10 hover:border-white/20"
           >
             <Github size={18} />

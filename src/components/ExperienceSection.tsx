@@ -4,16 +4,18 @@ import { useEffect, useRef } from "react";
 import { MapPin, ExternalLink } from "lucide-react";
 
 type Experience = {
-  id: string;
+  id?: string;
+  _id?: string;
   role: string;
   company: string;
-  companyUrl: string;
-  location: string;
+  companyUrl?: string;
+  location?: string;
   period: string;
-  type: "Full-time" | "Contract" | "Part-time" | "Freelance";
+  type: string;
   bullets: string[];
   tags: string[];
   current?: boolean;
+  order?: number;
 };
 
 const experiences: Experience[] = [
@@ -59,8 +61,18 @@ const typeColors: Record<string, string> = {
   "Part-time": "text-purple-400 bg-purple-400/10 border-purple-400/20",
 };
 
-export default function ExperienceSection() {
+interface ExperienceSectionProps {
+  experiences?: Experience[];
+}
+
+export default function ExperienceSection({
+  experiences: propExperiences,
+}: ExperienceSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
+  const activeExperiences =
+    propExperiences && propExperiences.length > 0
+      ? propExperiences
+      : experiences;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -102,20 +114,22 @@ export default function ExperienceSection() {
         </div>
 
         <h2 className="reveal reveal-delay-1 text-3xl sm:text-4xl lg:text-5xl font-black text-foreground mb-16">
-          Where I&apos;ve{" "}
-          <span className="gradient-text">worked</span>
+          Work <span className="gradient-text">journey</span>
         </h2>
 
         {/* Timeline */}
         <div className="relative">
           {/* Vertical line */}
-          <div className="absolute left-5 sm:left-8 top-0 bottom-0 w-px bg-gradient-to-b from-primary/60 via-primary/20 to-transparent" />
+          <div
+            className="absolute left-5 sm:left-8 top-8 bottom-8 w-px bg-gradient-to-b from-primary/50 via-primary/20 to-transparent pointer-events-none"
+            aria-hidden="true"
+          />
 
-          <div className="space-y-10">
-            {experiences.map((exp, i) => (
+          <div className="space-y-12 sm:space-y-16">
+            {activeExperiences.map((exp: Experience, i: number) => (
               <div
-                key={exp.id}
-                id={exp.id}
+                key={exp._id || exp.id || exp.role}
+                id={exp._id || exp.id || `exp-${i}`}
                 className={`reveal reveal-delay-${Math.min(i + 2, 5)} relative flex gap-6 sm:gap-10`}
               >
                 {/* Timeline dot */}
@@ -134,32 +148,39 @@ export default function ExperienceSection() {
                 </div>
 
                 {/* Content card */}
-                <div className="flex-1 glass rounded-2xl sm:rounded-3xl p-5 sm:p-7 border border-white/5 hover:border-white/10 transition-all duration-300 hover:-translate-y-1 mb-2">
-                  {/* Header */}
-                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-4">
+                <div className="flex-1 glass rounded-3xl p-6 sm:p-8 border border-white/5 hover:border-white/10 transition-all duration-300 hover:-translate-y-1">
+                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 mb-4">
                     <div>
-                      <h3 className="text-lg sm:text-xl font-bold text-foreground">
-                        {exp.role}
-                      </h3>
-                      <div className="flex items-center gap-2 mt-0.5">
-                        <a
-                          href={exp.companyUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-primary font-semibold text-sm hover:underline flex items-center gap-1"
-                        >
-                          {exp.company}
-                          <ExternalLink size={11} />
-                        </a>
+                      <div className="flex items-center gap-2.5 flex-wrap">
+                        <h3 className="text-lg font-bold text-foreground">
+                          {exp.role}
+                        </h3>
                         <span
-                          className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${typeColors[exp.type]}`}
+                          className={`text-[11px] px-2.5 py-0.5 rounded-full font-medium border ${
+                            typeColors[exp.type] ||
+                            "text-indigo-400 bg-indigo-400/10 border-indigo-400/20"
+                          }`}
                         >
                           {exp.type}
                         </span>
-                        {exp.current && (
-                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-1">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                            Current
+                      </div>
+                      <div className="flex items-center gap-2 mt-1">
+                        {exp.companyUrl ? (
+                          <a
+                            href={exp.companyUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary hover:underline text-sm font-semibold flex items-center gap-1 group"
+                          >
+                            {exp.company}
+                            <ExternalLink
+                              size={12}
+                              className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"
+                            />
+                          </a>
+                        ) : (
+                          <span className="text-primary text-sm font-semibold">
+                            {exp.company}
                           </span>
                         )}
                       </div>
@@ -176,7 +197,7 @@ export default function ExperienceSection() {
 
                   {/* Bullets */}
                   <ul className="space-y-2.5 mb-5">
-                    {exp.bullets.map((bullet, j) => (
+                    {exp.bullets?.map((bullet: string, j: number) => (
                       <li key={j} className="flex items-start gap-3 text-sm text-muted-foreground">
                         <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-primary/60 flex-shrink-0" />
                         {bullet}
@@ -186,7 +207,7 @@ export default function ExperienceSection() {
 
                   {/* Tags */}
                   <div className="flex flex-wrap gap-2">
-                    {exp.tags.map((tag) => (
+                    {exp.tags?.map((tag: string) => (
                       <span
                         key={tag}
                         className="text-[11px] px-2.5 py-1 rounded-lg glass border border-white/5 text-muted-foreground font-medium"

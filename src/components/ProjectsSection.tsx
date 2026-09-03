@@ -7,17 +7,19 @@ import { Github } from "@/components/icons";
 import { trackProjectClick } from "@/lib/gtm";
 
 type Project = {
-  id: string;
+  id?: string;
+  _id?: string;
   title: string;
   description: string;
-  longDesc: string;
+  longDesc?: string;
   image: string;
   tags: string[];
   github: string;
   live: string;
-  emoji: string;
+  emoji?: string;
   featured?: boolean;
   stars?: number;
+  order?: number;
 };
 
 const projects: Project[] = [
@@ -99,8 +101,13 @@ const projects: Project[] = [
   },
 ];
 
-export default function ProjectsSection() {
+interface ProjectsSectionProps {
+  projects?: Project[];
+}
+
+export default function ProjectsSection({ projects: propProjects }: ProjectsSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
+  const activeProjects = propProjects && propProjects.length > 0 ? propProjects : projects;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -119,8 +126,8 @@ export default function ProjectsSection() {
     return () => observer.disconnect();
   }, []);
 
-  const featured = projects.filter((p) => p.featured);
-  const others = projects.filter((p) => !p.featured);
+  const featured = activeProjects.filter((p) => p.featured);
+  const others = activeProjects.filter((p) => !p.featured);
 
   return (
     <section
