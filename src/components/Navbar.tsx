@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { Github, Linkedin, Twitter } from "@/components/icons";
 import { trackSocialClick, trackPageView } from "@/lib/gtm";
@@ -57,10 +56,10 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <a
-            href="#"
+            href="/"
             onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }}
             className="flex items-center gap-2.5 group"
-            aria-label="Home"
+            aria-label="Sahadat Hossen Portfolio Home"
           >
             <div className="relative w-8 h-8 rounded-full overflow-hidden border border-indigo-500/50 shadow-md group-hover:shadow-indigo-500/40 transition-all duration-300 group-hover:scale-110">
               <Image
@@ -82,10 +81,14 @@ export default function Navbar() {
               const id = link.href.slice(1);
               const isActive = activeSection === id;
               return (
-                <button
+                <a
                   key={link.href}
                   id={`nav-${id}`}
-                  onClick={() => handleNavClick(link.href)}
+                  href={link.href}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleNavClick(link.href);
+                  }}
                   className={`relative px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 cursor-pointer ${
                     isActive
                       ? "text-primary"
@@ -96,7 +99,7 @@ export default function Navbar() {
                     <span className="absolute inset-0 rounded-lg bg-primary/10 border border-primary/20" />
                   )}
                   {link.label}
-                </button>
+                </a>
               );
             })}
           </div>
@@ -123,14 +126,17 @@ export default function Navbar() {
             >
               <Linkedin size={18} />
             </a>
-            <Button
+            <a
               id="nav-contact-btn"
-              onClick={() => handleNavClick("#contact")}
-              size="sm"
-              className="ml-2 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white border-0 shadow-lg hover:shadow-indigo-500/30 transition-all duration-300 hover:scale-[1.03]"
+              href="#contact"
+              onClick={(e) => {
+                e.preventDefault();
+                handleNavClick("#contact");
+              }}
+              className="ml-2 inline-flex items-center justify-center h-8 px-3 rounded-lg text-xs font-semibold bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-lg hover:shadow-indigo-500/30 transition-all duration-300 hover:scale-[1.03]"
             >
               Hire Me
-            </Button>
+            </a>
           </div>
 
           {/* Mobile toggle */}
@@ -153,13 +159,17 @@ export default function Navbar() {
         >
           <div className="flex flex-col gap-1 pt-2 border-t border-white/5">
             {navLinks.map((link) => (
-              <button
+              <a
                 key={link.href}
-                onClick={() => handleNavClick(link.href)}
+                href={link.href}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNavClick(link.href);
+                }}
                 className="text-left px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:bg-white/5 rounded-lg transition-colors cursor-pointer"
               >
                 {link.label}
-              </button>
+              </a>
             ))}
             <div className="flex items-center gap-3 px-4 pt-3 border-t border-white/5 mt-2">
               <a

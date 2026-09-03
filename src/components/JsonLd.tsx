@@ -12,7 +12,7 @@ export default function JsonLd() {
       "Full Stack MERN Developer specializing in building scalable web applications with MongoDB, Express.js, React, Node.js, Next.js, and TypeScript.",
     url: "https://sahadathossen.dev",
     image: "https://sahadathossen.dev/profile.jpg",
-    email: "mailto:sahadat.hossen1435@gmai.com",
+    email: "mailto:sahadat.hossen1435@gmail.com",
     address: {
       "@type": "PostalAddress",
       addressLocality: "Dhaka",

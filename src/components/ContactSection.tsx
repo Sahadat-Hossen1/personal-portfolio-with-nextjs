@@ -37,8 +37,8 @@ const socials = [
     platform: "whatsapp" as const,
     icon: Whatsapp,
     label: "Whatsapp",
-    value: "+01606081657",
-    href: "https://wa.me/01606081657",
+    value: "+8801606081657",
+    href: "https://wa.me/8801606081657",
     color: "hover:text-green-400",
   },
   {
@@ -46,8 +46,8 @@ const socials = [
     platform: "email" as const,
     icon: Mail,
     label: "Email",
-    value: "sahadat.hossen1435@gmai.com",
-    href: "mailto:sahadat.hossen1435@gmai.com",
+    value: "sahadat.hossen1435@gmail.com",
+    href: "mailto:sahadat.hossen1435@gmail.com",
     color: "hover:text-primary",
   },
 ];

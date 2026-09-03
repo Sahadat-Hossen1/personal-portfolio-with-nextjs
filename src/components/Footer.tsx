@@ -15,7 +15,7 @@ const socials = [
   { icon: Github, href: "https://github.com/Sahadat-Hossen1", label: "GitHub" },
   { icon: Linkedin, href: "https://linkedin.com/in/sahadathossen", label: "LinkedIn" },
   { icon: Twitter, href: "https://twitter.com", label: "Twitter" },
-  { icon: Mail, href: "mailto:sahadat.hossen1435@gmai.com", label: "Email" },
+  { icon: Mail, href: "mailto:sahadat.hossen1435@gmail.com", label: "Email" },
 ];
 
 export default function Footer() {
@@ -36,10 +36,10 @@ export default function Footer() {
         <div className="flex flex-col items-center gap-8">
           {/* Logo */}
           <a
-            href="#"
+            href="/"
             onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }}
             className="flex items-center gap-2 group"
-            aria-label="Back to top"
+            aria-label="Sahadat Hossen - Back to top"
           >
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg group-hover:shadow-indigo-500/40 transition-all duration-300 group-hover:scale-110">
               <Code2 size={16} className="text-white" />

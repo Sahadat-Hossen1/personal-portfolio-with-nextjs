@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     template: "%s | Sahadat Hossen",
   },
   description:
-    "Personal portfolio of Sahadat Hossen, a Full Stack MERN Developer specializing in building scalable web applications with MongoDB, Express.js, React, Node.js, Next.js, and TypeScript.",
+    "Full Stack MERN Developer specializing in building scalable web applications with MongoDB, Express.js, React, Node.js, Next.js, and TypeScript.",
   keywords: [
     "Sahadat Hossen",
     "Full Stack Developer",
