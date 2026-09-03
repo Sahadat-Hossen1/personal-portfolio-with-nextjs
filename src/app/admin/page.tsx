@@ -191,7 +191,7 @@ export default function AdminDashboardPage() {
             rel="noopener noreferrer"
             className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-xs font-semibold text-white flex items-center gap-2 shadow-lg shadow-indigo-500/25 transition-all hover:scale-[1.02]"
           >
-            <span>Live Portfolio</span>
+            <span>Live Portfolio.</span>
             <ArrowUpRight size={14} />
           </a>
         </div>
