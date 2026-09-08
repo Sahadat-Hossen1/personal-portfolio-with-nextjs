@@ -7,7 +7,7 @@
  * Templates receive this data through props via `TemplateProps`.
  */
 
-export type TemplateId = "developer" | "video-editor" | "digital-marketer";
+export type TemplateId = "developer" | "video-editor" | "digital-marketer" | "doctor";
 
 export interface FloatingBadgeData {
   label: string;

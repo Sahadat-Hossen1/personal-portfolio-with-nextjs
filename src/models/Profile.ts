@@ -38,7 +38,7 @@ export interface ISectionVisibility {
   floatingChat: boolean;
 }
 
-export type TemplateId = "developer" | "video-editor" | "digital-marketer";
+export type TemplateId = "developer" | "video-editor" | "digital-marketer" | "doctor";
 
 export interface IProfile extends Document {
   // Hero section
@@ -164,7 +164,7 @@ const ProfileSchema = new Schema<IProfile>(
     },
     selectedTemplate: {
       type: String,
-      enum: ["developer", "video-editor", "digital-marketer"],
+      enum: ["developer", "video-editor", "digital-marketer", "doctor"],
       default: "developer",
     },
   },

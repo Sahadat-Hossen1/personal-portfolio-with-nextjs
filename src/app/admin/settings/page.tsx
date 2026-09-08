@@ -19,6 +19,7 @@ import {
   Code2,
   Video,
   TrendingUp,
+  Activity,
   Check,
   ExternalLink,
 } from "lucide-react";
@@ -83,6 +84,20 @@ const templateOptions: TemplateOption[] = [
     activeBorderClass: "border-emerald-500 ring-2 ring-emerald-500/40",
     activeBgClass: "bg-emerald-500/[0.06]",
     activeGlowClass: "shadow-lg shadow-emerald-500/20",
+  },
+  {
+    id: "doctor",
+    name: "Doctor",
+    tag: "Clinical & Medical Practice",
+    desc: "High-trust clinical portfolio featuring physician credentials, areas of clinical expertise, research & project showcase with detail modal, and professional consultation booking.",
+    icon: Activity,
+    previewUrl: "/?template=doctor",
+    features: ["Clinical Profile & Badges", "Expertise Proficiency Grid", "Project Showcase Modal"],
+    themeSummary: "Clinical Slate / Teal & Cyan Accents",
+    badgeClass: "bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-500/30",
+    activeBorderClass: "border-teal-500 ring-2 ring-teal-500/40",
+    activeBgClass: "bg-teal-500/[0.06]",
+    activeGlowClass: "shadow-lg shadow-teal-500/20",
   },
 ];
 
@@ -487,7 +502,7 @@ export default function SettingsAdminPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
             {templateOptions.map((tpl) => {
               const Icon = tpl.icon;
               const isSelected = form.selectedTemplate === tpl.id;

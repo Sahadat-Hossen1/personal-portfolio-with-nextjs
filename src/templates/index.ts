@@ -3,6 +3,7 @@ import type { TemplateId, TemplateProps } from "@/types/portfolio";
 import DeveloperTemplate from "./developer/index";
 import VideoEditorTemplate from "./video-editor/index";
 import DigitalMarketerTemplate from "./digital-marketer/index";
+import DoctorTemplate from "./doctor/index";
 
 export type { TemplateId, TemplateProps };
 
@@ -18,6 +19,7 @@ export const SUPPORTED_TEMPLATE_IDS: readonly TemplateId[] = [
   "developer",
   "video-editor",
   "digital-marketer",
+  "doctor",
 ] as const;
 
 /**
@@ -27,6 +29,7 @@ export const TEMPLATE_MAP: Record<TemplateId, ComponentType<TemplateProps>> = {
   developer: DeveloperTemplate,
   "video-editor": VideoEditorTemplate,
   "digital-marketer": DigitalMarketerTemplate,
+  doctor: DoctorTemplate,
 };
 
 /**
