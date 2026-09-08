@@ -34,7 +34,7 @@ interface HeroSectionProps {
     avatarUrl?: string;
     cvUrl?: string;
     floatingBadges?: typeof floatingBadges;
-    socials?: { platform: string; href: string }[];
+    socials?: { platform: string; href: string; enabled?: boolean }[];
   };
 }
 
@@ -46,7 +46,9 @@ export default function HeroSection({ profile }: HeroSectionProps) {
   const statusText = profile?.statusText || "Available for new opportunities";
   const isAvailable = profile?.statusAvailable ?? true;
   const avatarSrc = profile?.avatarUrl || "/profile.jpg";
-  const githubLink = profile?.socials?.find((s) => s.platform === "github")?.href || "https://github.com/Sahadat-Hossen1";
+  const githubItem = profile?.socials?.find((s) => s.platform === "github");
+  const isGithubEnabled = githubItem ? githubItem.enabled !== false : true;
+  const githubLink = githubItem?.href || "https://github.com/Sahadat-Hossen1";
 
   const [roleIndex, setRoleIndex] = useState(0);
   const [displayed, setDisplayed] = useState("");
@@ -282,17 +284,19 @@ export default function HeroSection({ profile }: HeroSectionProps) {
             <Download size={18} className="group-hover:translate-y-0.5 transition-transform" />
             Download CV
           </Button>
-          <a
-            href={githubLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            id="hero-github"
-            onClick={() => trackSocialClick("github", "hero", githubLink)}
-            className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 h-12 text-muted-foreground hover:text-foreground glass rounded-xl transition-all duration-300 hover:scale-[1.04] text-base font-semibold border border-border hover:border-primary/40"
-          >
-            <Github size={18} />
-            GitHub
-          </a>
+          {isGithubEnabled && (
+            <a
+              href={githubLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              id="hero-github"
+              onClick={() => trackSocialClick("github", "hero", githubLink)}
+              className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 h-12 text-muted-foreground hover:text-foreground glass rounded-xl transition-all duration-300 hover:scale-[1.04] text-base font-semibold border border-border hover:border-primary/40"
+            >
+              <Github size={18} />
+              GitHub
+            </a>
+          )}
         </div>
 
         {/* Stats */}

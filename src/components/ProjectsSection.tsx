@@ -103,9 +103,15 @@ const projects: Project[] = [
 
 interface ProjectsSectionProps {
   projects?: Project[];
+  githubEnabled?: boolean;
+  githubUrl?: string;
 }
 
-export default function ProjectsSection({ projects: propProjects }: ProjectsSectionProps) {
+export default function ProjectsSection({
+  projects: propProjects,
+  githubEnabled = true,
+  githubUrl = "https://github.com/Sahadat-Hossen1",
+}: ProjectsSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const activeProjects = propProjects && propProjects.length > 0 ? propProjects : projects;
 
@@ -321,23 +327,25 @@ export default function ProjectsSection({ projects: propProjects }: ProjectsSect
         </div>
 
         {/* View All on GitHub */}
-        <div className="reveal text-center mt-12">
-          <a
-            href="https://github.com/Sahadat-Hossen1"
-            target="_blank"
-            rel="noopener noreferrer"
-            id="projects-view-github"
-            onClick={() => trackProjectClick("View All Projects", "github", "https://github.com/Sahadat-Hossen1")}
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors group px-5 py-2.5 rounded-full glass border border-border hover:border-primary/40"
-          >
-            <Github size={16} />
-            View all projects on GitHub
-            <ExternalLink
-              size={13}
-              className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"
-            />
-          </a>
-        </div>
+        {githubEnabled !== false && (
+          <div className="reveal text-center mt-12">
+            <a
+              href={githubUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              id="projects-view-github"
+              onClick={() => trackProjectClick("View All Projects", "github", githubUrl)}
+              className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors group px-5 py-2.5 rounded-full glass border border-border hover:border-primary/40"
+            >
+              <Github size={16} />
+              View all projects on GitHub
+              <ExternalLink
+                size={13}
+                className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"
+              />
+            </a>
+          </div>
+        )}
       </div>
     </section>
   );

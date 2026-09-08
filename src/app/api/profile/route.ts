@@ -58,6 +58,9 @@ export async function PUT(request: NextRequest) {
         delete body.sections;
       }
       Object.assign(profile, body);
+      if (body.socials) {
+        profile.markModified("socials");
+      }
     }
 
     await profile.save();

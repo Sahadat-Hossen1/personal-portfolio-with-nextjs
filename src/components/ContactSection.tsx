@@ -73,22 +73,24 @@ interface ContactSectionProps {
     email?: string;
     phone?: string;
     location?: string;
-    socials?: { platform: string; label: string; value: string; href: string }[];
+    socials?: { platform: string; label: string; value: string; href: string; enabled?: boolean }[];
   };
 }
 
 export default function ContactSection({ profile }: ContactSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const activeSocials = profile?.socials && profile.socials.length > 0
-    ? profile.socials.map((s) => ({
-        id: `contact-${s.platform}`,
-        platform: s.platform as any,
-        icon: socialIconMap[s.platform] || Mail,
-        label: s.label,
-        value: s.value,
-        href: s.href,
-        color: s.platform === "linkedin" ? "hover:text-blue-500 dark:hover:text-blue-400" : s.platform === "whatsapp" ? "hover:text-emerald-500 dark:hover:text-green-400" : "hover:text-foreground",
-      }))
+    ? profile.socials
+        .filter((s) => s.enabled !== false)
+        .map((s) => ({
+          id: `contact-${s.platform}`,
+          platform: s.platform as any,
+          icon: socialIconMap[s.platform] || Mail,
+          label: s.label,
+          value: s.value,
+          href: s.href,
+          color: s.platform === "linkedin" ? "hover:text-blue-500 dark:hover:text-blue-400" : s.platform === "whatsapp" ? "hover:text-emerald-500 dark:hover:text-green-400" : "hover:text-foreground",
+        }))
     : socials;
 
   const [form, setForm] = useState<FormState>({

@@ -28,7 +28,7 @@ const socialIconMap: Record<string, any> = {
 interface FooterProps {
   profile?: {
     name?: string;
-    socials?: { platform: string; label: string; href: string }[];
+    socials?: { platform: string; label: string; href: string; enabled?: boolean }[];
     sections?: {
       hero?: boolean;
       about?: boolean;
@@ -64,11 +64,13 @@ export default function Footer({ profile, sections }: FooterProps) {
   });
 
   const activeSocials = profile?.socials && profile.socials.length > 0
-    ? profile.socials.map((s) => ({
-        icon: socialIconMap[s.platform] || Mail,
-        href: s.href,
-        label: s.label,
-      }))
+    ? profile.socials
+        .filter((s) => s.enabled !== false)
+        .map((s) => ({
+          icon: socialIconMap[s.platform] || Mail,
+          href: s.href,
+          label: s.label,
+        }))
     : socials;
 
   return (

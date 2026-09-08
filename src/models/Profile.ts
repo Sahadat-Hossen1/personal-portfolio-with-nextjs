@@ -25,6 +25,7 @@ export interface ISocialItem {
   label: string;
   value: string;
   href: string;
+  enabled?: boolean;
 }
 
 export interface ISectionVisibility {
@@ -142,6 +143,7 @@ const ProfileSchema = new Schema<IProfile>(
         label: { type: String, required: true },
         value: { type: String, required: true },
         href: { type: String, required: true },
+        enabled: { type: Boolean, default: true },
       },
     ],
     sections: {

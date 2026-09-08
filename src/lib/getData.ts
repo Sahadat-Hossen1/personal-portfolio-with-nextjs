@@ -45,6 +45,13 @@ export async function getPortfolioData(): Promise<PortfolioData> {
             ...initialProfile.sections,
             ...(parsedProfile.sections || {}),
           },
+          socials:
+            parsedProfile.socials && parsedProfile.socials.length > 0
+              ? parsedProfile.socials.map((s: any) => ({
+                  ...s,
+                  enabled: s.enabled !== false,
+                }))
+              : initialProfile.socials,
         }
       : initialProfile;
 

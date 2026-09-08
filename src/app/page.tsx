@@ -23,9 +23,13 @@ export default async function HomePage() {
     floatingChat: true,
   };
 
+  const githubItem = data.profile?.socials?.find((s) => s.platform === "github");
+  const isGithubEnabled = githubItem ? githubItem.enabled !== false : true;
+  const githubUrl = githubItem?.href || "https://github.com/Sahadat-Hossen1";
+
   return (
     <>
-      <Navbar sections={sections} />
+      <Navbar sections={sections} socials={data.profile?.socials} />
       <main className="flex-1">
         {sections.hero !== false && <HeroSection profile={data.profile} />}
         {sections.about !== false && <AboutSection profile={data.profile} />}
@@ -33,7 +37,11 @@ export default async function HomePage() {
           <SkillsSection skills={data.skills} tags={data.skillTags} />
         )}
         {sections.projects !== false && (
-          <ProjectsSection projects={data.projects} />
+          <ProjectsSection
+            projects={data.projects}
+            githubEnabled={isGithubEnabled}
+            githubUrl={githubUrl}
+          />
         )}
         {sections.experience !== false && (
           <ExperienceSection experiences={data.experiences} />

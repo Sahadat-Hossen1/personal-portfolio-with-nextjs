@@ -25,9 +25,15 @@ interface NavbarProps {
     contact?: boolean;
     floatingChat?: boolean;
   };
+  socials?: {
+    platform: string;
+    label?: string;
+    href: string;
+    enabled?: boolean;
+  }[];
 }
 
-export default function Navbar({ sections }: NavbarProps = {}) {
+export default function Navbar({ sections, socials }: NavbarProps = {}) {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("");
@@ -41,6 +47,16 @@ export default function Navbar({ sections }: NavbarProps = {}) {
   });
 
   const showContact = sections ? sections.contact !== false : true;
+
+  const githubSocial = socials
+    ? socials.find((s) => s.platform === "github")
+    : { href: "https://github.com/Sahadat-Hossen1", enabled: true };
+  const linkedinSocial = socials
+    ? socials.find((s) => s.platform === "linkedin")
+    : { href: "https://linkedin.com/in/sahadathossen", enabled: true };
+  const twitterSocial = socials
+    ? socials.find((s) => s.platform === "twitter")
+    : { href: "https://twitter.com", enabled: true };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -129,26 +145,30 @@ export default function Navbar({ sections }: NavbarProps = {}) {
 
           {/* Social + ModeToggle + CTA */}
           <div className="hidden md:flex items-center gap-2">
-            <a
-              href="https://github.com/Sahadat-Hossen1"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="GitHub"
-              onClick={() => trackSocialClick("github", "navbar", "https://github.com/Sahadat-Hossen1")}
-              className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted"
-            >
-              <Github size={18} />
-            </a>
-            <a
-              href="https://linkedin.com/in/sahadathossen"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="LinkedIn"
-              onClick={() => trackSocialClick("linkedin", "navbar", "https://linkedin.com/in/sahadathossen")}
-              className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted"
-            >
-              <Linkedin size={18} />
-            </a>
+            {githubSocial && githubSocial.enabled !== false && (
+              <a
+                href={githubSocial.href || "https://github.com/Sahadat-Hossen1"}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="GitHub"
+                onClick={() => trackSocialClick("github", "navbar", githubSocial.href || "https://github.com/Sahadat-Hossen1")}
+                className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted"
+              >
+                <Github size={18} />
+              </a>
+            )}
+            {linkedinSocial && linkedinSocial.enabled !== false && (
+              <a
+                href={linkedinSocial.href || "https://linkedin.com/in/sahadathossen"}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="LinkedIn"
+                onClick={() => trackSocialClick("linkedin", "navbar", linkedinSocial.href || "https://linkedin.com/in/sahadathossen")}
+                className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted"
+              >
+                <Linkedin size={18} />
+              </a>
+            )}
 
             {/* shadcn Dark/Light Mode Toggle */}
             <ModeToggle />
@@ -202,36 +222,42 @@ export default function Navbar({ sections }: NavbarProps = {}) {
             ))}
             <div className="flex items-center justify-between px-4 pt-3 border-t border-border mt-2">
               <div className="flex items-center gap-3">
-                <a
-                  href="https://github.com/Sahadat-Hossen1"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="GitHub"
-                  onClick={() => trackSocialClick("github", "navbar", "https://github.com/Sahadat-Hossen1")}
-                  className="p-2 text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <Github size={18} />
-                </a>
-                <a
-                  href="https://linkedin.com/in/sahadathossen"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="LinkedIn"
-                  onClick={() => trackSocialClick("linkedin", "navbar", "https://linkedin.com/in/sahadathossen")}
-                  className="p-2 text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <Linkedin size={18} />
-                </a>
-                <a
-                  href="https://twitter.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Twitter"
-                  onClick={() => trackSocialClick("twitter", "navbar", "https://twitter.com")}
-                  className="p-2 text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <Twitter size={18} />
-                </a>
+                {githubSocial && githubSocial.enabled !== false && (
+                  <a
+                    href={githubSocial.href || "https://github.com/Sahadat-Hossen1"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="GitHub"
+                    onClick={() => trackSocialClick("github", "navbar", githubSocial.href || "https://github.com/Sahadat-Hossen1")}
+                    className="p-2 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <Github size={18} />
+                  </a>
+                )}
+                {linkedinSocial && linkedinSocial.enabled !== false && (
+                  <a
+                    href={linkedinSocial.href || "https://linkedin.com/in/sahadathossen"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="LinkedIn"
+                    onClick={() => trackSocialClick("linkedin", "navbar", linkedinSocial.href || "https://linkedin.com/in/sahadathossen")}
+                    className="p-2 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <Linkedin size={18} />
+                  </a>
+                )}
+                {twitterSocial && twitterSocial.enabled !== false && (
+                  <a
+                    href={twitterSocial.href || "https://twitter.com"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Twitter"
+                    onClick={() => trackSocialClick("twitter", "navbar", twitterSocial.href || "https://twitter.com")}
+                    className="p-2 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <Twitter size={18} />
+                  </a>
+                )}
               </div>
               <ModeToggle />
             </div>

@@ -65,6 +65,14 @@ const sectionConfigs = [
   },
 ];
 
+const socialPlatformIcons: Record<string, any> = {
+  github: Github,
+  linkedin: Linkedin,
+  whatsapp: Whatsapp,
+  email: Mail,
+  twitter: Twitter,
+};
+
 export default function SettingsAdminPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -78,11 +86,11 @@ export default function SettingsAdminPage() {
     whatsappMessage: "",
     messengerUrl: "",
     socials: [
-      { platform: "github", label: "GitHub", value: "", href: "" },
-      { platform: "linkedin", label: "LinkedIn", value: "", href: "" },
-      { platform: "whatsapp", label: "Whatsapp", value: "", href: "" },
-      { platform: "email", label: "Email", value: "", href: "" },
-      { platform: "twitter", label: "Twitter", value: "", href: "" },
+      { platform: "github", label: "GitHub", value: "", href: "", enabled: true },
+      { platform: "linkedin", label: "LinkedIn", value: "", href: "", enabled: true },
+      { platform: "whatsapp", label: "Whatsapp", value: "", href: "", enabled: true },
+      { platform: "email", label: "Email", value: "", href: "", enabled: true },
+      { platform: "twitter", label: "Twitter", value: "", href: "", enabled: true },
     ],
     sections: {
       hero: true,
@@ -116,37 +124,45 @@ export default function SettingsAdminPage() {
           messengerUrl:
             data.data.messengerUrl || "https://m.me/sahadat.hossen.1435",
           socials: data.data.socials?.length
-            ? data.data.socials
+            ? data.data.socials.map((s: any) => ({
+                ...s,
+                enabled: s.enabled !== false,
+              }))
             : [
                 {
                   platform: "github",
                   label: "GitHub",
                   value: "github.com/Sahadat-Hossen1",
                   href: "https://github.com/Sahadat-Hossen1",
+                  enabled: true,
                 },
                 {
                   platform: "linkedin",
                   label: "LinkedIn",
                   value: "linkedin.com/in/sahadathossen",
                   href: "https://linkedin.com/in/sahadathossen",
+                  enabled: true,
                 },
                 {
                   platform: "whatsapp",
                   label: "Whatsapp",
                   value: "+8801606081657",
                   href: "https://wa.me/8801606081657",
+                  enabled: true,
                 },
                 {
                   platform: "email",
                   label: "Email",
                   value: "sahadat.hossen1435@gmail.com",
                   href: "mailto:sahadat.hossen1435@gmail.com",
+                  enabled: true,
                 },
                 {
                   platform: "twitter",
                   label: "Twitter",
                   value: "twitter.com",
                   href: "https://twitter.com",
+                  enabled: true,
                 },
               ],
           sections: {
@@ -192,9 +208,25 @@ export default function SettingsAdminPage() {
     }));
   };
 
-  const handleSocialChange = (index: number, field: "value" | "href", val: string) => {
+  const handleSocialChange = (
+    index: number,
+    field: "value" | "href" | "enabled",
+    val: any
+  ) => {
     const nextSocials = [...form.socials];
     nextSocials[index] = { ...nextSocials[index], [field]: val };
+    setForm({ ...form, socials: nextSocials });
+  };
+
+  const handleToggleSocial = (index: number) => {
+    const nextSocials = [...form.socials];
+    const current = nextSocials[index].enabled !== false;
+    nextSocials[index] = { ...nextSocials[index], enabled: !current };
+    setForm({ ...form, socials: nextSocials });
+  };
+
+  const handleEnableAllSocials = () => {
+    const nextSocials = form.socials.map((s) => ({ ...s, enabled: true }));
     setForm({ ...form, socials: nextSocials });
   };
 
@@ -487,48 +519,128 @@ export default function SettingsAdminPage() {
 
         {/* Section 3: Social Profile Links */}
         <div className="glass rounded-3xl p-6 border border-border space-y-4">
-          <h2 className="text-base font-bold text-foreground flex items-center gap-2 border-b border-border pb-3">
-            <Share2 size={16} className="text-purple-400" />
-            3. Social Profiles & Links (Navbar, Footer, Contact)
-          </h2>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border pb-3">
+            <div>
+              <h2 className="text-base font-bold text-foreground flex items-center gap-2">
+                <Share2 size={16} className="text-purple-400" />
+                3. Social Profiles & Links (Navbar, Footer, Contact)
+              </h2>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Enable or disable individual social icons and update your destination links.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 self-start sm:self-auto">
+              <button
+                type="button"
+                onClick={handleEnableAllSocials}
+                className="text-xs font-semibold px-3 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-600 dark:text-purple-400 border border-purple-500/30 transition-all hover:scale-[1.02] cursor-pointer"
+              >
+                Enable All Socials
+              </button>
+              <span className="text-[11px] font-mono px-2.5 py-1 rounded-full bg-purple-500/10 text-purple-500 border border-purple-500/30">
+                {form.socials.filter((s) => s.enabled !== false).length} / {form.socials.length} Active
+              </span>
+            </div>
+          </div>
 
           <div className="space-y-3">
-            {form.socials.map((social, idx) => (
-              <div
-                key={social.platform}
-                className="grid grid-cols-1 sm:grid-cols-12 gap-3 p-3.5 rounded-2xl glass border border-border items-center"
-              >
-                <div className="sm:col-span-2 font-bold text-xs text-foreground capitalize flex items-center gap-2">
-                  <span>{social.label}</span>
+            {form.socials.map((social, idx) => {
+              const Icon = socialPlatformIcons[social.platform] || Share2;
+              const isEnabled = social.enabled !== false;
+              return (
+                <div
+                  key={social.platform}
+                  className={`p-4 rounded-2xl glass border transition-all flex flex-col gap-3 ${
+                    isEnabled
+                      ? "border-border hover:border-purple-500/30"
+                      : "border-amber-500/30 dark:border-amber-500/20 bg-amber-500/[0.02]"
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div
+                        className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors ${
+                          isEnabled
+                            ? "bg-purple-500/10 text-purple-500 border border-purple-500/20"
+                            : "bg-muted text-muted-foreground border border-border"
+                        }`}
+                      >
+                        <Icon size={16} />
+                      </div>
+                      <span className="font-bold text-xs text-foreground capitalize">
+                        {social.label}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => handleToggleSocial(idx)}
+                        className={`text-[10px] px-2 py-0.5 rounded-full font-bold border transition-all cursor-pointer ${
+                          isEnabled
+                            ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20"
+                            : "bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/30 hover:bg-amber-500/25"
+                        }`}
+                        title={isEnabled ? "Click to disable" : "Click to enable"}
+                      >
+                        {isEnabled ? "Visible" : "Hidden (Click to Enable)"}
+                      </button>
+                    </div>
+
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      {!isEnabled && (
+                        <button
+                          type="button"
+                          onClick={() => handleToggleSocial(idx)}
+                          className="text-xs font-bold px-3 py-1 rounded-xl bg-purple-600 hover:bg-purple-700 text-white shadow-sm transition-all hover:scale-105 cursor-pointer"
+                        >
+                          Enable
+                        </button>
+                      )}
+                      <label className="relative inline-flex items-center cursor-pointer select-none">
+                        <input
+                          type="checkbox"
+                          checked={isEnabled}
+                          onChange={() => handleToggleSocial(idx)}
+                          className="sr-only peer"
+                        />
+                        <div className="w-11 h-6 bg-zinc-300 dark:bg-zinc-700 border border-zinc-400/50 dark:border-zinc-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all after:shadow-md peer-checked:bg-purple-600 dark:peer-checked:bg-purple-500 peer-checked:border-purple-600"></div>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 pt-1 border-t border-border/50">
+                    <div className="sm:col-span-5">
+                      <span className="text-[10px] text-muted-foreground block mb-1">
+                        Display Handle / Text
+                      </span>
+                      <input
+                        type="text"
+                        value={social.value}
+                        onChange={(e) =>
+                          handleSocialChange(idx, "value", e.target.value)
+                        }
+                        className={`w-full px-3 py-1.5 rounded-lg glass border border-border text-xs text-foreground ${
+                          !isEnabled ? "opacity-75" : ""
+                        }`}
+                      />
+                    </div>
+                    <div className="sm:col-span-7">
+                      <span className="text-[10px] text-muted-foreground block mb-1">
+                        Destination URL
+                      </span>
+                      <input
+                        type="text"
+                        value={social.href}
+                        onChange={(e) =>
+                          handleSocialChange(idx, "href", e.target.value)
+                        }
+                        className={`w-full px-3 py-1.5 rounded-lg glass border border-border text-xs text-foreground ${
+                          !isEnabled ? "opacity-75" : ""
+                        }`}
+                      />
+                    </div>
+                  </div>
                 </div>
-                <div className="sm:col-span-4">
-                  <span className="text-[10px] text-muted-foreground block mb-1">
-                    Display Handle / Text
-                  </span>
-                  <input
-                    type="text"
-                    value={social.value}
-                    onChange={(e) =>
-                      handleSocialChange(idx, "value", e.target.value)
-                    }
-                    className="w-full px-3 py-1.5 rounded-lg glass border border-border text-xs text-foreground"
-                  />
-                </div>
-                <div className="sm:col-span-6">
-                  <span className="text-[10px] text-muted-foreground block mb-1">
-                    Destination URL
-                  </span>
-                  <input
-                    type="text"
-                    value={social.href}
-                    onChange={(e) =>
-                      handleSocialChange(idx, "href", e.target.value)
-                    }
-                    className="w-full px-3 py-1.5 rounded-lg glass border border-border text-xs text-foreground"
-                  />
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </form>
