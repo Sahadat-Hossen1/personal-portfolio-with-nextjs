@@ -85,6 +85,8 @@ export default function SettingsAdminPage() {
     whatsappNumber: "",
     whatsappMessage: "",
     messengerUrl: "",
+    chatWhatsAppEnabled: true,
+    chatMessengerEnabled: true,
     socials: [
       { platform: "github", label: "GitHub", value: "", href: "", enabled: true },
       { platform: "linkedin", label: "LinkedIn", value: "", href: "", enabled: true },
@@ -123,6 +125,8 @@ export default function SettingsAdminPage() {
             "Hi Sahadat, I visited your portfolio and would like to connect!",
           messengerUrl:
             data.data.messengerUrl || "https://m.me/sahadat.hossen.1435",
+          chatWhatsAppEnabled: data.data.chatWhatsAppEnabled !== false,
+          chatMessengerEnabled: data.data.chatMessengerEnabled !== false,
           socials: data.data.socials?.length
             ? data.data.socials.map((s: any) => ({
                 ...s,
@@ -463,57 +467,229 @@ export default function SettingsAdminPage() {
         </div>
 
         {/* Section 2: Floating Chat Widget Settings */}
-        <div className="glass rounded-3xl p-6 border border-border space-y-4">
-          <h2 className="text-base font-bold text-foreground flex items-center gap-2 border-b border-border pb-3">
-            <MessageSquare size={16} className="text-emerald-500 dark:text-emerald-400" />
-            2. Floating Chat Widget (Bottom-right Popup)
-          </h2>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="glass rounded-3xl p-6 border border-border space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border pb-3">
             <div>
-              <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
-                WhatsApp Phone Number (Numbers only with country code)
-              </label>
-              <input
-                type="text"
-                value={form.whatsappNumber}
-                onChange={(e) =>
-                  setForm({ ...form, whatsappNumber: e.target.value })
-                }
-                className={inputClass}
-                placeholder="8801606081657"
-              />
+              <h2 className="text-base font-bold text-foreground flex items-center gap-2">
+                <MessageSquare size={16} className="text-emerald-500 dark:text-emerald-400" />
+                2. Floating Chat Widget Channels (WhatsApp & Messenger)
+              </h2>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Enable, disable, or remove individual chat channels from the floating popup.
+              </p>
             </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
-                Facebook Messenger URL
-              </label>
-              <input
-                type="text"
-                value={form.messengerUrl}
-                onChange={(e) =>
-                  setForm({ ...form, messengerUrl: e.target.value })
-                }
-                className={inputClass}
-                placeholder="https://m.me/sahadat.hossen.1435"
-              />
+            <div className="flex items-center gap-2 self-start sm:self-auto">
+              <span className="text-[11px] font-mono px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/30">
+                {[form.chatWhatsAppEnabled, form.chatMessengerEnabled].filter(Boolean).length} / 2 Channels Active
+              </span>
             </div>
           </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
-              WhatsApp Prefilled Welcome Message
-            </label>
-            <input
-              type="text"
-              value={form.whatsappMessage}
-              onChange={(e) =>
-                setForm({ ...form, whatsappMessage: e.target.value })
-              }
-              className={inputClass}
-              placeholder="Hi Sahadat, I visited your portfolio and would like to connect!"
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* WhatsApp Channel Card */}
+            <div
+              className={`p-4 rounded-2xl glass border transition-all space-y-3.5 ${
+                form.chatWhatsAppEnabled
+                  ? "border-border hover:border-emerald-500/30"
+                  : "border-amber-500/30 dark:border-amber-500/20 bg-amber-500/[0.02]"
+              }`}
+            >
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2.5">
+                  <div
+                    className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors ${
+                      form.chatWhatsAppEnabled
+                        ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20"
+                        : "bg-muted text-muted-foreground border border-border"
+                    }`}
+                  >
+                    <Whatsapp size={18} />
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-bold text-foreground">WhatsApp Channel</h3>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setForm({
+                          ...form,
+                          chatWhatsAppEnabled: !form.chatWhatsAppEnabled,
+                        })
+                      }
+                      className={`text-[10px] px-2 py-0.5 rounded-full font-bold border transition-all cursor-pointer ${
+                        form.chatWhatsAppEnabled
+                          ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20"
+                          : "bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/30 hover:bg-amber-500/25"
+                      }`}
+                    >
+                      {form.chatWhatsAppEnabled
+                        ? "Active (In Popup)"
+                        : "Hidden (Click to Enable)"}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  {!form.chatWhatsAppEnabled && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setForm({ ...form, chatWhatsAppEnabled: true })
+                      }
+                      className="text-xs font-bold px-3 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition-all hover:scale-105 cursor-pointer"
+                    >
+                      Enable
+                    </button>
+                  )}
+                  <label className="relative inline-flex items-center cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={form.chatWhatsAppEnabled}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          chatWhatsAppEnabled: e.target.checked,
+                        })
+                      }
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-zinc-300 dark:bg-zinc-700 border border-zinc-400/50 dark:border-zinc-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all after:shadow-md peer-checked:bg-emerald-600 dark:peer-checked:bg-emerald-500 peer-checked:border-emerald-600"></div>
+                  </label>
+                </div>
+              </div>
+
+              <div className="space-y-3 pt-2 border-t border-border/50">
+                <div>
+                  <label className="block text-[11px] font-semibold text-muted-foreground mb-1">
+                    WhatsApp Phone Number (with country code)
+                  </label>
+                  <input
+                    type="text"
+                    value={form.whatsappNumber}
+                    onChange={(e) =>
+                      setForm({ ...form, whatsappNumber: e.target.value })
+                    }
+                    className={`w-full px-3 py-1.5 rounded-lg glass border border-border text-xs text-foreground ${
+                      !form.chatWhatsAppEnabled ? "opacity-75" : ""
+                    }`}
+                    placeholder="8801606081657"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-semibold text-muted-foreground mb-1">
+                    Prefilled Welcome Message
+                  </label>
+                  <input
+                    type="text"
+                    value={form.whatsappMessage}
+                    onChange={(e) =>
+                      setForm({ ...form, whatsappMessage: e.target.value })
+                    }
+                    className={`w-full px-3 py-1.5 rounded-lg glass border border-border text-xs text-foreground ${
+                      !form.chatWhatsAppEnabled ? "opacity-75" : ""
+                    }`}
+                    placeholder="Hi Sahadat, I visited your portfolio..."
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Messenger Channel Card */}
+            <div
+              className={`p-4 rounded-2xl glass border transition-all space-y-3.5 flex flex-col justify-between ${
+                form.chatMessengerEnabled
+                  ? "border-border hover:border-blue-500/30"
+                  : "border-amber-500/30 dark:border-amber-500/20 bg-amber-500/[0.02]"
+              }`}
+            >
+              <div className="space-y-3.5">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2.5">
+                    <div
+                      className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors ${
+                        form.chatMessengerEnabled
+                          ? "bg-blue-500/10 text-blue-500 border border-blue-500/20"
+                          : "bg-muted text-muted-foreground border border-border"
+                      }`}
+                    >
+                      <Messenger size={18} />
+                    </div>
+                    <div>
+                      <h3 className="text-xs font-bold text-foreground">Facebook Messenger</h3>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setForm({
+                            ...form,
+                            chatMessengerEnabled: !form.chatMessengerEnabled,
+                          })
+                        }
+                        className={`text-[10px] px-2 py-0.5 rounded-full font-bold border transition-all cursor-pointer ${
+                          form.chatMessengerEnabled
+                            ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20"
+                            : "bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/30 hover:bg-amber-500/25"
+                        }`}
+                      >
+                        {form.chatMessengerEnabled
+                          ? "Active (In Popup)"
+                          : "Hidden (Click to Enable)"}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    {!form.chatMessengerEnabled && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setForm({ ...form, chatMessengerEnabled: true })
+                        }
+                        className="text-xs font-bold px-3 py-1 rounded-xl bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-all hover:scale-105 cursor-pointer"
+                      >
+                        Enable
+                      </button>
+                    )}
+                    <label className="relative inline-flex items-center cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={form.chatMessengerEnabled}
+                        onChange={(e) =>
+                          setForm({
+                            ...form,
+                            chatMessengerEnabled: e.target.checked,
+                          })
+                        }
+                        className="sr-only peer"
+                      />
+                      <div className="w-11 h-6 bg-zinc-300 dark:bg-zinc-700 border border-zinc-400/50 dark:border-zinc-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all after:shadow-md peer-checked:bg-blue-600 dark:peer-checked:bg-blue-500 peer-checked:border-blue-600"></div>
+                    </label>
+                  </div>
+                </div>
+
+                <div className="pt-2 border-t border-border/50">
+                  <label className="block text-[11px] font-semibold text-muted-foreground mb-1">
+                    Facebook Messenger URL
+                  </label>
+                  <input
+                    type="text"
+                    value={form.messengerUrl}
+                    onChange={(e) =>
+                      setForm({ ...form, messengerUrl: e.target.value })
+                    }
+                    className={`w-full px-3 py-1.5 rounded-lg glass border border-border text-xs text-foreground ${
+                      !form.chatMessengerEnabled ? "opacity-75" : ""
+                    }`}
+                    placeholder="https://m.me/sahadat.hossen.1435"
+                  />
+                </div>
+              </div>
+
+              <p className="text-[11px] text-muted-foreground">
+                {form.chatMessengerEnabled
+                  ? "✓ Users can click to open a direct Messenger chat conversation."
+                  : "✕ Messenger button will not appear in the floating popup."}
+              </p>
+            </div>
           </div>
         </div>
 

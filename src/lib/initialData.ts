@@ -44,6 +44,8 @@ export const initialProfile = {
   whatsappNumber: "8801606081657",
   whatsappMessage: "Hi Sahadat, I visited your portfolio and would like to connect!",
   messengerUrl: "https://m.me/sahadat.hossen.1435",
+  chatWhatsAppEnabled: true,
+  chatMessengerEnabled: true,
   location: "Dhaka, Bangladesh",
   socials: [
     {

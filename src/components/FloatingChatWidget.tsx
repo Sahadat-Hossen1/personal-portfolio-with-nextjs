@@ -9,12 +9,16 @@ interface FloatingChatWidgetProps {
   whatsappNumber?: string;
   whatsappMessage?: string;
   messengerUrl?: string;
+  whatsappEnabled?: boolean;
+  messengerEnabled?: boolean;
 }
 
 export default function FloatingChatWidget({
   whatsappNumber = "8801606081657",
   whatsappMessage = "Hi Sahadat, I visited your portfolio and would like to connect!",
   messengerUrl = "https://m.me/sahadat.hossen.1435",
+  whatsappEnabled = true,
+  messengerEnabled = true,
 }: FloatingChatWidgetProps) {
   const [isOpen, setIsOpen] = useState(false);
   const widgetRef = useRef<HTMLDivElement>(null);
@@ -47,6 +51,20 @@ export default function FloatingChatWidget({
     };
   }, [isOpen]);
 
+  const hasWhatsApp = whatsappEnabled !== false && !!whatsappNumber;
+  const hasMessenger = messengerEnabled !== false && !!messengerUrl;
+
+  if (!hasWhatsApp && !hasMessenger) {
+    return null;
+  }
+
+  const statusSubtitle =
+    hasWhatsApp && hasMessenger
+      ? "● Available on WhatsApp & Messenger"
+      : hasWhatsApp
+      ? "● Available on WhatsApp"
+      : "● Available on Messenger";
+
   const encodedMessage = encodeURIComponent(whatsappMessage);
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
 
@@ -76,7 +94,7 @@ export default function FloatingChatWidget({
                   <Sparkles size={14} className="text-amber-400" />
                 </h4>
                 <p className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
-                  ● Available on WhatsApp & Messenger
+                  {statusSubtitle}
                 </p>
               </div>
             </div>
@@ -97,54 +115,58 @@ export default function FloatingChatWidget({
           {/* Action Links */}
           <div className="space-y-3">
             {/* WhatsApp Button */}
-            <a
-              id="chat-widget-whatsapp"
-              href={whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => trackSocialClick("whatsapp", "floating_widget", whatsappUrl)}
-              className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/25 hover:border-emerald-500/40 text-emerald-600 dark:text-emerald-400 transition-all duration-200 group hover:-translate-y-0.5"
-            >
-              <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400 group-hover:scale-105 transition-transform">
-                <Whatsapp size={22} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-bold text-foreground group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
-                    WhatsApp
-                  </span>
-                  <ExternalLink size={14} className="opacity-60 group-hover:opacity-100 transition-opacity" />
+            {hasWhatsApp && (
+              <a
+                id="chat-widget-whatsapp"
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackSocialClick("whatsapp", "floating_widget", whatsappUrl)}
+                className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/25 hover:border-emerald-500/40 text-emerald-600 dark:text-emerald-400 transition-all duration-200 group hover:-translate-y-0.5"
+              >
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400 group-hover:scale-105 transition-transform">
+                  <Whatsapp size={22} />
                 </div>
-                <p className="text-[11px] text-muted-foreground truncate">
-                  Chat directly via WhatsApp
-                </p>
-              </div>
-            </a>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-bold text-foreground group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                      WhatsApp
+                    </span>
+                    <ExternalLink size={14} className="opacity-60 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                  <p className="text-[11px] text-muted-foreground truncate">
+                    Chat directly via WhatsApp
+                  </p>
+                </div>
+              </a>
+            )}
 
             {/* Messenger Button */}
-            <a
-              id="chat-widget-messenger"
-              href={messengerUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => trackSocialClick("messenger", "floating_widget", messengerUrl)}
-              className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/25 hover:border-blue-500/40 text-blue-600 dark:text-blue-400 transition-all duration-200 group hover:-translate-y-0.5"
-            >
-              <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover:scale-105 transition-transform">
-                <Messenger size={22} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-bold text-foreground group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                    Messenger
-                  </span>
-                  <ExternalLink size={14} className="opacity-60 group-hover:opacity-100 transition-opacity" />
+            {hasMessenger && (
+              <a
+                id="chat-widget-messenger"
+                href={messengerUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackSocialClick("messenger", "floating_widget", messengerUrl)}
+                className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/25 hover:border-blue-500/40 text-blue-600 dark:text-blue-400 transition-all duration-200 group hover:-translate-y-0.5"
+              >
+                <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover:scale-105 transition-transform">
+                  <Messenger size={22} />
                 </div>
-                <p className="text-[11px] text-muted-foreground truncate">
-                  Send a Facebook message
-                </p>
-              </div>
-            </a>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-bold text-foreground group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                      Messenger
+                    </span>
+                    <ExternalLink size={14} className="opacity-60 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                  <p className="text-[11px] text-muted-foreground truncate">
+                    Send a Facebook message
+                  </p>
+                </div>
+              </a>
+            )}
           </div>
 
           <div className="mt-4 pt-3 border-t border-border text-center">

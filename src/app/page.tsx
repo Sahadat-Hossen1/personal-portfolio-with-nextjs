@@ -56,6 +56,8 @@ export default async function HomePage() {
           whatsappNumber={data.profile?.whatsappNumber}
           whatsappMessage={data.profile?.whatsappMessage}
           messengerUrl={data.profile?.messengerUrl}
+          whatsappEnabled={data.profile?.chatWhatsAppEnabled !== false}
+          messengerEnabled={data.profile?.chatMessengerEnabled !== false}
         />
       )}
     </>

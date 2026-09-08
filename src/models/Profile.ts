@@ -63,6 +63,8 @@ export interface IProfile extends Document {
   whatsappNumber: string;
   whatsappMessage: string;
   messengerUrl: string;
+  chatWhatsAppEnabled?: boolean;
+  chatMessengerEnabled?: boolean;
   location: string;
   socials: ISocialItem[];
   sections: ISectionVisibility;
@@ -136,6 +138,8 @@ const ProfileSchema = new Schema<IProfile>(
       default: "Hi Sahadat, I visited your portfolio and would like to connect!",
     },
     messengerUrl: { type: String, default: "https://m.me/sahadat.hossen.1435" },
+    chatWhatsAppEnabled: { type: Boolean, default: true },
+    chatMessengerEnabled: { type: Boolean, default: true },
     location: { type: String, default: "Dhaka, Bangladesh" },
     socials: [
       {

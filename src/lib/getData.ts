@@ -45,6 +45,8 @@ export async function getPortfolioData(): Promise<PortfolioData> {
             ...initialProfile.sections,
             ...(parsedProfile.sections || {}),
           },
+          chatWhatsAppEnabled: parsedProfile.chatWhatsAppEnabled !== false,
+          chatMessengerEnabled: parsedProfile.chatMessengerEnabled !== false,
           socials:
             parsedProfile.socials && parsedProfile.socials.length > 0
               ? parsedProfile.socials.map((s: any) => ({
