@@ -77,6 +77,15 @@ export const initialProfile = {
       href: "https://twitter.com",
     },
   ],
+  sections: {
+    hero: true,
+    about: true,
+    skills: true,
+    projects: true,
+    experience: true,
+    contact: true,
+    floatingChat: true,
+  },
 };
 
 export const initialSkills = [

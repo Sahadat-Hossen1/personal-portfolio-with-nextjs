@@ -13,24 +13,43 @@ export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   const data = await getPortfolioData();
+  const sections = data.profile?.sections || {
+    hero: true,
+    about: true,
+    skills: true,
+    projects: true,
+    experience: true,
+    contact: true,
+    floatingChat: true,
+  };
 
   return (
     <>
-      <Navbar />
+      <Navbar sections={sections} />
       <main className="flex-1">
-        <HeroSection profile={data.profile} />
-        <AboutSection profile={data.profile} />
-        <SkillsSection skills={data.skills} tags={data.skillTags} />
-        <ProjectsSection projects={data.projects} />
-        <ExperienceSection experiences={data.experiences} />
-        <ContactSection profile={data.profile} />
+        {sections.hero !== false && <HeroSection profile={data.profile} />}
+        {sections.about !== false && <AboutSection profile={data.profile} />}
+        {sections.skills !== false && (
+          <SkillsSection skills={data.skills} tags={data.skillTags} />
+        )}
+        {sections.projects !== false && (
+          <ProjectsSection projects={data.projects} />
+        )}
+        {sections.experience !== false && (
+          <ExperienceSection experiences={data.experiences} />
+        )}
+        {sections.contact !== false && (
+          <ContactSection profile={data.profile} />
+        )}
       </main>
-      <Footer profile={data.profile} />
-      <FloatingChatWidget
-        whatsappNumber={data.profile?.whatsappNumber}
-        whatsappMessage={data.profile?.whatsappMessage}
-        messengerUrl={data.profile?.messengerUrl}
-      />
+      <Footer profile={data.profile} sections={sections} />
+      {sections.floatingChat !== false && (
+        <FloatingChatWidget
+          whatsappNumber={data.profile?.whatsappNumber}
+          whatsappMessage={data.profile?.whatsappMessage}
+          messengerUrl={data.profile?.messengerUrl}
+        />
+      )}
     </>
   );
 }

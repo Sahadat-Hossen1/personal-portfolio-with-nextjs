@@ -27,6 +27,16 @@ export interface ISocialItem {
   href: string;
 }
 
+export interface ISectionVisibility {
+  hero: boolean;
+  about: boolean;
+  skills: boolean;
+  projects: boolean;
+  experience: boolean;
+  contact: boolean;
+  floatingChat: boolean;
+}
+
 export interface IProfile extends Document {
   // Hero section
   name: string;
@@ -54,6 +64,7 @@ export interface IProfile extends Document {
   messengerUrl: string;
   location: string;
   socials: ISocialItem[];
+  sections: ISectionVisibility;
   updatedAt: Date;
 }
 
@@ -133,9 +144,22 @@ const ProfileSchema = new Schema<IProfile>(
         href: { type: String, required: true },
       },
     ],
+    sections: {
+      hero: { type: Boolean, default: true },
+      about: { type: Boolean, default: true },
+      skills: { type: Boolean, default: true },
+      projects: { type: Boolean, default: true },
+      experience: { type: Boolean, default: true },
+      contact: { type: Boolean, default: true },
+      floatingChat: { type: Boolean, default: true },
+    },
   },
   { timestamps: true }
 );
+
+if (process.env.NODE_ENV !== "production" && mongoose.models?.Profile) {
+  delete (mongoose.models as Record<string, unknown>).Profile;
+}
 
 export const Profile: Model<IProfile> =
   mongoose.models.Profile || mongoose.model<IProfile>("Profile", ProfileSchema);

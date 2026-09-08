@@ -33,8 +33,19 @@ export async function getPortfolioData(): Promise<PortfolioData> {
         Experience.find().sort({ order: 1, createdAt: -1 }).lean(),
       ]);
 
-    const profile = profileDoc
+    const parsedProfile = profileDoc
       ? JSON.parse(JSON.stringify(profileDoc))
+      : null;
+
+    const profile = parsedProfile
+      ? {
+          ...initialProfile,
+          ...parsedProfile,
+          sections: {
+            ...initialProfile.sections,
+            ...(parsedProfile.sections || {}),
+          },
+        }
       : initialProfile;
 
     const projects =

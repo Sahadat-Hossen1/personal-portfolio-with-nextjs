@@ -39,6 +39,8 @@ export default function HeroAboutAdminPage() {
   const [cvUrl, setCvUrl] = useState("");
   const [roles, setRoles] = useState<string[]>([]);
   const [newRoleInput, setNewRoleInput] = useState("");
+  const [heroVisible, setHeroVisible] = useState(true);
+  const [aboutVisible, setAboutVisible] = useState(true);
 
   const [aboutTitle, setAboutTitle] = useState("");
   const [currentlyBuilding, setCurrentlyBuilding] = useState("");
@@ -64,6 +66,8 @@ export default function HeroAboutAdminPage() {
         setAvatarUrl(p.avatarUrl || "");
         setCvUrl(p.cvUrl || "");
         setRoles(p.roles || []);
+        setHeroVisible(p.sections?.hero ?? true);
+        setAboutVisible(p.sections?.about ?? true);
 
         setAboutTitle(p.aboutTitle || "");
         setCurrentlyBuilding(p.currentlyBuilding || "");
@@ -153,6 +157,10 @@ export default function HeroAboutAdminPage() {
       aboutP2,
       stats,
       highlights,
+      sections: {
+        hero: heroVisible,
+        about: aboutVisible,
+      },
     };
 
     try {
@@ -247,11 +255,46 @@ export default function HeroAboutAdminPage() {
 
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Section 1: Hero Intro */}
-        <div className="glass rounded-3xl p-6 border border-border space-y-5">
-          <h2 className="text-base font-bold text-foreground flex items-center gap-2 border-b border-border pb-3">
-            <Sparkles size={16} className="text-indigo-400" />
-            1. Hero Header & Headline Content
-          </h2>
+        <div className={`glass rounded-3xl p-6 border transition-all space-y-5 ${
+          heroVisible ? "border-border" : "border-border/40 opacity-75 bg-muted/10"
+        }`}>
+          <div className="flex items-center justify-between border-b border-border pb-3">
+            <h2 className="text-base font-bold text-foreground flex items-center gap-2">
+              <Sparkles size={16} className="text-indigo-400" />
+              1. Hero Header & Headline Content
+            </h2>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setHeroVisible(!heroVisible)}
+                className={`text-[10px] px-2.5 py-0.5 rounded-full font-bold border transition-all cursor-pointer ${
+                  heroVisible
+                    ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20"
+                    : "bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/30 hover:bg-amber-500/25"
+                }`}
+              >
+                {heroVisible ? "Section Visible" : "Hidden (Click to Enable)"}
+              </button>
+              {!heroVisible && (
+                <button
+                  type="button"
+                  onClick={() => setHeroVisible(true)}
+                  className="text-xs font-bold px-2.5 py-0.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm transition-all cursor-pointer"
+                >
+                  Enable
+                </button>
+              )}
+              <label className="relative inline-flex items-center cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={heroVisible}
+                  onChange={(e) => setHeroVisible(e.target.checked)}
+                  className="sr-only peer"
+                />
+                <div className="w-10 h-5.5 bg-zinc-300 dark:bg-zinc-700 border border-zinc-400/50 dark:border-zinc-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4.5 after:w-4.5 after:transition-all after:shadow-md peer-checked:bg-indigo-600 dark:peer-checked:bg-indigo-500 peer-checked:border-indigo-600"></div>
+              </label>
+            </div>
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
@@ -389,11 +432,46 @@ export default function HeroAboutAdminPage() {
         </div>
 
         {/* Section 2: About Me Content */}
-        <div className="glass rounded-3xl p-6 border border-border space-y-5">
-          <h2 className="text-base font-bold text-foreground flex items-center gap-2 border-b border-border pb-3">
-            <FileText size={16} className="text-indigo-400" />
-            2. About Section Details
-          </h2>
+        <div className={`glass rounded-3xl p-6 border transition-all space-y-5 ${
+          aboutVisible ? "border-border" : "border-border/40 opacity-75 bg-muted/10"
+        }`}>
+          <div className="flex items-center justify-between border-b border-border pb-3">
+            <h2 className="text-base font-bold text-foreground flex items-center gap-2">
+              <FileText size={16} className="text-indigo-400" />
+              2. About Section Details
+            </h2>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setAboutVisible(!aboutVisible)}
+                className={`text-[10px] px-2.5 py-0.5 rounded-full font-bold border transition-all cursor-pointer ${
+                  aboutVisible
+                    ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20"
+                    : "bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/30 hover:bg-amber-500/25"
+                }`}
+              >
+                {aboutVisible ? "Section Visible" : "Hidden (Click to Enable)"}
+              </button>
+              {!aboutVisible && (
+                <button
+                  type="button"
+                  onClick={() => setAboutVisible(true)}
+                  className="text-xs font-bold px-2.5 py-0.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm transition-all cursor-pointer"
+                >
+                  Enable
+                </button>
+              )}
+              <label className="relative inline-flex items-center cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={aboutVisible}
+                  onChange={(e) => setAboutVisible(e.target.checked)}
+                  className="sr-only peer"
+                />
+                <div className="w-10 h-5.5 bg-zinc-300 dark:bg-zinc-700 border border-zinc-400/50 dark:border-zinc-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4.5 after:w-4.5 after:transition-all after:shadow-md peer-checked:bg-indigo-600 dark:peer-checked:bg-indigo-500 peer-checked:border-indigo-600"></div>
+              </label>
+            </div>
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>

@@ -15,18 +15,40 @@ const navLinks = [
   { label: "Contact", href: "#contact" },
 ];
 
-export default function Navbar() {
+interface NavbarProps {
+  sections?: {
+    hero?: boolean;
+    about?: boolean;
+    skills?: boolean;
+    projects?: boolean;
+    experience?: boolean;
+    contact?: boolean;
+    floatingChat?: boolean;
+  };
+}
+
+export default function Navbar({ sections }: NavbarProps = {}) {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("");
+
+  const activeNavLinks = navLinks.filter((link) => {
+    const key = link.href.slice(1);
+    if (sections && key in sections) {
+      return sections[key as keyof typeof sections] !== false;
+    }
+    return true;
+  });
+
+  const showContact = sections ? sections.contact !== false : true;
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
 
       // Track active section
-      const sections = navLinks.map((l) => l.href.slice(1));
-      for (const section of sections.reverse()) {
+      const sectionIds = activeNavLinks.map((l) => l.href.slice(1));
+      for (const section of sectionIds.reverse()) {
         const el = document.getElementById(section);
         if (el && window.scrollY >= el.offsetTop - 120) {
           setActiveSection(section);
@@ -36,7 +58,7 @@ export default function Navbar() {
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [activeNavLinks]);
 
   const handleNavClick = (href: string) => {
     setIsOpen(false);
@@ -78,7 +100,7 @@ export default function Navbar() {
 
           {/* Desktop nav */}
           <div className="hidden md:flex items-center gap-1">
-            {navLinks.map((link) => {
+            {activeNavLinks.map((link) => {
               const id = link.href.slice(1);
               const isActive = activeSection === id;
               return (
@@ -131,17 +153,19 @@ export default function Navbar() {
             {/* shadcn Dark/Light Mode Toggle */}
             <ModeToggle />
 
-            <a
-              id="nav-contact-btn"
-              href="#contact"
-              onClick={(e) => {
-                e.preventDefault();
-                handleNavClick("#contact");
-              }}
-              className="ml-2 inline-flex items-center justify-center h-8 px-3 rounded-lg text-xs font-semibold bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-lg hover:shadow-indigo-500/30 transition-all duration-300 hover:scale-[1.03]"
-            >
-              Hire Me
-            </a>
+            {showContact && (
+              <a
+                id="nav-contact-btn"
+                href="#contact"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNavClick("#contact");
+                }}
+                className="ml-2 inline-flex items-center justify-center h-8 px-3 rounded-lg text-xs font-semibold bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-lg hover:shadow-indigo-500/30 transition-all duration-300 hover:scale-[1.03]"
+              >
+                Hire Me
+              </a>
+            )}
           </div>
 
           {/* Mobile toggle */}
@@ -163,7 +187,7 @@ export default function Navbar() {
           }`}
         >
           <div className="flex flex-col gap-1 pt-2 border-t border-border">
-            {navLinks.map((link) => (
+            {activeNavLinks.map((link) => (
               <a
                 key={link.href}
                 href={link.href}

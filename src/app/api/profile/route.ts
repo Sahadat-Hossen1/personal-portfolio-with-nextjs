@@ -36,8 +36,27 @@ export async function PUT(request: NextRequest) {
 
     let profile = await Profile.findOne();
     if (!profile) {
-      profile = new Profile(body);
+      profile = new Profile({
+        ...initialProfile,
+        ...body,
+        sections: {
+          ...initialProfile.sections,
+          ...(body.sections || {}),
+        },
+      });
     } else {
+      if (body.sections) {
+        const existingSections = profile.sections
+          ? JSON.parse(JSON.stringify(profile.sections))
+          : initialProfile.sections;
+        profile.sections = {
+          ...initialProfile.sections,
+          ...existingSections,
+          ...body.sections,
+        };
+        profile.markModified("sections");
+        delete body.sections;
+      }
       Object.assign(profile, body);
     }
 

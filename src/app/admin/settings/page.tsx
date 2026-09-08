@@ -12,8 +12,58 @@ import {
   MapPin,
   MessageSquare,
   Share2,
+  Sparkles,
+  User,
+  Cpu,
+  FolderGit2,
+  Briefcase,
 } from "lucide-react";
 import { Github, Linkedin, Twitter, Whatsapp, Messenger } from "@/components/icons";
+
+const sectionConfigs = [
+  {
+    key: "hero",
+    title: "Hero Section",
+    icon: Sparkles,
+    desc: "Top introductory banner with typewriter effect, bio blurb, and avatar photo.",
+  },
+  {
+    key: "about",
+    title: "About Me Section",
+    icon: User,
+    desc: "Detailed background story, currently building badge, metric cards, and key highlights.",
+  },
+  {
+    key: "skills",
+    title: "Skills & Tech Stack",
+    icon: Cpu,
+    desc: "Skill proficiency cards, category filter tabs, and familiar technologies pills.",
+  },
+  {
+    key: "projects",
+    title: "Projects Showcase",
+    icon: FolderGit2,
+    desc: "Featured case studies, GitHub repo links, live demo buttons, and project grid.",
+  },
+  {
+    key: "experience",
+    title: "Experience Timeline",
+    icon: Briefcase,
+    desc: "Work history journey, role details, company links, and achievement bullets.",
+  },
+  {
+    key: "contact",
+    title: "Contact Section",
+    icon: Mail,
+    desc: "Interactive inquiry form, primary email/phone details, and location card.",
+  },
+  {
+    key: "floatingChat",
+    title: "Floating Chat Widget",
+    icon: MessageSquare,
+    desc: "Bottom-right corner WhatsApp & Messenger instant messaging popup bubble.",
+  },
+];
 
 export default function SettingsAdminPage() {
   const [loading, setLoading] = useState(true);
@@ -34,6 +84,15 @@ export default function SettingsAdminPage() {
       { platform: "email", label: "Email", value: "", href: "" },
       { platform: "twitter", label: "Twitter", value: "", href: "" },
     ],
+    sections: {
+      hero: true,
+      about: true,
+      skills: true,
+      projects: true,
+      experience: true,
+      contact: true,
+      floatingChat: true,
+    },
   });
 
   useEffect(() => {
@@ -90,6 +149,15 @@ export default function SettingsAdminPage() {
                   href: "https://twitter.com",
                 },
               ],
+          sections: {
+            hero: data.data.sections?.hero ?? true,
+            about: data.data.sections?.about ?? true,
+            skills: data.data.sections?.skills ?? true,
+            projects: data.data.sections?.projects ?? true,
+            experience: data.data.sections?.experience ?? true,
+            contact: data.data.sections?.contact ?? true,
+            floatingChat: data.data.sections?.floatingChat ?? true,
+          },
         });
       }
     } catch (err) {
@@ -97,6 +165,31 @@ export default function SettingsAdminPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleToggleSection = (key: string) => {
+    setForm((prev) => ({
+      ...prev,
+      sections: {
+        ...prev.sections,
+        [key]: !prev.sections[key as keyof typeof prev.sections],
+      },
+    }));
+  };
+
+  const handleEnableAll = () => {
+    setForm((prev) => ({
+      ...prev,
+      sections: {
+        hero: true,
+        about: true,
+        skills: true,
+        projects: true,
+        experience: true,
+        contact: true,
+        floatingChat: true,
+      },
+    }));
   };
 
   const handleSocialChange = (index: number, field: "value" | "href", val: string) => {
@@ -189,6 +282,105 @@ export default function SettingsAdminPage() {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-8">
+        {/* Section 0: Section Visibility Manager */}
+        <div className="glass rounded-3xl p-6 border border-border space-y-5">
+          <div className="border-b border-border pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <h2 className="text-base font-bold text-foreground flex items-center gap-2">
+                <Sliders size={16} className="text-indigo-400" />
+                Portfolio Section Visibility (Enable / Disable)
+              </h2>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Toggle individual sections on or off. Disabled sections and their navigation links are automatically removed from the public website.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 self-start sm:self-auto">
+              <button
+                type="button"
+                onClick={handleEnableAll}
+                className="text-xs font-semibold px-3 py-1.5 rounded-xl bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 border border-indigo-500/30 transition-all hover:scale-[1.02] cursor-pointer"
+              >
+                Enable All
+              </button>
+              <span className="text-[11px] font-mono px-2.5 py-1 rounded-full bg-indigo-500/10 text-indigo-500 border border-indigo-500/30">
+                {Object.values(form.sections).filter(Boolean).length} / 7 Active
+              </span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {sectionConfigs.map((sec) => {
+              const Icon = sec.icon;
+              const isEnabled = form.sections[sec.key as keyof typeof form.sections];
+              return (
+                <div
+                  key={sec.key}
+                  className={`p-4 rounded-2xl glass border transition-all flex items-start justify-between gap-3 ${
+                    isEnabled
+                      ? "border-border hover:border-indigo-500/40"
+                      : "border-amber-500/30 dark:border-amber-500/20 bg-amber-500/[0.03]"
+                  }`}
+                >
+                  <div className="flex items-start gap-3 min-w-0">
+                    <div
+                      className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors ${
+                        isEnabled
+                          ? "bg-indigo-500/10 text-indigo-400 border border-indigo-500/30"
+                          : "bg-muted text-muted-foreground border border-border"
+                      }`}
+                    >
+                      <Icon size={18} />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold text-foreground">
+                          {sec.title}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleToggleSection(sec.key)}
+                          className={`text-[10px] px-2 py-0.5 rounded-full font-bold border transition-all cursor-pointer ${
+                            isEnabled
+                              ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20"
+                              : "bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/30 hover:bg-amber-500/25"
+                          }`}
+                          title={isEnabled ? "Click to disable" : "Click to enable"}
+                        >
+                          {isEnabled ? "Visible" : "Hidden (Click to Enable)"}
+                        </button>
+                      </div>
+                      <p className="text-[11px] text-muted-foreground mt-1 leading-relaxed">
+                        {sec.desc}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 flex-shrink-0 mt-1">
+                    {!isEnabled && (
+                      <button
+                        type="button"
+                        onClick={() => handleToggleSection(sec.key)}
+                        className="text-xs font-bold px-3 py-1 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm transition-all hover:scale-105 cursor-pointer"
+                      >
+                        Enable
+                      </button>
+                    )}
+                    <label className="relative inline-flex items-center cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={isEnabled}
+                        onChange={() => handleToggleSection(sec.key)}
+                        className="sr-only peer"
+                      />
+                      <div className="w-11 h-6 bg-zinc-300 dark:bg-zinc-700 border border-zinc-400/50 dark:border-zinc-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all after:shadow-md peer-checked:bg-indigo-600 dark:peer-checked:bg-indigo-500 peer-checked:border-indigo-600"></div>
+                    </label>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
         {/* Section 1: Contact Details */}
         <div className="glass rounded-3xl p-6 border border-border space-y-4">
           <h2 className="text-base font-bold text-foreground flex items-center gap-2 border-b border-border pb-3">

@@ -17,6 +17,7 @@ import {
   Sparkles,
   AlertCircle,
   Loader2,
+  Sliders,
 } from "lucide-react";
 
 interface DashboardStats {
@@ -47,6 +48,23 @@ export default function AdminDashboardPage() {
     messages: 0,
     unreadMessages: 0,
   });
+  const [sections, setSections] = useState<{
+    hero?: boolean;
+    about?: boolean;
+    skills?: boolean;
+    projects?: boolean;
+    experience?: boolean;
+    contact?: boolean;
+    floatingChat?: boolean;
+  }>({
+    hero: true,
+    about: true,
+    skills: true,
+    projects: true,
+    experience: true,
+    contact: true,
+    floatingChat: true,
+  });
   const [recentMessages, setRecentMessages] = useState<RecentMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const [seedLoading, setSeedLoading] = useState(false);
@@ -55,17 +73,19 @@ export default function AdminDashboardPage() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [projRes, skillRes, expRes, msgRes] = await Promise.all([
+      const [projRes, skillRes, expRes, msgRes, profileRes] = await Promise.all([
         fetch("/api/projects"),
         fetch("/api/skills"),
         fetch("/api/experiences"),
         fetch("/api/messages"),
+        fetch("/api/profile"),
       ]);
 
       const projData = await projRes.json();
       const skillData = await skillRes.json();
       const expData = await expRes.json();
       const msgData = await msgRes.json();
+      const profileData = await profileRes.json();
 
       setStats({
         projects: projData.data?.length || 0,
@@ -75,6 +95,10 @@ export default function AdminDashboardPage() {
         messages: msgData.data?.length || 0,
         unreadMessages: msgData.unreadCount || 0,
       });
+
+      if (profileData.data?.sections) {
+        setSections(profileData.data.sections);
+      }
 
       if (msgData.data) {
         setRecentMessages(msgData.data.slice(0, 5));
@@ -261,7 +285,27 @@ export default function AdminDashboardPage() {
                 <User size={16} className="text-indigo-400" />
                 <span>Hero & About Details</span>
               </div>
-              <ArrowUpRight size={14} className="text-muted-foreground group-hover:text-foreground" />
+              <div className="flex items-center gap-2">
+                <span
+                  className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold ${
+                    sections.hero !== false && sections.about !== false
+                      ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                      : "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                  }`}
+                >
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full ${
+                      sections.hero !== false && sections.about !== false ? "bg-emerald-400" : "bg-amber-400"
+                    }`}
+                  />
+                  {sections.hero !== false && sections.about !== false
+                    ? "Live"
+                    : sections.hero === false && sections.about === false
+                    ? "Hidden"
+                    : "Partial"}
+                </span>
+                <ArrowUpRight size={14} className="text-muted-foreground group-hover:text-foreground" />
+              </div>
             </Link>
 
             <Link
@@ -272,7 +316,23 @@ export default function AdminDashboardPage() {
                 <FolderGit2 size={16} className="text-blue-400" />
                 <span>Projects & Case Studies</span>
               </div>
-              <ArrowUpRight size={14} className="text-muted-foreground group-hover:text-foreground" />
+              <div className="flex items-center gap-2">
+                <span
+                  className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold ${
+                    sections.projects !== false
+                      ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                      : "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                  }`}
+                >
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full ${
+                      sections.projects !== false ? "bg-emerald-400" : "bg-amber-400"
+                    }`}
+                  />
+                  {sections.projects !== false ? "Live" : "Hidden"}
+                </span>
+                <ArrowUpRight size={14} className="text-muted-foreground group-hover:text-foreground" />
+              </div>
             </Link>
 
             <Link
@@ -283,7 +343,23 @@ export default function AdminDashboardPage() {
                 <Cpu size={16} className="text-purple-400" />
                 <span>Skills & Familiar Tags</span>
               </div>
-              <ArrowUpRight size={14} className="text-muted-foreground group-hover:text-foreground" />
+              <div className="flex items-center gap-2">
+                <span
+                  className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold ${
+                    sections.skills !== false
+                      ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                      : "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                  }`}
+                >
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full ${
+                      sections.skills !== false ? "bg-emerald-400" : "bg-amber-400"
+                    }`}
+                  />
+                  {sections.skills !== false ? "Live" : "Hidden"}
+                </span>
+                <ArrowUpRight size={14} className="text-muted-foreground group-hover:text-foreground" />
+              </div>
             </Link>
 
             <Link
@@ -294,16 +370,35 @@ export default function AdminDashboardPage() {
                 <Briefcase size={16} className="text-emerald-400" />
                 <span>Experience Timeline</span>
               </div>
-              <ArrowUpRight size={14} className="text-muted-foreground group-hover:text-foreground" />
+              <div className="flex items-center gap-2">
+                <span
+                  className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold ${
+                    sections.experience !== false
+                      ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                      : "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                  }`}
+                >
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full ${
+                      sections.experience !== false ? "bg-emerald-400" : "bg-amber-400"
+                    }`}
+                  />
+                  {sections.experience !== false ? "Live" : "Hidden"}
+                </span>
+                <ArrowUpRight size={14} className="text-muted-foreground group-hover:text-foreground" />
+              </div>
             </Link>
 
             <Link
               href="/admin/settings"
-              className="flex items-center justify-between p-3.5 rounded-xl glass border border-border hover:border-border hover:bg-muted transition-all text-xs font-medium text-foreground group"
+              className="flex items-center justify-between p-3.5 rounded-xl glass border border-indigo-500/30 bg-indigo-500/5 hover:bg-indigo-500/10 hover:border-indigo-500/50 transition-all text-xs font-medium text-foreground group"
             >
               <div className="flex items-center gap-3">
-                <Sparkles size={16} className="text-amber-400" />
-                <span>Socials & Chat Widget</span>
+                <Sliders size={16} className="text-indigo-400" />
+                <div>
+                  <span className="font-semibold text-indigo-300">Section Visibility Manager</span>
+                  <p className="text-[11px] text-muted-foreground">Toggle any section on / off</p>
+                </div>
               </div>
               <ArrowUpRight size={14} className="text-muted-foreground group-hover:text-foreground" />
             </Link>

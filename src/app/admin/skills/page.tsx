@@ -64,6 +64,8 @@ export default function SkillsAdminPage() {
   const [form, setForm] = useState<SkillItem>(emptySkill);
   const [newTagInput, setNewTagInput] = useState("");
   const [saving, setSaving] = useState(false);
+  const [skillsVisible, setSkillsVisible] = useState(true);
+  const [togglingVisibility, setTogglingVisibility] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
 
   const fetchSkillsData = async () => {
@@ -84,7 +86,38 @@ export default function SkillsAdminPage() {
 
   useEffect(() => {
     fetchSkillsData();
+    fetch("/api/profile")
+      .then((res) => res.json())
+      .then((d) => {
+        if (d.success && d.data?.sections) {
+          setSkillsVisible(d.data.sections.skills ?? true);
+        }
+      })
+      .catch(() => {});
   }, []);
+
+  const handleToggleSkillsVisibility = async () => {
+    const nextVal = !skillsVisible;
+    setSkillsVisible(nextVal);
+    setTogglingVisibility(true);
+    try {
+      await fetch("/api/profile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sections: { skills: nextVal } }),
+      });
+      setMessage({
+        type: "success",
+        text: `Skills section is now ${nextVal ? "visible on" : "hidden from"} public portfolio.`,
+      });
+    } catch {
+      setSkillsVisible(!nextVal);
+      setMessage({ type: "error", text: "Failed to update visibility." });
+    } finally {
+      setTogglingVisibility(false);
+      setTimeout(() => setMessage({ type: "", text: "" }), 3500);
+    }
+  };
 
   const handleOpenCreate = () => {
     setEditingSkill(null);
@@ -211,13 +244,42 @@ export default function SkillsAdminPage() {
           </p>
         </div>
 
-        <button
-          onClick={handleOpenCreate}
-          className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold text-xs shadow-lg shadow-indigo-500/25 transition-all hover:scale-[1.02] flex items-center gap-2 cursor-pointer self-start sm:self-auto"
-        >
-          <Plus size={16} />
-          <span>Add New Skill</span>
-        </button>
+        <div className="flex flex-wrap items-center gap-3 self-start sm:self-auto">
+          {/* Section Visibility Quick Toggle */}
+          <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl glass border border-border">
+            <span className={`text-[11px] font-bold ${skillsVisible ? "text-emerald-500 dark:text-emerald-400" : "text-amber-600 dark:text-amber-400"}`}>
+              {skillsVisible ? "Public: Live" : "Public: Hidden"}
+            </span>
+            {!skillsVisible && (
+              <button
+                type="button"
+                disabled={togglingVisibility}
+                onClick={handleToggleSkillsVisibility}
+                className="text-[11px] font-bold px-2.5 py-0.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition-all cursor-pointer"
+              >
+                Enable
+              </button>
+            )}
+            <label className="relative inline-flex items-center cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={skillsVisible}
+                disabled={togglingVisibility}
+                onChange={handleToggleSkillsVisibility}
+                className="sr-only peer"
+              />
+              <div className="w-10 h-5.5 bg-zinc-300 dark:bg-zinc-700 border border-zinc-400/50 dark:border-zinc-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4.5 after:w-4.5 after:transition-all after:shadow-md peer-checked:bg-emerald-600 dark:peer-checked:bg-emerald-500 peer-checked:border-emerald-600"></div>
+            </label>
+          </div>
+
+          <button
+            onClick={handleOpenCreate}
+            className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold text-xs shadow-lg shadow-indigo-500/25 transition-all hover:scale-[1.02] flex items-center gap-2 cursor-pointer"
+          >
+            <Plus size={16} />
+            <span>Add New Skill</span>
+          </button>
+        </div>
       </div>
 
       {/* Message Alert */}

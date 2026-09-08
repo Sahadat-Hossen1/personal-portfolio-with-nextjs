@@ -29,12 +29,40 @@ interface FooterProps {
   profile?: {
     name?: string;
     socials?: { platform: string; label: string; href: string }[];
+    sections?: {
+      hero?: boolean;
+      about?: boolean;
+      skills?: boolean;
+      projects?: boolean;
+      experience?: boolean;
+      contact?: boolean;
+      floatingChat?: boolean;
+    };
+  };
+  sections?: {
+    hero?: boolean;
+    about?: boolean;
+    skills?: boolean;
+    projects?: boolean;
+    experience?: boolean;
+    contact?: boolean;
+    floatingChat?: boolean;
   };
 }
 
-export default function Footer({ profile }: FooterProps) {
+export default function Footer({ profile, sections }: FooterProps) {
   const currentYear = new Date().getFullYear();
   const displayName = profile?.name || "Sahadat Hossen";
+  const effectiveSections = sections || profile?.sections;
+
+  const activeNavLinks = navLinks.filter((link) => {
+    const key = link.href.slice(1);
+    if (effectiveSections && key in effectiveSections) {
+      return effectiveSections[key as keyof typeof effectiveSections] !== false;
+    }
+    return true;
+  });
+
   const activeSocials = profile?.socials && profile.socials.length > 0
     ? profile.socials.map((s) => ({
         icon: socialIconMap[s.platform] || Mail,
@@ -72,7 +100,7 @@ export default function Footer({ profile }: FooterProps) {
           {/* Nav links */}
           <nav aria-label="Footer navigation">
             <ul className="flex flex-wrap items-center justify-center gap-6">
-              {navLinks.map((link) => (
+              {activeNavLinks.map((link) => (
                 <li key={link.label}>
                   <a
                     href={link.href}
