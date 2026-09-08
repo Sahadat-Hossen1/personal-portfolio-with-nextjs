@@ -130,7 +130,7 @@ export default function SettingsAdminPage() {
   };
 
   const inputClass =
-    "w-full px-3.5 py-2.5 rounded-xl glass border border-white/10 bg-transparent text-sm text-white placeholder:text-muted-foreground/50 focus:outline-none focus:border-indigo-500/60 focus:ring-2 focus:ring-indigo-500/20 transition-all";
+    "w-full px-3.5 py-2.5 rounded-xl glass border border-border bg-transparent text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-indigo-500/60 focus:ring-2 focus:ring-indigo-500/20 transition-all";
 
   if (loading) {
     return (
@@ -148,7 +148,7 @@ export default function SettingsAdminPage() {
           <div className="flex items-center gap-2 text-xs font-semibold text-indigo-400 uppercase tracking-wider mb-1">
             <Sliders size={14} /> Configuration
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white">
+          <h1 className="text-2xl sm:text-3xl font-black text-foreground">
             General & <span className="gradient-text">Social Settings</span>
           </h1>
           <p className="text-xs sm:text-sm text-muted-foreground mt-1">
@@ -190,8 +190,8 @@ export default function SettingsAdminPage() {
 
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Section 1: Contact Details */}
-        <div className="glass rounded-3xl p-6 border border-white/10 space-y-4">
-          <h2 className="text-base font-bold text-white flex items-center gap-2 border-b border-white/10 pb-3">
+        <div className="glass rounded-3xl p-6 border border-border space-y-4">
+          <h2 className="text-base font-bold text-foreground flex items-center gap-2 border-b border-border pb-3">
             <Mail size={16} className="text-indigo-400" />
             1. Contact Details (Shown in Contact Section)
           </h2>
@@ -239,9 +239,9 @@ export default function SettingsAdminPage() {
         </div>
 
         {/* Section 2: Floating Chat Widget Settings */}
-        <div className="glass rounded-3xl p-6 border border-white/10 space-y-4">
-          <h2 className="text-base font-bold text-white flex items-center gap-2 border-b border-white/10 pb-3">
-            <MessageSquare size={16} className="text-emerald-400" />
+        <div className="glass rounded-3xl p-6 border border-border space-y-4">
+          <h2 className="text-base font-bold text-foreground flex items-center gap-2 border-b border-border pb-3">
+            <MessageSquare size={16} className="text-emerald-500 dark:text-emerald-400" />
             2. Floating Chat Widget (Bottom-right Popup)
           </h2>
 
@@ -294,8 +294,8 @@ export default function SettingsAdminPage() {
         </div>
 
         {/* Section 3: Social Profile Links */}
-        <div className="glass rounded-3xl p-6 border border-white/10 space-y-4">
-          <h2 className="text-base font-bold text-white flex items-center gap-2 border-b border-white/10 pb-3">
+        <div className="glass rounded-3xl p-6 border border-border space-y-4">
+          <h2 className="text-base font-bold text-foreground flex items-center gap-2 border-b border-border pb-3">
             <Share2 size={16} className="text-purple-400" />
             3. Social Profiles & Links (Navbar, Footer, Contact)
           </h2>
@@ -304,9 +304,9 @@ export default function SettingsAdminPage() {
             {form.socials.map((social, idx) => (
               <div
                 key={social.platform}
-                className="grid grid-cols-1 sm:grid-cols-12 gap-3 p-3.5 rounded-2xl glass border border-white/5 items-center"
+                className="grid grid-cols-1 sm:grid-cols-12 gap-3 p-3.5 rounded-2xl glass border border-border items-center"
               >
-                <div className="sm:col-span-2 font-bold text-xs text-white capitalize flex items-center gap-2">
+                <div className="sm:col-span-2 font-bold text-xs text-foreground capitalize flex items-center gap-2">
                   <span>{social.label}</span>
                 </div>
                 <div className="sm:col-span-4">
@@ -319,7 +319,7 @@ export default function SettingsAdminPage() {
                     onChange={(e) =>
                       handleSocialChange(idx, "value", e.target.value)
                     }
-                    className="w-full px-3 py-1.5 rounded-lg glass border border-white/10 text-xs text-white"
+                    className="w-full px-3 py-1.5 rounded-lg glass border border-border text-xs text-foreground"
                   />
                 </div>
                 <div className="sm:col-span-6">
@@ -332,7 +332,7 @@ export default function SettingsAdminPage() {
                     onChange={(e) =>
                       handleSocialChange(idx, "href", e.target.value)
                     }
-                    className="w-full px-3 py-1.5 rounded-lg glass border border-white/10 text-xs text-white"
+                    className="w-full px-3 py-1.5 rounded-lg glass border border-border text-xs text-foreground"
                   />
                 </div>
               </div>

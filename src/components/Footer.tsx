@@ -44,7 +44,7 @@ export default function Footer({ profile }: FooterProps) {
     : socials;
 
   return (
-    <footer className="relative border-t border-white/5 mt-8">
+    <footer className="relative border-t border-border mt-8">
       {/* Top gradient line */}
       <div
         className="absolute top-0 left-1/2 -translate-x-1/2 h-px w-64 pointer-events-none"
@@ -94,7 +94,7 @@ export default function Footer({ profile }: FooterProps) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={social.label}
-                className="w-9 h-9 rounded-xl glass border border-white/5 flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-white/15 transition-all duration-200 hover:-translate-y-0.5"
+                className="w-9 h-9 rounded-xl glass border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all duration-200 hover:-translate-y-0.5"
               >
                 <social.icon size={16} />
               </a>
@@ -102,14 +102,14 @@ export default function Footer({ profile }: FooterProps) {
           </div>
 
           {/* Copyright & Admin Link */}
-          <div className="flex flex-col items-center gap-2 text-xs text-muted-foreground/60 text-center">
+          <div className="flex flex-col items-center gap-2 text-xs text-muted-foreground text-center">
             <p className="flex items-center gap-1.5">
               © {currentYear} {displayName}. Built with{" "}
               <Heart size={11} className="text-rose-400 fill-rose-400 inline" /> using Next.js, MongoDB & Tailwind CSS
             </p>
             <a
               href="/admin"
-              className="text-[11px] text-muted-foreground/40 hover:text-indigo-400 transition-colors"
+              className="text-[11px] text-muted-foreground hover:text-primary transition-colors"
             >
               Admin Portal
             </a>

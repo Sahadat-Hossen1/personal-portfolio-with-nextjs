@@ -193,7 +193,7 @@ export default function SkillsAdminPage() {
   if (!categories.includes("Analytics & Tracking")) categories.push("Analytics & Tracking");
 
   const inputClass =
-    "w-full px-3.5 py-2.5 rounded-xl glass border border-white/10 bg-transparent text-sm text-white placeholder:text-muted-foreground/50 focus:outline-none focus:border-indigo-500/60 focus:ring-2 focus:ring-indigo-500/20 transition-all";
+    "w-full px-3.5 py-2.5 rounded-xl glass border border-border bg-transparent text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-indigo-500/60 focus:ring-2 focus:ring-indigo-500/20 transition-all";
 
   return (
     <div className="space-y-8">
@@ -203,7 +203,7 @@ export default function SkillsAdminPage() {
           <div className="flex items-center gap-2 text-xs font-semibold text-indigo-400 uppercase tracking-wider mb-1">
             <Cpu size={14} /> Technology Stack
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white">
+          <h1 className="text-2xl sm:text-3xl font-black text-foreground">
             Skills & <span className="gradient-text">Proficiencies</span>
           </h1>
           <p className="text-xs sm:text-sm text-muted-foreground mt-1">
@@ -251,10 +251,10 @@ export default function SkillsAdminPage() {
             return (
               <div
                 key={cat}
-                className="glass rounded-3xl p-6 border border-white/10 space-y-4"
+                className="glass rounded-3xl p-6 border border-border space-y-4"
               >
-                <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                  <h2 className="text-base font-bold text-white flex items-center gap-2">
+                <div className="flex items-center justify-between border-b border-border pb-3">
+                  <h2 className="text-base font-bold text-foreground flex items-center gap-2">
                     <Sliders size={16} className="text-indigo-400" />
                     {cat}
                   </h2>
@@ -267,17 +267,17 @@ export default function SkillsAdminPage() {
                   {catSkills.map((skill) => (
                     <div
                       key={skill._id}
-                      className="p-3.5 rounded-2xl glass border border-white/5 hover:border-white/15 transition-all flex items-center justify-between group"
+                      className="p-3.5 rounded-2xl glass border border-border hover:border-primary/30 transition-all flex items-center justify-between group"
                     >
                       <div className="flex items-center gap-3 flex-1 min-w-0 mr-2">
                         <span className="text-xl flex-shrink-0">{skill.icon}</span>
                         <div className="min-w-0 flex-1">
-                          <div className="flex items-center justify-between text-xs font-bold text-white">
+                          <div className="flex items-center justify-between text-xs font-bold text-foreground">
                             <span className="truncate">{skill.name}</span>
                             <span style={{ color: skill.color }}>{skill.level}%</span>
                           </div>
                           {/* Mini progress bar */}
-                          <div className="w-full h-1.5 bg-white/10 rounded-full mt-1.5 overflow-hidden">
+                          <div className="w-full h-1.5 bg-muted rounded-full mt-1.5 overflow-hidden">
                             <div
                               className="h-full rounded-full transition-all"
                               style={{
@@ -292,7 +292,7 @@ export default function SkillsAdminPage() {
                       <div className="flex items-center gap-1 flex-shrink-0 opacity-80 group-hover:opacity-100">
                         <button
                           onClick={() => handleOpenEdit(skill)}
-                          className="p-1 rounded-md text-muted-foreground hover:text-white"
+                          className="p-1 rounded-md text-muted-foreground hover:text-foreground"
                           title="Edit"
                         >
                           <Edit2 size={13} />
@@ -313,10 +313,10 @@ export default function SkillsAdminPage() {
           })}
 
           {/* Section: Also Familiar With Tags */}
-          <div className="glass rounded-3xl p-6 border border-white/10 space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-3">
+          <div className="glass rounded-3xl p-6 border border-border space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-3">
               <div>
-                <h2 className="text-base font-bold text-white flex items-center gap-2">
+                <h2 className="text-base font-bold text-foreground flex items-center gap-2">
                   <Tag size={16} className="text-indigo-400" />
                   &quot;Also Familiar With&quot; Tech Tags
                 </h2>
@@ -332,11 +332,11 @@ export default function SkillsAdminPage() {
                   value={newTagInput}
                   onChange={(e) => setNewTagInput(e.target.value)}
                   placeholder="New tag e.g. Docker"
-                  className="px-3 py-1.5 rounded-xl glass border border-white/10 text-xs text-white placeholder:text-muted-foreground/50 focus:outline-none focus:border-indigo-500/60"
+                  className="px-3 py-1.5 rounded-xl glass border border-border text-xs text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-indigo-500/60"
                 />
                 <button
                   type="submit"
-                  className="px-3 py-1.5 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 border border-indigo-500/40 text-xs font-semibold flex items-center gap-1"
+                  className="px-3 py-1.5 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-700 dark:text-indigo-300 border border-indigo-500/40 text-xs font-semibold flex items-center gap-1"
                 >
                   <Plus size={13} /> Add Tag
                 </button>
@@ -348,7 +348,7 @@ export default function SkillsAdminPage() {
               {tags.map((tag) => (
                 <span
                   key={tag._id}
-                  className="px-3 py-1.5 rounded-full text-xs font-medium glass border border-white/10 text-white/80 flex items-center gap-2 group hover:border-white/20"
+                  className="px-3 py-1.5 rounded-full text-xs font-medium glass border border-border text-foreground/85 flex items-center gap-2 group hover:border-primary/30"
                 >
                   <span>{tag.name}</span>
                   <button
@@ -368,14 +368,14 @@ export default function SkillsAdminPage() {
       {/* Modal: Add/Edit Skill */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-          <div className="relative w-full max-w-md glass rounded-3xl p-6 sm:p-8 border border-white/15 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-5">
-              <h2 className="text-lg font-bold text-white">
+          <div className="relative w-full max-w-md glass rounded-3xl p-6 sm:p-8 border border-border shadow-2xl">
+            <div className="flex items-center justify-between border-b border-border pb-4 mb-5">
+              <h2 className="text-lg font-bold text-foreground">
                 {editingSkill ? "Edit Skill" : "Add New Skill"}
               </h2>
               <button
                 onClick={() => setModalOpen(false)}
-                className="p-1 rounded-lg text-muted-foreground hover:text-white"
+                className="p-1 rounded-lg text-muted-foreground hover:text-foreground"
               >
                 <X size={18} />
               </button>
@@ -418,7 +418,7 @@ export default function SkillsAdminPage() {
                 <select
                   value={form.category}
                   onChange={(e) => setForm({ ...form, category: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl glass border border-white/10 bg-[oklch(0.12_0.015_265)] text-sm text-white focus:outline-none focus:border-indigo-500/60"
+                  className="w-full px-3.5 py-2.5 rounded-xl glass border border-border bg-card text-sm text-foreground focus:outline-none focus:border-indigo-500/60"
                 >
                   <option value="Web Development">Web Development</option>
                   <option value="Analytics & Tracking">Analytics & Tracking</option>
@@ -455,7 +455,7 @@ export default function SkillsAdminPage() {
                 </label>
                 <div className="flex items-center gap-2 mb-2">
                   <div
-                    className="w-7 h-7 rounded-lg border border-white/20"
+                    className="w-7 h-7 rounded-lg border border-border"
                     style={{ backgroundColor: form.color }}
                   />
                   <input
@@ -473,7 +473,7 @@ export default function SkillsAdminPage() {
                       type="button"
                       onClick={() => setForm({ ...form, color: c })}
                       className={`w-6 h-6 rounded-full border transition-transform ${
-                        form.color === c ? "scale-110 border-white ring-2 ring-white/30" : "border-transparent opacity-80 hover:opacity-100"
+                        form.color === c ? "scale-110 border-primary ring-2 ring-primary/30" : "border-transparent opacity-80 hover:opacity-100"
                       }`}
                       style={{ backgroundColor: c }}
                     />
@@ -495,11 +495,11 @@ export default function SkillsAdminPage() {
                 />
               </div>
 
-              <div className="pt-4 border-t border-white/10 flex items-center justify-end gap-3">
+              <div className="pt-4 border-t border-border flex items-center justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="px-4 py-2 rounded-xl glass border border-white/10 text-xs font-semibold text-muted-foreground hover:text-white"
+                  className="px-4 py-2 rounded-xl glass border border-border text-xs font-semibold text-muted-foreground hover:text-foreground"
                 >
                   Cancel
                 </button>

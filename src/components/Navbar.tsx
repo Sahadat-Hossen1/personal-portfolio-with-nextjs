@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Menu, X } from "lucide-react";
 import { Github, Linkedin, Twitter } from "@/components/icons";
 import { trackSocialClick, trackPageView } from "@/lib/gtm";
+import { ModeToggle } from "@/components/mode-toggle";
 
 const navLinks = [
   { label: "About", href: "#about" },
@@ -49,6 +50,7 @@ export default function Navbar() {
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         scrolled
           ? "glass border-b border-white/5 shadow-[0_8px_32px_oklch(0_0_0/0.4)]"
+          ? "glass border-b border-border shadow-sm"
           : "bg-transparent"
       }`}
     >
@@ -105,6 +107,7 @@ export default function Navbar() {
           </div>
 
           {/* Social + CTA */}
+          {/* Social + ModeToggle + CTA */}
           <div className="hidden md:flex items-center gap-2">
             <a
               href="https://github.com/Sahadat-Hossen1"
@@ -113,6 +116,7 @@ export default function Navbar() {
               aria-label="GitHub"
               onClick={() => trackSocialClick("github", "navbar", "https://github.com/Sahadat-Hossen1")}
               className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-white/5"
+              className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted"
             >
               <Github size={18} />
             </a>
@@ -123,9 +127,14 @@ export default function Navbar() {
               aria-label="LinkedIn"
               onClick={() => trackSocialClick("linkedin", "navbar", "https://linkedin.com/in/sahadathossen")}
               className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-white/5"
+              className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted"
             >
               <Linkedin size={18} />
             </a>
+
+            {/* shadcn Dark/Light Mode Toggle */}
+            <ModeToggle />
+
             <a
               id="nav-contact-btn"
               href="#contact"
@@ -144,6 +153,7 @@ export default function Navbar() {
             id="mobile-menu-toggle"
             onClick={() => setIsOpen(!isOpen)}
             className="md:hidden p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-white/5 transition-colors"
+            className="md:hidden p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
             aria-label="Toggle menu"
             aria-expanded={isOpen}
           >
@@ -158,6 +168,7 @@ export default function Navbar() {
           }`}
         >
           <div className="flex flex-col gap-1 pt-2 border-t border-white/5">
+          <div className="flex flex-col gap-1 pt-2 border-t border-border">
             {navLinks.map((link) => (
               <a
                 key={link.href}
@@ -167,6 +178,7 @@ export default function Navbar() {
                   handleNavClick(link.href);
                 }}
                 className="text-left px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:bg-white/5 rounded-lg transition-colors cursor-pointer"
+                className="text-left px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors cursor-pointer"
               >
                 {link.label}
               </a>
@@ -202,6 +214,40 @@ export default function Navbar() {
               >
                 <Twitter size={18} />
               </a>
+            <div className="flex items-center justify-between px-4 pt-3 border-t border-border mt-2">
+              <div className="flex items-center gap-3">
+                <a
+                  href="https://github.com/Sahadat-Hossen1"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="GitHub"
+                  onClick={() => trackSocialClick("github", "navbar", "https://github.com/Sahadat-Hossen1")}
+                  className="p-2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <Github size={18} />
+                </a>
+                <a
+                  href="https://linkedin.com/in/sahadathossen"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="LinkedIn"
+                  onClick={() => trackSocialClick("linkedin", "navbar", "https://linkedin.com/in/sahadathossen")}
+                  className="p-2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <Linkedin size={18} />
+                </a>
+                <a
+                  href="https://twitter.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Twitter"
+                  onClick={() => trackSocialClick("twitter", "navbar", "https://twitter.com")}
+                  className="p-2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <Twitter size={18} />
+                </a>
+              </div>
+              <ModeToggle />
             </div>
           </div>
         </div>

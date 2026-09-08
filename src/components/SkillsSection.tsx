@@ -15,6 +15,7 @@ const skills: Skill[] = [
   // Web Development Stack
   { name: "React", icon: "⚛️", level: 95, color: "#38bdf8", category: "Web Development" },
   { name: "Next.js", icon: "▲", level: 90, color: "#e2e8f0", category: "Web Development" },
+  { name: "Next.js", icon: "▲", level: 90, color: "#64748b", category: "Web Development" },
   { name: "JavaScript", icon: "🟡", level: 97, color: "#eab308", category: "Web Development" },
   { name: "TypeScript", icon: "🔷", level: 88, color: "#3b82f6", category: "Web Development" },
   { name: "Node.js", icon: "🟢", level: 93, color: "#84cc16", category: "Web Development" },
@@ -115,6 +116,7 @@ export default function SkillsSection({
         {/* Section Label */}
         <div className="reveal flex items-center gap-3 mb-4">
           <span className="text-cyan-400 text-sm font-mono font-semibold tracking-widest uppercase">
+          <span className="text-cyan-600 dark:text-cyan-400 text-sm font-mono font-semibold tracking-widest uppercase">
             02. Skills
           </span>
           <div className="h-px flex-1 max-w-16 bg-cyan-500/40" />
@@ -122,9 +124,11 @@ export default function SkillsSection({
 
         {/* Title */}
         <h2 className="reveal text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-4">
+        <h2 className="reveal text-3xl sm:text-4xl lg:text-5xl font-black text-foreground mb-4">
           My <span className="bg-gradient-to-r from-cyan-400 via-indigo-400 to-violet-400 bg-clip-text text-transparent">Tech Stack</span>
         </h2>
         <p className="reveal text-slate-400 max-w-2xl mb-8 leading-relaxed">
+        <p className="reveal text-muted-foreground max-w-2xl mb-8 leading-relaxed">
           A robust blend of modern full-stack development technologies and precision web analytics tools to build, deploy, and accurately track user interactions.
         </p>
 
@@ -138,6 +142,8 @@ export default function SkillsSection({
                 activeTab === tab
                   ? "bg-cyan-500/20 text-cyan-300 border-cyan-500/40 shadow-lg shadow-cyan-500/10"
                   : "bg-slate-900/60 text-slate-400 border-slate-800 hover:text-white hover:border-slate-700"
+                  ? "bg-cyan-500/15 text-cyan-700 dark:text-cyan-300 border-cyan-500/40 shadow-lg shadow-cyan-500/10"
+                  : "glass text-muted-foreground border-border hover:text-foreground hover:border-primary/40"
               }`}
             >
               {tab}
@@ -152,6 +158,7 @@ export default function SkillsSection({
               key={skill.name}
               onClick={() => trackSkillClick(skill.name, skill.category)}
               className="reveal group bg-slate-900/60 backdrop-blur-md rounded-2xl p-4 border border-slate-800/80 hover:border-slate-700 hover:bg-slate-800/50 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl flex flex-col items-center text-center cursor-pointer"
+              className="reveal group glass rounded-2xl p-4 border border-border hover:border-primary/40 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl flex flex-col items-center text-center cursor-pointer"
             >
               <div
                 className="text-3xl mb-3 group-hover:scale-110 transition-transform duration-300"
@@ -161,11 +168,13 @@ export default function SkillsSection({
                 {skill.icon}
               </div>
               <span className="text-xs sm:text-sm font-semibold text-slate-200 mb-2 line-clamp-1">
+              <span className="text-xs sm:text-sm font-semibold text-foreground mb-2 line-clamp-1">
                 {skill.name}
               </span>
 
               {/* Proficiency Bar */}
               <div className="w-full h-1.5 rounded-full bg-slate-800 overflow-hidden mt-auto">
+              <div className="w-full h-1.5 rounded-full bg-muted overflow-hidden mt-auto">
                 <div
                   data-progress={skill.level}
                   className="h-full rounded-full transition-all duration-1000 ease-out"
@@ -176,6 +185,7 @@ export default function SkillsSection({
                 />
               </div>
               <span className="text-[10px] font-mono text-slate-400 mt-1.5">{skill.level}%</span>
+              <span className="text-[10px] font-mono text-muted-foreground mt-1.5">{skill.level}%</span>
             </div>
           ))}
         </div>
@@ -183,6 +193,7 @@ export default function SkillsSection({
         {/* Extra Competency Tags */}
         <div className="reveal mt-16 text-center">
           <p className="text-xs text-slate-500 font-mono mb-4 tracking-widest uppercase">
+          <p className="text-xs text-muted-foreground font-mono mb-4 tracking-widest uppercase">
             Also Familiar With & Tracking Methods
           </p>
           <div className="flex flex-wrap gap-2.5 justify-center max-w-4xl mx-auto">
@@ -191,6 +202,7 @@ export default function SkillsSection({
                 key={tag}
                 onClick={() => trackSkillClick(tag, "Familiarity & Tracking")}
                 className="text-xs px-3.5 py-1.5 rounded-full bg-slate-900/80 border border-slate-800 text-slate-400 hover:text-cyan-300 hover:border-cyan-500/30 transition-all duration-200 cursor-pointer"
+                className="text-xs px-3.5 py-1.5 rounded-full glass border border-border text-muted-foreground hover:text-primary hover:border-primary/30 transition-all duration-200 cursor-pointer"
               >
                 {tag}
               </span>

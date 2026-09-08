@@ -19,6 +19,7 @@ import {
   Sparkles,
   ShieldCheck,
 } from "lucide-react";
+import { ModeToggle } from "@/components/mode-toggle";
 
 const navItems = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
@@ -83,8 +84,10 @@ export default function AdminLayout({
 
   return (
     <div className="min-h-screen bg-[oklch(0.08_0.01_265)] text-[oklch(0.95_0.005_265)] flex flex-col lg:flex-row">
+    <div className="min-h-screen bg-background text-foreground flex flex-col lg:flex-row transition-colors duration-300">
       {/* Mobile Topbar */}
       <header className="lg:hidden flex items-center justify-between p-4 border-b border-white/10 bg-black/40 backdrop-blur-md sticky top-0 z-40">
+      <header className="lg:hidden flex items-center justify-between p-4 border-b border-border bg-card/80 backdrop-blur-md sticky top-0 z-40">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-md">
             <ShieldCheck size={18} className="text-white" />
@@ -98,22 +101,35 @@ export default function AdminLayout({
         >
           {mobileOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
+        <div className="flex items-center gap-2">
+          <ModeToggle />
+          <button
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted"
+            aria-label="Toggle menu"
+          >
+            {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
       </header>
 
       {/* Sidebar */}
       <aside
         className={`fixed lg:sticky top-0 left-0 h-screen w-64 border-r border-white/10 bg-black/60 backdrop-blur-xl z-50 flex flex-col transition-transform duration-300 ${
+        className={`fixed lg:sticky top-0 left-0 h-screen w-64 border-r border-border bg-card/90 backdrop-blur-xl z-50 flex flex-col transition-transform duration-300 ${
           mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
       >
         {/* Header */}
         <div className="p-5 border-b border-white/10 flex items-center justify-between">
+        <div className="p-5 border-b border-border flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
               <ShieldCheck size={20} className="text-white" />
             </div>
             <div>
               <div className="font-bold text-sm tracking-tight text-white flex items-center gap-1.5">
+              <div className="font-bold text-sm tracking-tight text-foreground flex items-center gap-1.5">
                 Admin Center
                 <Sparkles size={12} className="text-amber-400" />
               </div>
@@ -129,6 +145,17 @@ export default function AdminLayout({
           >
             <X size={18} />
           </button>
+          <div className="flex items-center gap-1">
+            <div className="hidden lg:block">
+              <ModeToggle />
+            </div>
+            <button
+              onClick={() => setMobileOpen(false)}
+              className="lg:hidden p-1 rounded-md text-muted-foreground hover:text-foreground"
+            >
+              <X size={18} />
+            </button>
+          </div>
         </div>
 
         {/* Navigation Links */}
@@ -145,6 +172,8 @@ export default function AdminLayout({
                   active
                     ? "bg-gradient-to-r from-indigo-500/20 to-purple-500/20 text-white border border-indigo-500/40 shadow-sm"
                     : "text-muted-foreground hover:text-white hover:bg-white/5"
+                    ? "bg-gradient-to-r from-indigo-500/20 to-purple-500/20 text-foreground border border-indigo-500/40 shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
                 }`}
               >
                 <div className="flex items-center gap-3">
@@ -166,11 +195,13 @@ export default function AdminLayout({
 
         {/* Bottom Footer Actions */}
         <div className="p-3 border-t border-white/10 space-y-1 bg-black/20">
+        <div className="p-3 border-t border-border space-y-1 bg-muted/20">
           <a
             href="/"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium text-muted-foreground hover:text-white hover:bg-white/5 transition-colors"
+            className="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
           >
             <span className="flex items-center gap-2">
               <ExternalLink size={15} />

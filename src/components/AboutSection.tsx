@@ -134,16 +134,16 @@ export default function AboutSection({ profile }: AboutSectionProps) {
               </div>
 
               {/* Floating card: Currently */}
-              <div className="absolute -bottom-6 -right-6 glass rounded-2xl px-4 py-3 shadow-xl border border-white/10 animate-float">
+              <div className="absolute -bottom-6 -right-6 glass rounded-2xl px-4 py-3 shadow-xl border border-border animate-float">
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <div className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
                   <span className="text-xs font-semibold text-muted-foreground">Currently building:</span>
                 </div>
                 <p className="text-sm font-bold text-foreground mt-0.5">{buildingText}</p>
               </div>
 
               {/* Floating card: Location */}
-              <div className="absolute -top-4 -left-6 glass rounded-2xl px-4 py-3 shadow-xl border border-white/10 animate-float-delayed">
+              <div className="absolute -top-4 -left-6 glass rounded-2xl px-4 py-3 shadow-xl border border-border animate-float-delayed">
                 <div className="flex items-center gap-2">
                   <MapPin size={13} className="text-primary" />
                   <span className="text-sm font-semibold text-foreground">{loc}</span>
@@ -183,7 +183,7 @@ export default function AboutSection({ profile }: AboutSectionProps) {
               {activeHighlights.map((item) => (
                 <div
                   key={item.text}
-                  className="flex items-start gap-3 glass rounded-xl px-4 py-3 border border-white/5 hover:border-primary/20 transition-colors duration-300"
+                  className="flex items-start gap-3 glass rounded-xl px-4 py-3 border border-border hover:border-primary/30 transition-colors duration-300"
                 >
                   <span className="text-lg flex-shrink-0">{item.emoji}</span>
                   <span className="text-sm text-muted-foreground leading-snug">{item.text}</span>
@@ -196,7 +196,7 @@ export default function AboutSection({ profile }: AboutSectionProps) {
               {activeStats.map((stat) => (
                 <div
                   key={stat.label}
-                  className="glass rounded-2xl p-4 text-center border border-white/5 hover:border-primary/20 transition-all duration-300 hover:-translate-y-1 group"
+                  className="glass rounded-2xl p-4 text-center border border-border hover:border-primary/30 transition-all duration-300 hover:-translate-y-1 group"
                 >
                   <stat.icon
                     size={20}

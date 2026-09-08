@@ -21,7 +21,7 @@ const socials = [
     label: "GitHub",
     value: "github.com/Sahadat-Hossen1",
     href: "https://github.com/Sahadat-Hossen1",
-    color: "hover:text-white",
+    color: "hover:text-foreground",
   },
   {
     id: "contact-linkedin",
@@ -87,7 +87,7 @@ export default function ContactSection({ profile }: ContactSectionProps) {
         label: s.label,
         value: s.value,
         href: s.href,
-        color: s.platform === "linkedin" ? "hover:text-blue-400" : s.platform === "whatsapp" ? "hover:text-green-400" : "hover:text-white",
+        color: s.platform === "linkedin" ? "hover:text-blue-500 dark:hover:text-blue-400" : s.platform === "whatsapp" ? "hover:text-emerald-500 dark:hover:text-green-400" : "hover:text-foreground",
       }))
     : socials;
 
@@ -154,7 +154,7 @@ export default function ContactSection({ profile }: ContactSectionProps) {
   };
 
   const inputClass =
-    "w-full px-4 py-3 rounded-xl glass border border-white/10 bg-transparent text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200 text-sm";
+    "w-full px-4 py-3 rounded-xl glass border border-border bg-transparent text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200 text-sm";
 
   return (
     <section
@@ -195,8 +195,8 @@ export default function ContactSection({ profile }: ContactSectionProps) {
             {/* Availability card */}
             <div className="glass rounded-2xl p-6 border border-emerald-500/15 gradient-border">
               <div className="flex items-center gap-2 mb-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-sm font-semibold text-emerald-400">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
+                <span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
                   Available for hire
                 </span>
               </div>
@@ -207,7 +207,7 @@ export default function ContactSection({ profile }: ContactSectionProps) {
             </div>
 
             {/* Location */}
-            <div className="glass rounded-2xl p-5 border border-white/5">
+            <div className="glass rounded-2xl p-5 border border-border">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
                   <MapPin size={18} className="text-primary" />
@@ -234,9 +234,9 @@ export default function ContactSection({ profile }: ContactSectionProps) {
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => trackSocialClick(social.platform, "contact_section", social.href)}
-                  className={`flex items-center gap-4 glass rounded-xl p-4 border border-white/5 hover:border-white/10 transition-all duration-200 hover:-translate-y-0.5 group ${social.color}`}
+                  className={`flex items-center gap-4 glass rounded-xl p-4 border border-border hover:border-primary/30 transition-all duration-200 hover:-translate-y-0.5 group ${social.color}`}
                 >
-                  <div className="w-9 h-9 rounded-lg glass flex items-center justify-center flex-shrink-0 border border-white/5 group-hover:border-white/15 transition-colors">
+                  <div className="w-9 h-9 rounded-lg glass flex items-center justify-center flex-shrink-0 border border-border group-hover:border-primary/30 transition-colors">
                     <social.icon size={17} />
                   </div>
                   <div>
@@ -250,7 +250,7 @@ export default function ContactSection({ profile }: ContactSectionProps) {
 
           {/* Right: Contact form */}
           <div className="lg:col-span-3 reveal reveal-delay-3">
-            <div className="glass rounded-3xl p-6 sm:p-8 border border-white/5 gradient-border">
+            <div className="glass rounded-3xl p-6 sm:p-8 border border-border gradient-border">
               <div className="flex items-center gap-2 mb-6">
                 <MessageSquare size={20} className="text-primary" />
                 <h3 className="font-bold text-foreground">Send a message</h3>

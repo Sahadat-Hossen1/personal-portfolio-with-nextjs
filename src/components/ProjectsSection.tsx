@@ -155,9 +155,9 @@ export default function ProjectsSection({ projects: propProjects }: ProjectsSect
         <div className="space-y-12 mb-16">
           {featured.map((project, i) => (
             <article
-              key={project.id}
-              id={project.id}
-              className={`reveal reveal-delay-${i + 1} group glass rounded-3xl overflow-hidden border border-white/5 hover:border-primary/30 transition-all duration-500 grid md:grid-cols-12 gap-0 shadow-2xl hover:shadow-indigo-500/10`}
+              key={project._id || project.id || `featured-${i}`}
+              id={project.id || project._id || `featured-${i}`}
+              className={`reveal reveal-delay-${i + 1} group glass rounded-3xl overflow-hidden border border-border hover:border-primary/30 transition-all duration-500 grid md:grid-cols-12 gap-0 shadow-2xl hover:shadow-indigo-500/10`}
             >
               {/* Image Column */}
               <div
@@ -169,6 +169,7 @@ export default function ProjectsSection({ projects: propProjects }: ProjectsSect
                   src={project.image}
                   alt={project.title}
                   fill
+                  unoptimized
                   className="object-cover object-top transition-transform duration-700 group-hover:scale-105"
                   sizes="(max-width: 768px) 100vw, 60vw"
                 />
@@ -208,7 +209,7 @@ export default function ProjectsSection({ projects: propProjects }: ProjectsSect
                     {project.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="text-xs px-2.5 py-1 rounded-lg glass border border-white/5 text-muted-foreground font-medium"
+                        className="text-xs px-2.5 py-1 rounded-lg glass border border-border text-muted-foreground font-medium"
                       >
                         {tag}
                       </span>
@@ -216,7 +217,7 @@ export default function ProjectsSection({ projects: propProjects }: ProjectsSect
                   </div>
 
                   {/* Links */}
-                  <div className="flex items-center gap-4 pt-2 border-t border-white/5">
+                  <div className="flex items-center gap-4 pt-2 border-t border-border">
                     <a
                       href={project.github}
                       target="_blank"
@@ -248,19 +249,20 @@ export default function ProjectsSection({ projects: propProjects }: ProjectsSect
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {others.map((project, i) => (
             <article
-              key={project.id}
-              id={project.id}
-              className={`reveal reveal-delay-${i + 2} group glass rounded-2xl overflow-hidden border border-white/5 hover:border-primary/25 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl flex flex-col`}
+              key={project._id || project.id || `other-${i}`}
+              id={project.id || project._id || `other-${i}`}
+              className={`reveal reveal-delay-${i + 2} group glass rounded-2xl overflow-hidden border border-border hover:border-primary/30 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl flex flex-col`}
             >
-              <div className="relative w-full h-36 overflow-hidden bg-slate-900 border-b border-white/5">
+              <div className="relative w-full h-36 overflow-hidden bg-slate-900 border-b border-border">
                 <Image
                   src={project.image}
                   alt={project.title}
                   fill
+                  unoptimized
                   className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
                   sizes="(max-width: 768px) 100vw, 25vw"
                 />
-                <div className="absolute top-2 left-2 w-8 h-8 rounded-lg glass flex items-center justify-center text-base border border-white/10 backdrop-blur-md">
+                <div className="absolute top-2 left-2 w-8 h-8 rounded-lg glass flex items-center justify-center text-base border border-border backdrop-blur-md">
                   {project.emoji}
                 </div>
               </div>
@@ -302,7 +304,7 @@ export default function ProjectsSection({ projects: propProjects }: ProjectsSect
                   {project.tags.slice(0, 3).map((tag) => (
                     <span
                       key={tag}
-                      className="text-[10px] px-2 py-0.5 rounded-md glass border border-white/5 text-muted-foreground"
+                      className="text-[10px] px-2 py-0.5 rounded-md glass border border-border text-muted-foreground"
                     >
                       {tag}
                     </span>
@@ -326,7 +328,7 @@ export default function ProjectsSection({ projects: propProjects }: ProjectsSect
             rel="noopener noreferrer"
             id="projects-view-github"
             onClick={() => trackProjectClick("View All Projects", "github", "https://github.com/Sahadat-Hossen1")}
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors group px-5 py-2.5 rounded-full glass border border-white/5 hover:border-white/15"
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors group px-5 py-2.5 rounded-full glass border border-border hover:border-primary/40"
           >
             <Github size={16} />
             View all projects on GitHub

@@ -55,10 +55,10 @@ const experiences: Experience[] = [
 ];
 
 const typeColors: Record<string, string> = {
-  "Full-time": "text-emerald-400 bg-emerald-400/10 border-emerald-400/20",
-  Contract: "text-amber-400 bg-amber-400/10 border-amber-400/20",
-  Freelance: "text-blue-400 bg-blue-400/10 border-blue-400/20",
-  "Part-time": "text-purple-400 bg-purple-400/10 border-purple-400/20",
+  "Full-time": "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
+  Contract: "text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/20",
+  Freelance: "text-blue-600 dark:text-blue-400 bg-blue-500/10 border-blue-500/20",
+  "Part-time": "text-purple-600 dark:text-purple-400 bg-purple-500/10 border-purple-500/20",
 };
 
 interface ExperienceSectionProps {
@@ -138,17 +138,17 @@ export default function ExperienceSection({
                     className={`w-10 h-10 sm:w-16 sm:h-16 rounded-2xl sm:rounded-3xl flex items-center justify-center z-10 shadow-lg transition-all duration-300 ${
                       exp.current
                         ? "bg-gradient-to-br from-indigo-500 to-purple-600 shadow-indigo-500/30 animate-pulse-glow"
-                        : "glass border border-white/10"
+                        : "glass border border-border"
                     }`}
                   >
-                    <span className="text-sm sm:text-xl font-black text-white">
+                    <span className={`text-sm sm:text-xl font-black ${exp.current ? "text-white" : "text-foreground"}`}>
                       {exp.company.charAt(0)}
                     </span>
                   </div>
                 </div>
 
                 {/* Content card */}
-                <div className="flex-1 glass rounded-3xl p-6 sm:p-8 border border-white/5 hover:border-white/10 transition-all duration-300 hover:-translate-y-1">
+                <div className="flex-1 glass rounded-3xl p-6 sm:p-8 border border-border hover:border-primary/30 transition-all duration-300 hover:-translate-y-1">
                   <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 mb-4">
                     <div>
                       <div className="flex items-center gap-2.5 flex-wrap">
@@ -158,7 +158,7 @@ export default function ExperienceSection({
                         <span
                           className={`text-[11px] px-2.5 py-0.5 rounded-full font-medium border ${
                             typeColors[exp.type] ||
-                            "text-indigo-400 bg-indigo-400/10 border-indigo-400/20"
+                            "text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 border-indigo-500/20"
                           }`}
                         >
                           {exp.type}
@@ -210,7 +210,7 @@ export default function ExperienceSection({
                     {exp.tags?.map((tag: string) => (
                       <span
                         key={tag}
-                        className="text-[11px] px-2.5 py-1 rounded-lg glass border border-white/5 text-muted-foreground font-medium"
+                        className="text-[11px] px-2.5 py-1 rounded-lg glass border border-border text-muted-foreground font-medium"
                       >
                         {tag}
                       </span>

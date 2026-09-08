@@ -167,7 +167,7 @@ export default function ProjectsAdminPage() {
   };
 
   const inputClass =
-    "w-full px-3.5 py-2.5 rounded-xl glass border border-white/10 bg-transparent text-sm text-white placeholder:text-muted-foreground/50 focus:outline-none focus:border-indigo-500/60 focus:ring-2 focus:ring-indigo-500/20 transition-all";
+    "w-full px-3.5 py-2.5 rounded-xl glass border border-border bg-transparent text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-indigo-500/60 focus:ring-2 focus:ring-indigo-500/20 transition-all";
 
   return (
     <div className="space-y-8">
@@ -177,7 +177,7 @@ export default function ProjectsAdminPage() {
           <div className="flex items-center gap-2 text-xs font-semibold text-indigo-400 uppercase tracking-wider mb-1">
             <FolderGit2 size={14} /> Showcase Manager
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white">
+          <h1 className="text-2xl sm:text-3xl font-black text-foreground">
             Projects & <span className="gradient-text">Case Studies</span>
           </h1>
           <p className="text-xs sm:text-sm text-muted-foreground mt-1">
@@ -218,9 +218,9 @@ export default function ProjectsAdminPage() {
           <Loader2 size={32} className="animate-spin text-indigo-400" />
         </div>
       ) : projects.length === 0 ? (
-        <div className="glass rounded-3xl p-12 text-center border border-white/10 space-y-3">
+        <div className="glass rounded-3xl p-12 text-center border border-border space-y-3">
           <FolderGit2 size={40} className="mx-auto text-muted-foreground/40" />
-          <h3 className="text-base font-bold text-white">No Projects Found</h3>
+          <h3 className="text-base font-bold text-foreground">No Projects Found</h3>
           <p className="text-xs text-muted-foreground max-w-sm mx-auto">
             You don&apos;t have any projects in your database yet. Click &quot;Add New Project&quot; or sync default data from the dashboard.
           </p>
@@ -236,7 +236,7 @@ export default function ProjectsAdminPage() {
           {projects.map((proj) => (
             <div
               key={proj._id}
-              className="glass rounded-3xl overflow-hidden border border-white/10 flex flex-col justify-between transition-all duration-300 hover:border-white/20 group"
+              className="glass rounded-3xl overflow-hidden border border-border flex flex-col justify-between transition-all duration-300 hover:border-primary/40 group"
             >
               {/* Preview image banner */}
               <div className="relative h-44 w-full bg-slate-900 overflow-hidden">
@@ -245,6 +245,7 @@ export default function ProjectsAdminPage() {
                     src={proj.image}
                     alt={proj.title}
                     fill
+                    unoptimized
                     sizes="(max-width: 768px) 100vw, 33vw"
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
@@ -266,7 +267,7 @@ export default function ProjectsAdminPage() {
                   )}
                 </div>
 
-                <div className="absolute top-3 right-3 text-[11px] font-mono font-semibold px-2 py-0.5 rounded-md glass text-white/80">
+                <div className="absolute top-3 right-3 text-[11px] font-mono font-semibold px-2 py-0.5 rounded-md glass text-foreground/90">
                   #{proj.order}
                 </div>
               </div>
@@ -274,7 +275,7 @@ export default function ProjectsAdminPage() {
               {/* Body */}
               <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
                 <div>
-                  <h3 className="text-base font-bold text-white group-hover:text-indigo-400 transition-colors">
+                  <h3 className="text-base font-bold text-foreground group-hover:text-indigo-400 transition-colors">
                     {proj.title}
                   </h3>
                   <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
@@ -286,7 +287,7 @@ export default function ProjectsAdminPage() {
                     {proj.tags?.map((t, idx) => (
                       <span
                         key={idx}
-                        className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-white/5 border border-white/5 text-muted-foreground"
+                        className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-card/40 border border-border text-muted-foreground"
                       >
                         {t}
                       </span>
@@ -295,14 +296,14 @@ export default function ProjectsAdminPage() {
                 </div>
 
                 {/* Footer bar */}
-                <div className="pt-4 border-t border-white/5 flex items-center justify-between text-xs">
+                <div className="pt-4 border-t border-border flex items-center justify-between text-xs">
                   <div className="flex items-center gap-3">
                     {proj.github && (
                       <a
                         href={proj.github}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-muted-foreground hover:text-white"
+                        className="text-muted-foreground hover:text-foreground"
                         title="GitHub"
                       >
                         <Github size={15} />
@@ -313,7 +314,7 @@ export default function ProjectsAdminPage() {
                         href={proj.live}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-muted-foreground hover:text-white"
+                        className="text-muted-foreground hover:text-foreground"
                         title="Live URL"
                       >
                         <ExternalLink size={15} />
@@ -329,7 +330,7 @@ export default function ProjectsAdminPage() {
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => handleOpenEdit(proj)}
-                      className="p-1.5 rounded-lg text-muted-foreground hover:text-white hover:bg-white/5 transition-colors"
+                      className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                       title="Edit project"
                     >
                       <Edit2 size={14} />
@@ -352,10 +353,10 @@ export default function ProjectsAdminPage() {
       {/* Modal: Add/Edit Project */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm overflow-y-auto">
-          <div className="relative w-full max-w-2xl glass rounded-3xl p-6 sm:p-8 border border-white/15 shadow-2xl my-8 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
+          <div className="relative w-full max-w-2xl glass rounded-3xl p-6 sm:p-8 border border-border shadow-2xl my-8 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-border pb-4 mb-6">
               <div>
-                <h2 className="text-lg font-bold text-white">
+                <h2 className="text-lg font-bold text-foreground">
                   {editingProject ? "Edit Project" : "Add New Project"}
                 </h2>
                 <p className="text-xs text-muted-foreground">
@@ -364,7 +365,7 @@ export default function ProjectsAdminPage() {
               </div>
               <button
                 onClick={() => setModalOpen(false)}
-                className="p-1.5 rounded-lg text-muted-foreground hover:text-white hover:bg-white/5"
+                className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted"
               >
                 <X size={18} />
               </button>
@@ -531,11 +532,11 @@ export default function ProjectsAdminPage() {
               </div>
 
               {/* Actions */}
-              <div className="pt-4 border-t border-white/10 flex items-center justify-end gap-3">
+              <div className="pt-4 border-t border-border flex items-center justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="px-4 py-2.5 rounded-xl glass border border-white/10 text-xs font-semibold text-muted-foreground hover:text-white"
+                  className="px-4 py-2.5 rounded-xl glass border border-border text-xs font-semibold text-muted-foreground hover:text-foreground"
                 >
                   Cancel
                 </button>

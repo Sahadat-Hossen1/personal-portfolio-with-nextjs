@@ -203,7 +203,7 @@ export default function HeroSection({ profile }: HeroSectionProps) {
       {activeBadges.map((badge) => (
         <div
           key={badge.label}
-          className="absolute hidden lg:flex items-center gap-1.5 glass px-3 py-1.5 rounded-full text-xs font-semibold text-white/80 pointer-events-none select-none"
+          className="absolute hidden lg:flex items-center gap-1.5 glass px-3 py-1.5 rounded-full text-xs font-semibold text-foreground/90 pointer-events-none select-none"
           style={{
             top: badge.top,
             left: badge.left,
@@ -232,12 +232,12 @@ export default function HeroSection({ profile }: HeroSectionProps) {
               className="object-cover object-top"
             />
           </div>
-          <div className="flex items-center gap-2 text-emerald-400">
+          <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-medium">
             {isAvailable && (
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
             )}
             {statusText}
-            <Sparkles size={12} className="text-emerald-400/70" />
+            <Sparkles size={12} className="text-emerald-600/70 dark:text-emerald-400/70" />
           </div>
         </div>
 
@@ -277,7 +277,7 @@ export default function HeroSection({ profile }: HeroSectionProps) {
             onClick={handleDownloadCV}
             size="lg"
             variant="outline"
-            className="group w-full sm:w-auto px-8 h-12 gradient-border border-0 text-foreground hover:text-foreground bg-transparent hover:bg-white/5 transition-all duration-300 hover:scale-[1.04] text-base font-semibold rounded-xl"
+            className="group w-full sm:w-auto px-8 h-12 gradient-border border-0 text-foreground hover:text-foreground bg-transparent hover:bg-muted transition-all duration-300 hover:scale-[1.04] text-base font-semibold rounded-xl"
           >
             <Download size={18} className="group-hover:translate-y-0.5 transition-transform" />
             Download CV
@@ -288,7 +288,7 @@ export default function HeroSection({ profile }: HeroSectionProps) {
             rel="noopener noreferrer"
             id="hero-github"
             onClick={() => trackSocialClick("github", "hero", githubLink)}
-            className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 h-12 text-muted-foreground hover:text-foreground glass rounded-xl transition-all duration-300 hover:scale-[1.04] text-base font-semibold border border-white/10 hover:border-white/20"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 h-12 text-muted-foreground hover:text-foreground glass rounded-xl transition-all duration-300 hover:scale-[1.04] text-base font-semibold border border-border hover:border-primary/40"
           >
             <Github size={18} />
             GitHub

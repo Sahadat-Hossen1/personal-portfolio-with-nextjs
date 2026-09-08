@@ -59,23 +59,23 @@ export default function FloatingChatWidget({
       {isOpen && (
         <div
           id="chat-widget-popover"
-          className="mb-4 w-[320px] sm:w-[350px] glass rounded-3xl p-5 border border-white/10 shadow-2xl shadow-purple-950/40 backdrop-blur-xl animate-in fade-in slide-in-from-bottom-5 duration-200"
+          className="mb-4 w-[320px] sm:w-[350px] glass rounded-3xl p-5 border border-border shadow-2xl shadow-purple-950/40 backdrop-blur-xl animate-in fade-in slide-in-from-bottom-5 duration-200"
         >
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-4">
+          <div className="flex items-center justify-between border-b border-border pb-3 mb-4">
             <div className="flex items-center gap-3">
               <div className="relative">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-white text-sm shadow-md">
                   SH
                 </div>
-                <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-400 ring-2 ring-background animate-pulse" />
+                <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-500 dark:bg-emerald-400 ring-2 ring-background animate-pulse" />
               </div>
               <div>
                 <h4 className="text-sm font-bold text-foreground flex items-center gap-1.5">
                   Sahadat Hossen
                   <Sparkles size={14} className="text-amber-400" />
                 </h4>
-                <p className="text-[11px] text-emerald-400 font-medium">
+                <p className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
                   ● Available on WhatsApp & Messenger
                 </p>
               </div>
@@ -84,7 +84,7 @@ export default function FloatingChatWidget({
             <button
               onClick={() => setIsOpen(false)}
               aria-label="Close chat options"
-              className="w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-white/10 transition-colors"
+              className="w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
             >
               <X size={18} />
             </button>
@@ -103,14 +103,14 @@ export default function FloatingChatWidget({
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => trackSocialClick("whatsapp", "floating_widget", whatsappUrl)}
-              className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/25 hover:border-emerald-500/40 text-emerald-400 transition-all duration-200 group hover:-translate-y-0.5"
+              className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/25 hover:border-emerald-500/40 text-emerald-600 dark:text-emerald-400 transition-all duration-200 group hover:-translate-y-0.5"
             >
-              <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover:scale-105 transition-transform">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400 group-hover:scale-105 transition-transform">
                 <Whatsapp size={22} />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-bold text-foreground group-hover:text-emerald-400 transition-colors">
+                  <span className="text-sm font-bold text-foreground group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                     WhatsApp
                   </span>
                   <ExternalLink size={14} className="opacity-60 group-hover:opacity-100 transition-opacity" />
@@ -128,14 +128,14 @@ export default function FloatingChatWidget({
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => trackSocialClick("messenger", "floating_widget", messengerUrl)}
-              className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/25 hover:border-blue-500/40 text-blue-400 transition-all duration-200 group hover:-translate-y-0.5"
+              className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/25 hover:border-blue-500/40 text-blue-600 dark:text-blue-400 transition-all duration-200 group hover:-translate-y-0.5"
             >
-              <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400 group-hover:scale-105 transition-transform">
+              <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover:scale-105 transition-transform">
                 <Messenger size={22} />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-bold text-foreground group-hover:text-blue-400 transition-colors">
+                  <span className="text-sm font-bold text-foreground group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                     Messenger
                   </span>
                   <ExternalLink size={14} className="opacity-60 group-hover:opacity-100 transition-opacity" />
@@ -147,8 +147,8 @@ export default function FloatingChatWidget({
             </a>
           </div>
 
-          <div className="mt-4 pt-3 border-t border-white/5 text-center">
-            <span className="text-[10px] text-muted-foreground/70 uppercase tracking-widest font-mono">
+          <div className="mt-4 pt-3 border-t border-border text-center">
+            <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-mono">
               Direct Contact Hub
             </span>
           </div>
@@ -177,7 +177,7 @@ export default function FloatingChatWidget({
 
         {/* Floating Tooltip when collapsed */}
         {!isOpen && (
-          <span className="absolute right-16 top-1/2 -translate-y-1/2 px-3 py-1.5 rounded-xl glass text-xs font-semibold text-foreground whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none shadow-md border border-white/10">
+          <span className="absolute right-16 top-1/2 -translate-y-1/2 px-3 py-1.5 rounded-xl glass text-xs font-semibold text-foreground whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none shadow-md border border-border">
             Message Me 💬
           </span>
         )}

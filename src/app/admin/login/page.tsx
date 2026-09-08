@@ -52,13 +52,13 @@ export default function AdminLoginPage() {
 
       <div className="relative z-10 w-full max-w-md">
         {/* Card */}
-        <div className="glass rounded-3xl p-8 border border-white/10 shadow-2xl backdrop-blur-2xl">
+        <div className="glass rounded-3xl p-8 border border-border shadow-2xl backdrop-blur-2xl">
           {/* Header */}
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-xl shadow-indigo-500/30 mb-4 animate-float">
               <ShieldCheck size={32} className="text-white" />
             </div>
-            <h1 className="text-2xl font-black tracking-tight text-white">
+            <h1 className="text-2xl font-black tracking-tight text-foreground">
               Portfolio <span className="gradient-text">Admin</span>
             </h1>
             <p className="text-xs text-muted-foreground mt-1">
@@ -89,7 +89,7 @@ export default function AdminLoginPage() {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="admin"
-                  className="w-full pl-10 pr-4 py-3 rounded-xl glass border border-white/10 bg-transparent text-sm text-white placeholder:text-muted-foreground/50 focus:outline-none focus:border-indigo-500/60 focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl glass border border-border bg-transparent text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-indigo-500/60 focus:ring-2 focus:ring-indigo-500/20 transition-all"
                 />
               </div>
             </div>
@@ -108,12 +108,12 @@ export default function AdminLoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-10 pr-10 py-3 rounded-xl glass border border-white/10 bg-transparent text-sm text-white placeholder:text-muted-foreground/50 focus:outline-none focus:border-indigo-500/60 focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                  className="w-full pl-10 pr-10 py-3 rounded-xl glass border border-border bg-transparent text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-indigo-500/60 focus:ring-2 focus:ring-indigo-500/20 transition-all"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-muted-foreground hover:text-white transition-colors"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-muted-foreground hover:text-foreground transition-colors"
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
@@ -121,9 +121,9 @@ export default function AdminLoginPage() {
             </div>
 
             {/* Quick credentials hint */}
-            <div className="p-3 rounded-xl bg-white/[0.03] border border-white/5 text-[11px] text-muted-foreground flex items-center justify-between">
+            <div className="p-3 rounded-xl bg-card/40 border border-border text-[11px] text-muted-foreground flex items-center justify-between">
               <span>Default local credentials:</span>
-              <span className="font-mono text-indigo-300">admin / admin123</span>
+              <span className="font-mono text-indigo-600 dark:text-indigo-300">admin / admin123</span>
             </div>
 
             {/* Submit button */}
@@ -150,7 +150,7 @@ export default function AdminLoginPage() {
           <div className="text-center mt-6">
             <a
               href="/"
-              className="text-xs text-muted-foreground hover:text-white transition-colors"
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
             >
               ← Back to public portfolio
             </a>

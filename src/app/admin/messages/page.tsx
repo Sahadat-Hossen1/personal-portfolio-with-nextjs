@@ -127,7 +127,7 @@ export default function MessagesAdminPage() {
           <div className="flex items-center gap-2 text-xs font-semibold text-indigo-400 uppercase tracking-wider mb-1">
             <Mail size={14} /> Contact Center
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white">
+          <h1 className="text-2xl sm:text-3xl font-black text-foreground">
             Client Inquiries & <span className="gradient-text">Messages</span>
           </h1>
           <p className="text-xs sm:text-sm text-muted-foreground mt-1">
@@ -163,13 +163,13 @@ export default function MessagesAdminPage() {
 
       {/* Search & Tabs */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-2 p-1 rounded-2xl glass border border-white/10 self-start">
+        <div className="flex items-center gap-2 p-1 rounded-2xl glass border border-border self-start">
           <button
             onClick={() => setFilter("all")}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all ${
               filter === "all"
-                ? "bg-indigo-500/20 text-white border border-indigo-500/40"
-                : "text-muted-foreground hover:text-white"
+                ? "bg-indigo-500/20 text-foreground border border-indigo-500/40 font-semibold"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             All Messages ({messages.length})
@@ -178,8 +178,8 @@ export default function MessagesAdminPage() {
             onClick={() => setFilter("unread")}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all ${
               filter === "unread"
-                ? "bg-indigo-500/20 text-white border border-indigo-500/40"
-                : "text-muted-foreground hover:text-white"
+                ? "bg-indigo-500/20 text-foreground border border-indigo-500/40 font-semibold"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             Unread ({unreadCount})
@@ -197,7 +197,7 @@ export default function MessagesAdminPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by sender or text..."
-            className="w-full pl-9 pr-3.5 py-1.5 rounded-xl glass border border-white/10 text-xs text-white placeholder:text-muted-foreground/50 focus:outline-none focus:border-indigo-500/60"
+            className="w-full pl-9 pr-3.5 py-1.5 rounded-xl glass border border-border text-xs text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-indigo-500/60"
           />
         </div>
       </div>
@@ -207,9 +207,9 @@ export default function MessagesAdminPage() {
           <Loader2 size={32} className="animate-spin text-indigo-400" />
         </div>
       ) : messages.length === 0 ? (
-        <div className="glass rounded-3xl p-16 text-center border border-white/10 space-y-3">
+        <div className="glass rounded-3xl p-16 text-center border border-border space-y-3">
           <Inbox size={44} className="mx-auto text-muted-foreground/30" />
-          <h3 className="text-base font-bold text-white">Your Inbox is Empty</h3>
+          <h3 className="text-base font-bold text-foreground">Your Inbox is Empty</h3>
           <p className="text-xs text-muted-foreground max-w-sm mx-auto">
             When someone sends a message via the portfolio contact form, their name, email, and inquiry will show up here.
           </p>
@@ -234,12 +234,12 @@ export default function MessagesAdminPage() {
                       isSelected
                         ? "border-indigo-500/60 bg-indigo-500/10 shadow-lg shadow-indigo-500/10"
                         : msg.read
-                        ? "border-white/5 hover:border-white/15 bg-white/[0.01]"
+                        ? "border-border hover:border-primary/40 bg-card/20"
                         : "border-indigo-500/30 bg-indigo-500/5 hover:border-indigo-500/40"
                     }`}
                   >
                     <div className="flex items-start justify-between gap-2 mb-1">
-                      <div className="font-bold text-xs text-white truncate">
+                      <div className="font-bold text-xs text-foreground truncate">
                         {msg.name}
                       </div>
                       <div className="flex items-center gap-1.5 flex-shrink-0">
@@ -252,7 +252,7 @@ export default function MessagesAdminPage() {
                       </div>
                     </div>
 
-                    <div className="text-xs font-semibold text-indigo-300 truncate mb-1">
+                    <div className="text-xs font-semibold text-indigo-600 dark:text-indigo-300 truncate mb-1">
                       {msg.subject || "No Subject"}
                     </div>
                     <p className="text-xs text-muted-foreground line-clamp-2">
@@ -265,15 +265,15 @@ export default function MessagesAdminPage() {
           </div>
 
           {/* Message Detail Viewer */}
-          <div className="lg:col-span-3 glass rounded-3xl p-6 sm:p-8 border border-white/10 sticky top-24 space-y-6">
+          <div className="lg:col-span-3 glass rounded-3xl p-6 sm:p-8 border border-border sticky top-24 space-y-6">
             {selectedMessage ? (
               <>
                 {/* Actions bar */}
-                <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                <div className="flex items-center justify-between border-b border-border pb-4">
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => handleToggleRead(selectedMessage)}
-                      className="px-3 py-1.5 rounded-xl glass border border-white/10 hover:border-white/20 text-xs font-medium text-white flex items-center gap-1.5"
+                      className="px-3 py-1.5 rounded-xl glass border border-border hover:border-primary/40 text-xs font-medium text-foreground flex items-center gap-1.5"
                     >
                       {selectedMessage.read ? (
                         <>
@@ -282,7 +282,7 @@ export default function MessagesAdminPage() {
                         </>
                       ) : (
                         <>
-                          <MailOpen size={14} className="text-emerald-400" />
+                          <MailOpen size={14} className="text-emerald-500 dark:text-emerald-400" />
                           <span>Mark as Read</span>
                         </>
                       )}
@@ -290,7 +290,7 @@ export default function MessagesAdminPage() {
 
                     <button
                       onClick={() => handleDelete(selectedMessage._id)}
-                      className="p-2 rounded-xl glass border border-white/10 hover:border-rose-500/40 text-muted-foreground hover:text-rose-400 transition-colors"
+                      className="p-2 rounded-xl glass border border-border hover:border-rose-500/40 text-muted-foreground hover:text-rose-400 transition-colors"
                       title="Delete message"
                     >
                       <Trash2 size={14} />
@@ -310,18 +310,18 @@ export default function MessagesAdminPage() {
 
                 {/* Sender details */}
                 <div className="space-y-1">
-                  <h2 className="text-lg font-bold text-white">
+                  <h2 className="text-lg font-bold text-foreground">
                     {selectedMessage.subject || "No Subject Specified"}
                   </h2>
                   <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground pt-1">
-                    <div className="flex items-center gap-1.5 text-white/90">
+                    <div className="flex items-center gap-1.5 text-foreground">
                       <User size={13} className="text-indigo-400" />
                       <span className="font-semibold">{selectedMessage.name}</span>
                     </div>
                     <div>
                       <a
                         href={`mailto:${selectedMessage.email}`}
-                        className="text-indigo-300 hover:underline flex items-center gap-1"
+                        className="text-indigo-600 dark:text-indigo-300 hover:underline flex items-center gap-1"
                       >
                         {selectedMessage.email}
                       </a>
@@ -334,7 +334,7 @@ export default function MessagesAdminPage() {
                 </div>
 
                 {/* Message Body */}
-                <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/5 text-sm text-white/90 leading-relaxed whitespace-pre-wrap font-sans">
+                <div className="p-5 rounded-2xl bg-card/40 border border-border text-sm text-foreground leading-relaxed whitespace-pre-wrap font-sans">
                   {selectedMessage.message}
                 </div>
               </>

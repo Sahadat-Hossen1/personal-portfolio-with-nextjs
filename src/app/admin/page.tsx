@@ -152,7 +152,7 @@ export default function AdminDashboardPage() {
   return (
     <div className="space-y-8">
       {/* Top Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 glass rounded-3xl p-6 border border-white/10 relative overflow-hidden">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 glass rounded-3xl p-6 border border-border relative overflow-hidden">
         <div
           className="absolute -right-10 -bottom-10 w-48 h-48 rounded-full pointer-events-none opacity-10"
           style={{ background: "radial-gradient(circle, #818cf8, #7c3aed)" }}
@@ -161,7 +161,7 @@ export default function AdminDashboardPage() {
           <div className="flex items-center gap-2 text-xs font-semibold text-indigo-400 uppercase tracking-wider mb-1">
             <Sparkles size={14} /> Control Center Overview
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white">
+          <h1 className="text-2xl sm:text-3xl font-black text-foreground">
             Welcome to your <span className="gradient-text">Portfolio Admin</span>
           </h1>
           <p className="text-xs sm:text-sm text-muted-foreground mt-1 max-w-xl">
@@ -175,7 +175,7 @@ export default function AdminDashboardPage() {
             onClick={() => handleSeed(false)}
             disabled={seedLoading}
             title="Populate MongoDB with default portfolio data if empty"
-            className="px-4 py-2.5 rounded-xl glass border border-white/15 hover:border-indigo-500/50 text-xs font-semibold text-white flex items-center gap-2 transition-all hover:scale-[1.02] cursor-pointer"
+            className="px-4 py-2.5 rounded-xl glass border border-border hover:border-indigo-500/50 text-xs font-semibold text-foreground flex items-center gap-2 transition-all hover:scale-[1.02] cursor-pointer"
           >
             {seedLoading ? (
               <Loader2 size={14} className="animate-spin text-indigo-400" />
@@ -224,7 +224,7 @@ export default function AdminDashboardPage() {
                 </div>
               </div>
               <div>
-                <div className="text-2xl sm:text-3xl font-black text-white">
+                <div className="text-2xl sm:text-3xl font-black text-foreground">
                   {loading ? "..." : card.value}
                 </div>
                 <div className="text-xs text-muted-foreground mt-1 flex items-center justify-between">
@@ -243,8 +243,8 @@ export default function AdminDashboardPage() {
       {/* Two Column Layout: Quick Actions & Recent Messages */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Quick section editors */}
-        <div className="glass rounded-3xl p-6 border border-white/10 space-y-4">
-          <h2 className="text-base font-bold text-white flex items-center gap-2">
+        <div className="glass rounded-3xl p-6 border border-border space-y-4">
+          <h2 className="text-base font-bold text-foreground flex items-center gap-2">
             <Sparkles size={16} className="text-indigo-400" />
             Quick Section Nav
           </h2>
@@ -255,66 +255,66 @@ export default function AdminDashboardPage() {
           <div className="space-y-2">
             <Link
               href="/admin/hero-about"
-              className="flex items-center justify-between p-3.5 rounded-xl glass border border-white/5 hover:border-white/20 hover:bg-white/5 transition-all text-xs font-medium text-white group"
+              className="flex items-center justify-between p-3.5 rounded-xl glass border border-border hover:border-border hover:bg-muted transition-all text-xs font-medium text-foreground group"
             >
               <div className="flex items-center gap-3">
                 <User size={16} className="text-indigo-400" />
                 <span>Hero & About Details</span>
               </div>
-              <ArrowUpRight size={14} className="text-muted-foreground group-hover:text-white" />
+              <ArrowUpRight size={14} className="text-muted-foreground group-hover:text-foreground" />
             </Link>
 
             <Link
               href="/admin/projects"
-              className="flex items-center justify-between p-3.5 rounded-xl glass border border-white/5 hover:border-white/20 hover:bg-white/5 transition-all text-xs font-medium text-white group"
+              className="flex items-center justify-between p-3.5 rounded-xl glass border border-border hover:border-border hover:bg-muted transition-all text-xs font-medium text-foreground group"
             >
               <div className="flex items-center gap-3">
                 <FolderGit2 size={16} className="text-blue-400" />
                 <span>Projects & Case Studies</span>
               </div>
-              <ArrowUpRight size={14} className="text-muted-foreground group-hover:text-white" />
+              <ArrowUpRight size={14} className="text-muted-foreground group-hover:text-foreground" />
             </Link>
 
             <Link
               href="/admin/skills"
-              className="flex items-center justify-between p-3.5 rounded-xl glass border border-white/5 hover:border-white/20 hover:bg-white/5 transition-all text-xs font-medium text-white group"
+              className="flex items-center justify-between p-3.5 rounded-xl glass border border-border hover:border-border hover:bg-muted transition-all text-xs font-medium text-foreground group"
             >
               <div className="flex items-center gap-3">
                 <Cpu size={16} className="text-purple-400" />
                 <span>Skills & Familiar Tags</span>
               </div>
-              <ArrowUpRight size={14} className="text-muted-foreground group-hover:text-white" />
+              <ArrowUpRight size={14} className="text-muted-foreground group-hover:text-foreground" />
             </Link>
 
             <Link
               href="/admin/experience"
-              className="flex items-center justify-between p-3.5 rounded-xl glass border border-white/5 hover:border-white/20 hover:bg-white/5 transition-all text-xs font-medium text-white group"
+              className="flex items-center justify-between p-3.5 rounded-xl glass border border-border hover:border-border hover:bg-muted transition-all text-xs font-medium text-foreground group"
             >
               <div className="flex items-center gap-3">
                 <Briefcase size={16} className="text-emerald-400" />
                 <span>Experience Timeline</span>
               </div>
-              <ArrowUpRight size={14} className="text-muted-foreground group-hover:text-white" />
+              <ArrowUpRight size={14} className="text-muted-foreground group-hover:text-foreground" />
             </Link>
 
             <Link
               href="/admin/settings"
-              className="flex items-center justify-between p-3.5 rounded-xl glass border border-white/5 hover:border-white/20 hover:bg-white/5 transition-all text-xs font-medium text-white group"
+              className="flex items-center justify-between p-3.5 rounded-xl glass border border-border hover:border-border hover:bg-muted transition-all text-xs font-medium text-foreground group"
             >
               <div className="flex items-center gap-3">
                 <Sparkles size={16} className="text-amber-400" />
                 <span>Socials & Chat Widget</span>
               </div>
-              <ArrowUpRight size={14} className="text-muted-foreground group-hover:text-white" />
+              <ArrowUpRight size={14} className="text-muted-foreground group-hover:text-foreground" />
             </Link>
           </div>
         </div>
 
         {/* Recent Inquiries feed */}
-        <div className="lg:col-span-2 glass rounded-3xl p-6 border border-white/10 space-y-4">
+        <div className="lg:col-span-2 glass rounded-3xl p-6 border border-border space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-base font-bold text-white flex items-center gap-2">
+              <h2 className="text-base font-bold text-foreground flex items-center gap-2">
                 <Mail size={16} className="text-indigo-400" />
                 Recent Contact Messages
               </h2>
@@ -336,7 +336,7 @@ export default function AdminDashboardPage() {
               <Loader2 size={24} className="animate-spin text-indigo-400" />
             </div>
           ) : recentMessages.length === 0 ? (
-            <div className="py-12 text-center rounded-2xl border border-dashed border-white/10 p-6">
+            <div className="py-12 text-center rounded-2xl border border-dashed border-border p-6">
               <Mail size={32} className="mx-auto text-muted-foreground/40 mb-2" />
               <p className="text-xs text-muted-foreground">
                 No contact messages yet. Submissions from the public form will appear here.
@@ -349,13 +349,13 @@ export default function AdminDashboardPage() {
                   key={msg._id}
                   className={`p-4 rounded-2xl glass border transition-all ${
                     msg.read
-                      ? "border-white/5 bg-white/[0.02]"
+                      ? "border-border bg-card/40"
                       : "border-indigo-500/30 bg-indigo-500/5 shadow-sm"
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2 mb-1.5">
                     <div>
-                      <span className="text-xs font-bold text-white">{msg.name}</span>
+                      <span className="text-xs font-bold text-foreground">{msg.name}</span>
                       <span className="text-[11px] text-muted-foreground ml-2">
                         &lt;{msg.email}&gt;
                       </span>
