@@ -98,7 +98,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
       suppressHydrationWarning
       data-scroll-behavior="smooth"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
@@ -106,9 +105,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <head>
         <JsonLd />
       </head>
-      <body className="min-h-full flex flex-col bg-background text-foreground">
-        <GTMProvider />
-        {children}
       <body
         suppressHydrationWarning
         className="min-h-full flex flex-col bg-background text-foreground transition-colors duration-300"
