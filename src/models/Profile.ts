@@ -38,6 +38,8 @@ export interface ISectionVisibility {
   floatingChat: boolean;
 }
 
+export type TemplateId = "developer" | "video-editor" | "digital-marketer";
+
 export interface IProfile extends Document {
   // Hero section
   name: string;
@@ -68,6 +70,7 @@ export interface IProfile extends Document {
   location: string;
   socials: ISocialItem[];
   sections: ISectionVisibility;
+  selectedTemplate?: TemplateId;
   updatedAt: Date;
 }
 
@@ -158,6 +161,11 @@ const ProfileSchema = new Schema<IProfile>(
       experience: { type: Boolean, default: true },
       contact: { type: Boolean, default: true },
       floatingChat: { type: Boolean, default: true },
+    },
+    selectedTemplate: {
+      type: String,
+      enum: ["developer", "video-editor", "digital-marketer"],
+      default: "developer",
     },
   },
   { timestamps: true }

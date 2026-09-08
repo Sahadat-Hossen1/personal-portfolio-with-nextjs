@@ -11,14 +11,9 @@ import {
   initialSkillTags,
   initialExperiences,
 } from "@/lib/initialData";
+import { PortfolioData, ProfileData, SocialItemData } from "@/types/portfolio";
 
-export interface PortfolioData {
-  profile: typeof initialProfile;
-  projects: typeof initialProjects;
-  skills: typeof initialSkills;
-  skillTags: string[];
-  experiences: typeof initialExperiences;
-}
+export type { PortfolioData } from "@/types/portfolio";
 
 export async function getPortfolioData(): Promise<PortfolioData> {
   try {
@@ -37,10 +32,11 @@ export async function getPortfolioData(): Promise<PortfolioData> {
       ? JSON.parse(JSON.stringify(profileDoc))
       : null;
 
-    const profile = parsedProfile
+    const profile: ProfileData = parsedProfile
       ? {
           ...initialProfile,
           ...parsedProfile,
+          selectedTemplate: parsedProfile.selectedTemplate || "developer",
           sections: {
             ...initialProfile.sections,
             ...(parsedProfile.sections || {}),
@@ -49,7 +45,7 @@ export async function getPortfolioData(): Promise<PortfolioData> {
           chatMessengerEnabled: parsedProfile.chatMessengerEnabled !== false,
           socials:
             parsedProfile.socials && parsedProfile.socials.length > 0
-              ? parsedProfile.socials.map((s: any) => ({
+              ? parsedProfile.socials.map((s: SocialItemData) => ({
                   ...s,
                   enabled: s.enabled !== false,
                 }))
@@ -69,7 +65,7 @@ export async function getPortfolioData(): Promise<PortfolioData> {
 
     const skillTags =
       tagDocs && tagDocs.length > 0
-        ? tagDocs.map((t: any) => t.name)
+        ? tagDocs.map((t: { name: string }) => t.name)
         : initialSkillTags;
 
     const experiences =

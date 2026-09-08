@@ -3,6 +3,7 @@ import { connectToDatabase } from "@/lib/mongodb";
 import { verifyAdminRequest } from "@/lib/auth";
 import Profile from "@/models/Profile";
 import { initialProfile } from "@/lib/initialData";
+import { isSupportedTemplateId, SUPPORTED_TEMPLATE_IDS } from "@/templates/index";
 
 export async function GET() {
   try {
@@ -33,6 +34,19 @@ export async function PUT(request: NextRequest) {
 
     await connectToDatabase();
     const body = await request.json();
+
+    if (
+      body.selectedTemplate !== undefined &&
+      !isSupportedTemplateId(body.selectedTemplate)
+    ) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Invalid template identifier. Supported templates: ${SUPPORTED_TEMPLATE_IDS.join(", ")}`,
+        },
+        { status: 400 }
+      );
+    }
 
     let profile = await Profile.findOne();
     if (!profile) {

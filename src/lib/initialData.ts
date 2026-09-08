@@ -93,6 +93,7 @@ export const initialProfile = {
     contact: true,
     floatingChat: true,
   },
+  selectedTemplate: "developer" as const,
 };
 
 export const initialSkills = [

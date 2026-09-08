@@ -7,7 +7,7 @@ import { ArrowDown, Download, ExternalLink, Sparkles } from "lucide-react";
 import { Github } from "@/components/icons";
 import { trackDownloadCV, trackSocialClick } from "@/lib/gtm";
 
-const roles = [
+const defaultRoles = [
   "Full Stack MERN Developer",
   "React Specialist",
   "Node.js Engineer",
@@ -15,7 +15,7 @@ const roles = [
   "API Designer",
 ];
 
-const floatingBadges = [
+const defaultFloatingBadges = [
   { label: "MongoDB", color: "from-green-500 to-emerald-600", delay: "0s", top: "15%", left: "8%" },
   { label: "Express", color: "from-gray-500 to-gray-700", delay: "1.5s", top: "70%", left: "5%" },
   { label: "React", color: "from-cyan-400 to-blue-500", delay: "0.8s", top: "20%", right: "8%" },
@@ -24,7 +24,7 @@ const floatingBadges = [
   { label: "Next.js", color: "from-slate-600 to-slate-800", delay: "2.5s", top: "40%", right: "4%" },
 ];
 
-interface HeroSectionProps {
+interface DevHeroProps {
   profile?: {
     name?: string;
     roles?: string[];
@@ -45,11 +45,17 @@ interface HeroSectionProps {
   };
 }
 
-export default function HeroSection({ profile }: HeroSectionProps) {
-  const activeRoles = profile?.roles && profile.roles.length > 0 ? profile.roles : roles;
-  const activeBadges = profile?.floatingBadges && profile.floatingBadges.length > 0 ? profile.floatingBadges : floatingBadges;
+export default function DevHero({ profile }: DevHeroProps) {
+  const activeRoles =
+    profile?.roles && profile.roles.length > 0 ? profile.roles : defaultRoles;
+  const activeBadges =
+    profile?.floatingBadges && profile.floatingBadges.length > 0
+      ? profile.floatingBadges
+      : defaultFloatingBadges;
   const displayName = profile?.name || "Sahadat Hossen";
-  const bioBlurb = profile?.bioBlurb || "I build scalable, performant web applications from database to deployment. Passionate about clean code, great UX, and the MERN stack.";
+  const bioBlurb =
+    profile?.bioBlurb ||
+    "I build scalable, performant web applications from database to deployment. Passionate about clean code, great UX, and the MERN stack.";
   const statusText = profile?.statusText || "Available for new opportunities";
   const isAvailable = profile?.statusAvailable ?? true;
   const avatarSrc = profile?.avatarUrl || "/profile.jpg";
@@ -80,7 +86,7 @@ export default function HeroSection({ profile }: HeroSectionProps) {
         setDisplayed(current.slice(0, charIndex - 1));
         if (charIndex - 1 === 0) {
           setIsDeleting(false);
-          setRoleIndex((i) => (i + 1) % roles.length);
+          setRoleIndex((i) => (i + 1) % activeRoles.length);
           setCharIndex(0);
         } else {
           setCharIndex((c) => c - 1);
@@ -89,7 +95,7 @@ export default function HeroSection({ profile }: HeroSectionProps) {
     }, speed);
 
     return () => clearTimeout(timer);
-  }, [charIndex, isDeleting, roleIndex]);
+  }, [charIndex, isDeleting, roleIndex, activeRoles]);
 
   // Particle canvas
   useEffect(() => {
@@ -102,8 +108,13 @@ export default function HeroSection({ profile }: HeroSectionProps) {
     canvas.height = window.innerHeight;
 
     interface Particle {
-      x: number; y: number; vx: number; vy: number;
-      size: number; opacity: number; color: string;
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      size: number;
+      opacity: number;
+      color: string;
     }
 
     const particles: Particle[] = [];
@@ -132,7 +143,11 @@ export default function HeroSection({ profile }: HeroSectionProps) {
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = p.color + Math.floor(p.opacity * 255).toString(16).padStart(2, "0");
+        ctx.fillStyle =
+          p.color +
+          Math.floor(p.opacity * 255)
+            .toString(16)
+            .padStart(2, "0");
         ctx.fill();
       });
 
@@ -178,7 +193,9 @@ export default function HeroSection({ profile }: HeroSectionProps) {
 
   const handleDownloadCV = () => {
     trackDownloadCV("hero_section");
-    // Download action or trigger
+    if (profile?.cvUrl) {
+      window.open(profile.cvUrl, "_blank");
+    }
   };
 
   return (
@@ -246,7 +263,10 @@ export default function HeroSection({ profile }: HeroSectionProps) {
               <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
             )}
             {statusText}
-            <Sparkles size={12} className="text-emerald-600/70 dark:text-emerald-400/70" />
+            <Sparkles
+              size={12}
+              className="text-emerald-600/70 dark:text-emerald-400/70"
+            />
           </div>
         </div>
 
@@ -278,7 +298,10 @@ export default function HeroSection({ profile }: HeroSectionProps) {
             size="lg"
             className="group w-full sm:w-auto px-8 h-12 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white border-0 shadow-xl hover:shadow-indigo-500/40 transition-all duration-300 hover:scale-[1.04] text-base font-semibold rounded-xl"
           >
-            <ExternalLink size={18} className="group-hover:rotate-12 transition-transform" />
+            <ExternalLink
+              size={18}
+              className="group-hover:rotate-12 transition-transform"
+            />
             View My Work
           </Button>
           <Button
@@ -288,7 +311,10 @@ export default function HeroSection({ profile }: HeroSectionProps) {
             variant="outline"
             className="group w-full sm:w-auto px-8 h-12 gradient-border border-0 text-foreground hover:text-foreground bg-transparent hover:bg-muted transition-all duration-300 hover:scale-[1.04] text-base font-semibold rounded-xl"
           >
-            <Download size={18} className="group-hover:translate-y-0.5 transition-transform" />
+            <Download
+              size={18}
+              className="group-hover:translate-y-0.5 transition-transform"
+            />
             Download CV
           </Button>
           {isGithubEnabled && (
@@ -315,8 +341,12 @@ export default function HeroSection({ profile }: HeroSectionProps) {
             { value: "99%", label: "Satisfaction" },
           ].map((stat) => (
             <div key={stat.label} className="text-center">
-              <div className="text-2xl sm:text-3xl font-black gradient-text">{stat.value}</div>
-              <div className="text-xs text-muted-foreground mt-0.5">{stat.label}</div>
+              <div className="text-2xl sm:text-3xl font-black gradient-text">
+                {stat.value}
+              </div>
+              <div className="text-xs text-muted-foreground mt-0.5">
+                {stat.label}
+              </div>
             </div>
           ))}
         </div>

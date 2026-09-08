@@ -8,8 +8,6 @@ import {
   AlertCircle,
   Loader2,
   Mail,
-  Phone,
-  MapPin,
   MessageSquare,
   Share2,
   Sparkles,
@@ -17,8 +15,76 @@ import {
   Cpu,
   FolderGit2,
   Briefcase,
+  LayoutTemplate,
+  Code2,
+  Video,
+  TrendingUp,
+  Check,
+  ExternalLink,
 } from "lucide-react";
 import { Github, Linkedin, Twitter, Whatsapp, Messenger } from "@/components/icons";
+import type { TemplateId } from "@/types/portfolio";
+import { isSupportedTemplateId } from "@/templates/index";
+
+interface TemplateOption {
+  id: TemplateId;
+  name: string;
+  tag: string;
+  desc: string;
+  icon: typeof Code2;
+  previewUrl: string;
+  features: string[];
+  themeSummary: string;
+  badgeClass: string;
+  activeBorderClass: string;
+  activeBgClass: string;
+  activeGlowClass: string;
+}
+
+const templateOptions: TemplateOption[] = [
+  {
+    id: "developer",
+    name: "Developer",
+    tag: "Engineering & Software",
+    desc: "Code-centric portfolio featuring a terminal typewriter hero, interactive skill proficiency bars, GitHub repository cards with star counts, and engineering timeline.",
+    icon: Code2,
+    previewUrl: "/?template=developer",
+    features: ["Typewriter Hero", "GitHub Repos & Stars", "Tech Proficiency Bars"],
+    themeSummary: "Modern Tech / Dark Accent",
+    badgeClass: "bg-indigo-500/10 text-indigo-400 border-indigo-500/30",
+    activeBorderClass: "border-indigo-500 ring-2 ring-indigo-500/40",
+    activeBgClass: "bg-indigo-500/[0.06]",
+    activeGlowClass: "shadow-lg shadow-indigo-500/20",
+  },
+  {
+    id: "video-editor",
+    name: "Video Editor",
+    tag: "Cinematic & Post-Production",
+    desc: "Cinematic media-heavy showcase featuring full-width showreel hero banner, 16:9 widescreen video gallery with interactive video modal player, and post-production software toolkit.",
+    icon: Video,
+    previewUrl: "/?template=video-editor",
+    features: ["Showreel Hero Player", "16:9 Video Gallery & Modal", "Editing Software Suite"],
+    themeSummary: "Cinematic Zinc-950 / Red Highlights",
+    badgeClass: "bg-red-500/10 text-red-400 border-red-500/30",
+    activeBorderClass: "border-red-500 ring-2 ring-red-500/40",
+    activeBgClass: "bg-red-500/[0.06]",
+    activeGlowClass: "shadow-lg shadow-red-500/20",
+  },
+  {
+    id: "digital-marketer",
+    name: "Digital Marketer",
+    tag: "Executive & Growth Strategy",
+    desc: "Data-driven executive consulting portfolio featuring live KPI metric counters, Problem → Strategy → Results case study cards with detail modal, and MarTech growth stack.",
+    icon: TrendingUp,
+    previewUrl: "/?template=digital-marketer",
+    features: ["KPI Metric Counters", "Case Study Modals", "MarTech Growth Stack"],
+    themeSummary: "Executive Slate-950 / Emerald Accents",
+    badgeClass: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+    activeBorderClass: "border-emerald-500 ring-2 ring-emerald-500/40",
+    activeBgClass: "bg-emerald-500/[0.06]",
+    activeGlowClass: "shadow-lg shadow-emerald-500/20",
+  },
+];
 
 const sectionConfigs = [
   {
@@ -65,7 +131,7 @@ const sectionConfigs = [
   },
 ];
 
-const socialPlatformIcons: Record<string, any> = {
+const socialPlatformIcons: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
   github: Github,
   linkedin: Linkedin,
   whatsapp: Whatsapp,
@@ -76,9 +142,36 @@ const socialPlatformIcons: Record<string, any> = {
 export default function SettingsAdminPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [switchingTemplate, setSwitchingTemplate] = useState<TemplateId | null>(null);
   const [message, setMessage] = useState({ type: "", text: "" });
 
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<{
+    email: string;
+    phone: string;
+    location: string;
+    whatsappNumber: string;
+    whatsappMessage: string;
+    messengerUrl: string;
+    chatWhatsAppEnabled: boolean;
+    chatMessengerEnabled: boolean;
+    selectedTemplate: TemplateId;
+    socials: Array<{
+      platform: string;
+      label: string;
+      value: string;
+      href: string;
+      enabled?: boolean;
+    }>;
+    sections: {
+      hero: boolean;
+      about: boolean;
+      skills: boolean;
+      projects: boolean;
+      experience: boolean;
+      contact: boolean;
+      floatingChat: boolean;
+    };
+  }>({
     email: "",
     phone: "",
     location: "",
@@ -87,6 +180,7 @@ export default function SettingsAdminPage() {
     messengerUrl: "",
     chatWhatsAppEnabled: true,
     chatMessengerEnabled: true,
+    selectedTemplate: "developer",
     socials: [
       { platform: "github", label: "GitHub", value: "", href: "", enabled: true },
       { platform: "linkedin", label: "LinkedIn", value: "", href: "", enabled: true },
@@ -106,84 +200,128 @@ export default function SettingsAdminPage() {
   });
 
   useEffect(() => {
-    fetchSettings();
+    let isCancelled = false;
+
+    async function loadSettings() {
+      try {
+        const res = await fetch("/api/profile");
+        const data = await res.json();
+        if (!isCancelled && data.success && data.data) {
+          setForm({
+            email: data.data.email || "",
+            phone: data.data.phone || "",
+            location: data.data.location || "",
+            whatsappNumber: data.data.whatsappNumber || "8801606081657",
+            whatsappMessage:
+              data.data.whatsappMessage ||
+              "Hi Sahadat, I visited your portfolio and would like to connect!",
+            messengerUrl:
+              data.data.messengerUrl || "https://m.me/sahadat.hossen.1435",
+            chatWhatsAppEnabled: data.data.chatWhatsAppEnabled !== false,
+            chatMessengerEnabled: data.data.chatMessengerEnabled !== false,
+            selectedTemplate: (data.data.selectedTemplate as TemplateId) || "developer",
+            socials: data.data.socials?.length
+              ? data.data.socials.map((s: { platform: string; label: string; value: string; href: string; enabled?: boolean }) => ({
+                  ...s,
+                  enabled: s.enabled !== false,
+                }))
+              : [
+                  {
+                    platform: "github",
+                    label: "GitHub",
+                    value: "github.com/Sahadat-Hossen1",
+                    href: "https://github.com/Sahadat-Hossen1",
+                    enabled: true,
+                  },
+                  {
+                    platform: "linkedin",
+                    label: "LinkedIn",
+                    value: "linkedin.com/in/sahadathossen",
+                    href: "https://linkedin.com/in/sahadathossen",
+                    enabled: true,
+                  },
+                  {
+                    platform: "whatsapp",
+                    label: "Whatsapp",
+                    value: "+8801606081657",
+                    href: "https://wa.me/8801606081657",
+                    enabled: true,
+                  },
+                  {
+                    platform: "email",
+                    label: "Email",
+                    value: "sahadat.hossen1435@gmail.com",
+                    href: "mailto:sahadat.hossen1435@gmail.com",
+                    enabled: true,
+                  },
+                  {
+                    platform: "twitter",
+                    label: "Twitter",
+                    value: "twitter.com",
+                    href: "https://twitter.com",
+                    enabled: true,
+                  },
+                ],
+            sections: {
+              hero: data.data.sections?.hero ?? true,
+              about: data.data.sections?.about ?? true,
+              skills: data.data.sections?.skills ?? true,
+              projects: data.data.sections?.projects ?? true,
+              experience: data.data.sections?.experience ?? true,
+              contact: data.data.sections?.contact ?? true,
+              floatingChat: data.data.sections?.floatingChat ?? true,
+            },
+          });
+        }
+      } catch (err) {
+        if (!isCancelled) {
+          console.error("Failed to load settings:", err);
+        }
+      } finally {
+        if (!isCancelled) {
+          setLoading(false);
+        }
+      }
+    }
+
+    loadSettings();
+
+    return () => {
+      isCancelled = true;
+    };
   }, []);
 
-  const fetchSettings = async () => {
-    setLoading(true);
+  const handleSelectTemplate = async (templateId: TemplateId) => {
+    if (!isSupportedTemplateId(templateId)) return;
+    if (form.selectedTemplate === templateId || switchingTemplate) return;
+
+    setSwitchingTemplate(templateId);
+    setForm((prev) => ({ ...prev, selectedTemplate: templateId }));
+    setMessage({ type: "", text: "" });
+
     try {
-      const res = await fetch("/api/profile");
+      const res = await fetch("/api/profile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ selectedTemplate: templateId }),
+      });
       const data = await res.json();
-      if (data.success && data.data) {
-        setForm({
-          email: data.data.email || "",
-          phone: data.data.phone || "",
-          location: data.data.location || "",
-          whatsappNumber: data.data.whatsappNumber || "8801606081657",
-          whatsappMessage:
-            data.data.whatsappMessage ||
-            "Hi Sahadat, I visited your portfolio and would like to connect!",
-          messengerUrl:
-            data.data.messengerUrl || "https://m.me/sahadat.hossen.1435",
-          chatWhatsAppEnabled: data.data.chatWhatsAppEnabled !== false,
-          chatMessengerEnabled: data.data.chatMessengerEnabled !== false,
-          socials: data.data.socials?.length
-            ? data.data.socials.map((s: any) => ({
-                ...s,
-                enabled: s.enabled !== false,
-              }))
-            : [
-                {
-                  platform: "github",
-                  label: "GitHub",
-                  value: "github.com/Sahadat-Hossen1",
-                  href: "https://github.com/Sahadat-Hossen1",
-                  enabled: true,
-                },
-                {
-                  platform: "linkedin",
-                  label: "LinkedIn",
-                  value: "linkedin.com/in/sahadathossen",
-                  href: "https://linkedin.com/in/sahadathossen",
-                  enabled: true,
-                },
-                {
-                  platform: "whatsapp",
-                  label: "Whatsapp",
-                  value: "+8801606081657",
-                  href: "https://wa.me/8801606081657",
-                  enabled: true,
-                },
-                {
-                  platform: "email",
-                  label: "Email",
-                  value: "sahadat.hossen1435@gmail.com",
-                  href: "mailto:sahadat.hossen1435@gmail.com",
-                  enabled: true,
-                },
-                {
-                  platform: "twitter",
-                  label: "Twitter",
-                  value: "twitter.com",
-                  href: "https://twitter.com",
-                  enabled: true,
-                },
-              ],
-          sections: {
-            hero: data.data.sections?.hero ?? true,
-            about: data.data.sections?.about ?? true,
-            skills: data.data.sections?.skills ?? true,
-            projects: data.data.sections?.projects ?? true,
-            experience: data.data.sections?.experience ?? true,
-            contact: data.data.sections?.contact ?? true,
-            floatingChat: data.data.sections?.floatingChat ?? true,
-          },
-        });
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Failed to switch template");
       }
-    } catch (err) {
-      console.error("Failed to load settings:", err);
+      const opt = templateOptions.find((t) => t.id === templateId);
+      setMessage({
+        type: "success",
+        text: `Active template switched to "${opt?.name || templateId}"! The public portfolio (/) now renders this template.`,
+      });
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : "Failed to update template selection";
+      setMessage({
+        type: "error",
+        text: errMsg,
+      });
     } finally {
-      setLoading(false);
+      setSwitchingTemplate(null);
     }
   };
 
@@ -215,7 +353,7 @@ export default function SettingsAdminPage() {
   const handleSocialChange = (
     index: number,
     field: "value" | "href" | "enabled",
-    val: any
+    val: string | boolean
   ) => {
     const nextSocials = [...form.socials];
     nextSocials[index] = { ...nextSocials[index], [field]: val };
@@ -250,8 +388,9 @@ export default function SettingsAdminPage() {
         throw new Error(data.error || "Save failed");
       }
       setMessage({ type: "success", text: "Settings saved successfully!" });
-    } catch (err: any) {
-      setMessage({ type: "error", text: err.message || "Failed to update settings" });
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : "Failed to update settings";
+      setMessage({ type: "error", text: errMsg });
     } finally {
       setSaving(false);
       setTimeout(() => setMessage({ type: "", text: "" }), 5000);
@@ -318,6 +457,163 @@ export default function SettingsAdminPage() {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-8">
+        {/* Section: Active Portfolio Template Switcher */}
+        <div className="glass rounded-3xl p-6 border border-border space-y-6">
+          <div className="border-b border-border pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className="text-base font-bold text-foreground flex items-center gap-2">
+                  <LayoutTemplate size={18} className="text-indigo-400" />
+                  Active Portfolio Template
+                </h2>
+                <span className="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/30">
+                  {templateOptions.find((t) => t.id === form.selectedTemplate)?.name || form.selectedTemplate} Active
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Select the active profession template for your public portfolio (<code className="text-foreground font-mono">/</code>). Changes save directly to MongoDB and take effect immediately.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 self-start sm:self-auto">
+              <a
+                href="/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs font-semibold px-3 py-1.5 rounded-xl bg-card border border-border hover:border-indigo-500/40 text-foreground flex items-center gap-1.5 transition-all hover:scale-[1.02]"
+              >
+                <span>View Live Site</span>
+                <ExternalLink size={13} className="text-indigo-400" />
+              </a>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {templateOptions.map((tpl) => {
+              const Icon = tpl.icon;
+              const isSelected = form.selectedTemplate === tpl.id;
+              const isSwitching = switchingTemplate === tpl.id;
+
+              return (
+                <div
+                  key={tpl.id}
+                  onClick={() => {
+                    if (!isSelected && !switchingTemplate) {
+                      handleSelectTemplate(tpl.id);
+                    }
+                  }}
+                  className={`relative p-5 rounded-2xl glass border transition-all duration-300 flex flex-col justify-between group ${
+                    isSelected
+                      ? `${tpl.activeBorderClass} ${tpl.activeBgClass} ${tpl.activeGlowClass}`
+                      : "border-border hover:border-border hover:bg-card/60 cursor-pointer"
+                  }`}
+                >
+                  {/* Active Ribbon Badge */}
+                  {isSelected && (
+                    <div className="absolute -top-2.5 right-4 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-[10px] font-bold shadow-md flex items-center gap-1">
+                      <Check size={11} strokeWidth={3} />
+                      <span>ACTIVE TEMPLATE</span>
+                    </div>
+                  )}
+
+                  <div className="space-y-4">
+                    {/* Header with Icon and Title */}
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-105 ${
+                            isSelected
+                              ? "bg-foreground text-background shadow-md"
+                              : "bg-muted text-muted-foreground border border-border"
+                          }`}
+                        >
+                          <Icon size={20} />
+                        </div>
+                        <div>
+                          <h3 className="text-sm font-bold text-foreground flex items-center gap-1.5">
+                            {tpl.name}
+                          </h3>
+                          <span
+                            className={`text-[10px] px-2 py-0.5 rounded-full font-medium border inline-block mt-0.5 ${tpl.badgeClass}`}
+                          >
+                            {tpl.tag}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Description */}
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      {tpl.desc}
+                    </p>
+
+                    {/* Key features */}
+                    <div className="space-y-1.5 pt-2 border-t border-border/60">
+                      <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                        Key Features
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {tpl.features.map((feat) => (
+                          <span
+                            key={feat}
+                            className="text-[10px] px-2 py-0.5 rounded-md bg-muted/60 text-muted-foreground border border-border/50"
+                          >
+                            {feat}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Actions footer */}
+                  <div className="pt-4 mt-4 border-t border-border/60 flex items-center justify-between gap-2">
+                    <a
+                      href={tpl.previewUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="text-[11px] font-medium text-muted-foreground hover:text-foreground flex items-center gap-1 hover:underline"
+                      title="Preview this template without switching default"
+                    >
+                      <span>Preview</span>
+                      <ExternalLink size={12} />
+                    </a>
+
+                    <button
+                      type="button"
+                      disabled={isSelected || switchingTemplate !== null}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (!isSelected && !switchingTemplate) {
+                          handleSelectTemplate(tpl.id);
+                        }
+                      }}
+                      className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer disabled:cursor-default ${
+                        isSelected
+                          ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                          : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm hover:scale-105"
+                      }`}
+                    >
+                      {isSwitching ? (
+                        <>
+                          <Loader2 size={13} className="animate-spin" />
+                          <span>Switching...</span>
+                        </>
+                      ) : isSelected ? (
+                        <>
+                          <Check size={13} strokeWidth={2.5} />
+                          <span>Active</span>
+                        </>
+                      ) : (
+                        <span>Activate</span>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
         {/* Section 0: Section Visibility Manager */}
         <div className="glass rounded-3xl p-6 border border-border space-y-5">
           <div className="border-b border-border pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
