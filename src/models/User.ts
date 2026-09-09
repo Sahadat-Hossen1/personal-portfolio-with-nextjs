@@ -3,7 +3,11 @@ import type { TemplateId } from "@/types/portfolio";
 
 export type UserRole = "superadmin" | "user";
 export type UserPlan = "free" | "premium";
-export type UserProfession = "developer" | "digital-marketer" | "video-editor";
+export type UserProfession =
+  | "developer"
+  | "digital-marketer"
+  | "video-editor"
+  | "doctor";
 
 export interface IUser extends Document {
   _id: Types.ObjectId;
@@ -35,7 +39,7 @@ const UserSchema = new Schema<IUser>(
     profession: {
       type: String,
       required: true,
-      enum: ["developer", "digital-marketer", "video-editor"],
+      enum: ["developer", "digital-marketer", "video-editor", "doctor"],
       default: "developer",
     },
     passwordHash: { type: String, required: true },

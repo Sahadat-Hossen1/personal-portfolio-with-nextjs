@@ -1,28 +1,23 @@
 import { MetadataRoute } from "next";
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = "https://sahadathossen.dev";
+  const baseUrl =
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, "") ||
+    "http://localhost:3000";
 
   return {
     rules: [
       {
         userAgent: "*",
-        allow: "/",
-        disallow: ["/api/private/", "/admin/"],
-      },
-      {
-        userAgent: [
-          "GPTBot",
-          "OAI-SearchBot",
-          "PerplexityBot",
-          "ClaudeBot",
-          "Google-Extended",
-          "Applebot-Extended",
-          "Bytespider",
-          "CCBot",
-          "FacebookBot",
+        allow: ["/", "/p/"],
+        disallow: [
+          "/dashboard/",
+          "/admin/",
+          "/api/",
+          "/login",
+          "/register",
+          "/onboarding",
         ],
-        allow: "/",
       },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,

@@ -21,6 +21,7 @@ const PROFESSIONS = [
   { value: "developer", label: "Software Developer" },
   { value: "digital-marketer", label: "Digital Marketer" },
   { value: "video-editor", label: "Video Editor" },
+  { value: "doctor", label: "Medical Doctor" },
 ];
 
 export default function RegisterPage() {
@@ -54,8 +55,8 @@ export default function RegisterPage() {
         throw new Error(data.error || "Registration failed");
       }
 
-      // Registration issues session cookie and creates zero-state profile
-      router.push("/dashboard");
+      // Registration issues session cookie, creates zero-state profile, and directs to onboarding
+      router.push("/onboarding");
       router.refresh();
     } catch (err: any) {
       setError(err.message || "Registration failed. Please try again.");

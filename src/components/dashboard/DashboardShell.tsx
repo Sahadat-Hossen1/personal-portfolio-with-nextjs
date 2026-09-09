@@ -199,7 +199,7 @@ export default function DashboardShell({
         {/* Bottom Actions */}
         <div className="p-3 border-t border-border space-y-1 bg-muted/20">
           <Link
-            href="/"
+            href={user.username ? `/p/${user.username}` : "/"}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"

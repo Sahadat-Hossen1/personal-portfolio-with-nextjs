@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import mongoose from "mongoose";
 import { connectToDatabase } from "@/lib/mongodb";
 import {
   hashPassword,
@@ -17,9 +18,23 @@ const ALLOWED_REGISTRATION_PROFESSIONS: readonly UserProfession[] = [
   "developer",
   "digital-marketer",
   "video-editor",
+  "doctor",
 ] as const;
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function supportsMongoTransactions(): boolean {
+  try {
+    const topologyType = (mongoose.connection as any)?.client?.topology?.description?.type;
+    return (
+      topologyType === "ReplicaSetWithPrimary" ||
+      topologyType === "ReplicaSetNoPrimary" ||
+      topologyType === "Sharded"
+    );
+  } catch {
+    return false;
+  }
+}
 
 export async function POST(request: Request) {
   try {
@@ -116,77 +131,170 @@ export async function POST(request: Request) {
       );
     }
 
-    // 7. Generate secure password hash & collision-safe unique username
+    // 7. Generate secure password hash
     const passwordHash = await hashPassword(password);
-    const username = await generateUniqueUsername(name);
 
     // 8. Determine initial template assignment based on profession
     const defaultTemplate: TemplateId = profession as TemplateId;
     const allowedTemplates: TemplateId[] = [defaultTemplate];
 
-    // 9. Atomic User + Profile creation with rollback guard
+    // 9. Atomic User + Profile creation with MongoDB transaction session (where supported) and race-safe username retry
     let createdUser: IUser | null = null;
     let createdProfile: IProfile | null = null;
+    let lastProvisioningError: any = null;
 
-    try {
-      // Create User (strictly enforcing server-controlled role & plan)
-      createdUser = await User.create({
-        name: name.trim(),
-        email: normalizedEmail,
-        phone: phone.trim(),
-        profession: profession as UserProfession,
-        passwordHash,
-        role: "user", // Client CANNOT set superadmin
-        plan: "free", // Client CANNOT upgrade itself
-        username,
-        allowedTemplates,
-      });
+    const MAX_PROVISIONING_ATTEMPTS = 3;
+    let attempt = 0;
 
-      // Create clean Profile root for this user (NO fake claims, NO fake metrics, NO copied bio)
-      createdProfile = await Profile.create({
-        ownerId: createdUser._id,
-        name: createdUser.name,
-        email: createdUser.email,
-        phone: createdUser.phone,
-        roles: [],
-        bioBlurb: "",
-        statusText: "Available for opportunities",
-        statusAvailable: true,
-        avatarUrl: "",
-        cvUrl: "",
-        floatingBadges: [],
-        aboutTitle: "",
-        aboutP1: "",
-        aboutP2: "",
-        currentlyBuilding: "",
-        stats: [],
-        highlights: [],
-        whatsappNumber: createdUser.phone,
-        whatsappMessage: `Hi ${createdUser.name}, I visited your portfolio and would like to connect!`,
-        messengerUrl: "",
-        location: "",
-        socials: [],
-        sections: {
-          hero: true,
-          about: true,
-          skills: true,
-          projects: true,
-          experience: true,
-          contact: true,
-          floatingChat: false,
-        },
-        selectedTemplate: defaultTemplate,
-      });
-    } catch (creationError) {
-      // Rollback newly created entities on failure to prevent orphans
-      if (createdProfile?._id) {
-        await Profile.findByIdAndDelete(createdProfile._id).catch(() => {});
+    while (attempt < MAX_PROVISIONING_ATTEMPTS && !createdUser) {
+      attempt++;
+      const username = await generateUniqueUsername(name);
+
+      const canUseTxn = supportsMongoTransactions();
+      let session: mongoose.ClientSession | null = null;
+      if (canUseTxn) {
+        try {
+          session = await mongoose.startSession();
+          session.startTransaction();
+        } catch {
+          session = null;
+        }
       }
-      if (createdUser?._id) {
-        await User.findByIdAndDelete(createdUser._id).catch(() => {});
+
+      let attemptUser: IUser | null = null;
+      let attemptProfile: IProfile | null = null;
+
+      try {
+        // Create User (strictly enforcing server-controlled role & plan)
+        const userDoc = new User({
+          name: name.trim(),
+          email: normalizedEmail,
+          phone: phone.trim(),
+          profession: profession as UserProfession,
+          passwordHash,
+          role: "user", // Client CANNOT set superadmin
+          plan: "free", // Client CANNOT upgrade itself
+          username,
+          allowedTemplates,
+        });
+
+        await userDoc.save(session ? { session } : undefined);
+        attemptUser = userDoc;
+
+        // Create clean Profile root for this user (NO fake claims, NO fake metrics, NO copied bio)
+        const profileDoc = new Profile({
+          ownerId: attemptUser._id,
+          name: attemptUser.name,
+          email: attemptUser.email,
+          phone: attemptUser.phone,
+          roles: [],
+          bioBlurb: "",
+          statusText: "Available for opportunities",
+          statusAvailable: true,
+          avatarUrl: "",
+          cvUrl: "",
+          floatingBadges: [],
+          aboutTitle: "",
+          aboutP1: "",
+          aboutP2: "",
+          currentlyBuilding: "",
+          stats: [],
+          highlights: [],
+          whatsappNumber: attemptUser.phone,
+          whatsappMessage: `Hi ${attemptUser.name}, I visited your portfolio and would like to connect!`,
+          messengerUrl: "",
+          location: "",
+          socials: [],
+          sections: {
+            hero: true,
+            about: true,
+            skills: true,
+            projects: true,
+            experience: true,
+            contact: true,
+            floatingChat: false,
+          },
+          selectedTemplate: defaultTemplate,
+        });
+
+        await profileDoc.save(session ? { session } : undefined);
+        attemptProfile = profileDoc;
+
+        // Commit transaction if session is active
+        if (session) {
+          await session.commitTransaction();
+        }
+
+        createdUser = attemptUser;
+        createdProfile = attemptProfile;
+      } catch (creationError: any) {
+        // Abort transaction on failure to ensure atomicity
+        if (session) {
+          await session.abortTransaction().catch(() => {});
+        }
+
+        // Compensating rollback cleanup guard to prevent orphans
+        if (attemptProfile?._id) {
+          await Profile.findByIdAndDelete(attemptProfile._id).catch(() => {});
+        }
+        if (attemptUser?._id) {
+          await User.findByIdAndDelete(attemptUser._id).catch(() => {});
+        }
+
+        lastProvisioningError = creationError;
+
+        // Check if error is duplicate key error code 11000
+        const isDuplicateKey = creationError?.code === 11000;
+        const isEmailDuplicate =
+          isDuplicateKey &&
+          (creationError?.keyPattern?.email ||
+            creationError?.message?.includes("email"));
+        const isUsernameDuplicate =
+          isDuplicateKey &&
+          (creationError?.keyPattern?.username ||
+            creationError?.message?.includes("username"));
+
+        // If email duplicate race, immediate 409 Conflict
+        if (isEmailDuplicate) {
+          return NextResponse.json(
+            { success: false, error: "An account with this email already exists." },
+            { status: 409 }
+          );
+        }
+
+        // If username race collision, retry with next generated unique slug
+        if (isUsernameDuplicate && attempt < MAX_PROVISIONING_ATTEMPTS) {
+          console.warn(`Username race collision on '${username}', retrying attempt ${attempt + 1}...`);
+          continue;
+        }
+
+        break;
+      } finally {
+        if (session) {
+          await session.endSession().catch(() => {});
+        }
       }
-      console.error("Registration creation error during rollback:", creationError);
-      throw creationError;
+    }
+
+    if (!createdUser || !createdProfile) {
+      if (
+        lastProvisioningError?.code === 11000 &&
+        (lastProvisioningError?.keyPattern?.username ||
+          lastProvisioningError?.message?.includes("username"))
+      ) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "Username collision occurred during registration. Please try again.",
+          },
+          { status: 409 }
+        );
+      }
+      console.error("User registration provisioning error:", lastProvisioningError);
+      return NextResponse.json(
+        { success: false, error: "Internal server error. Please try again later." },
+        { status: 500 }
+      );
     }
 
     // 10. Issue User JWT & session cookie
