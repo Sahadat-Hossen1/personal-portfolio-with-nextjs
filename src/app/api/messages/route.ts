@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
-import { verifyAdminRequest } from "@/lib/auth";
+import { requireAuth } from "@/lib/authorization";
 import Message from "@/models/Message";
+import User from "@/models/User";
 
 // Public endpoint: Contact form submission
 export async function POST(request: Request) {
   try {
     await connectToDatabase();
-    const { name, email, subject, message } = await request.json();
+    const rawBody = await request.json();
+    const { name, email, subject, message } = rawBody;
 
     if (!name || !email || !message) {
       return NextResponse.json(
@@ -16,12 +18,20 @@ export async function POST(request: Request) {
       );
     }
 
+    // SECURITY: Client-supplied ownerId is NEVER trusted or accepted.
+    // In Phase 4 (single-portfolio compatibility mode prior to /p/[username]),
+    // resolve recipient server-side to the system default portfolio owner (superadmin).
+    const defaultOwner =
+      (await User.findOne({ role: "superadmin" })) ||
+      (await User.findOne().sort({ createdAt: 1 }));
+
     const newMessage = await Message.create({
-      name: name.trim(),
-      email: email.trim(),
-      subject: (subject || "").trim(),
-      message: message.trim(),
+      name: String(name).trim(),
+      email: String(email).trim(),
+      subject: (subject ? String(subject) : "").trim(),
+      message: String(message).trim(),
       read: false,
+      ...(defaultOwner ? { ownerId: defaultOwner._id } : {}),
     });
 
     return NextResponse.json(
@@ -41,20 +51,21 @@ export async function POST(request: Request) {
   }
 }
 
-// Admin endpoint: List messages
+// Private endpoint: List messages for authenticated user's inbox
 export async function GET(request: NextRequest) {
   try {
-    const admin = await verifyAdminRequest(request);
-    if (!admin) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    const auth = await requireAuth(request);
+    if (auth.errorResponse) return auth.errorResponse;
 
     await connectToDatabase();
-    const messages = await Message.find().sort({ createdAt: -1 });
-    const unreadCount = await Message.countDocuments({ read: false });
+    const messages = await Message.find({
+      ownerId: auth.user.ownerId,
+    }).sort({ createdAt: -1 });
+
+    const unreadCount = await Message.countDocuments({
+      ownerId: auth.user.ownerId,
+      read: false,
+    });
 
     return NextResponse.json({
       success: true,

@@ -1,6 +1,7 @@
-import mongoose, { Schema, Document, Model } from "mongoose";
+import mongoose, { Schema, Document, Model, Types } from "mongoose";
 
 export interface IExperience extends Document {
+  ownerId?: Types.ObjectId;
   role: string;
   company: string;
   companyUrl: string;
@@ -17,6 +18,11 @@ export interface IExperience extends Document {
 
 const ExperienceSchema = new Schema<IExperience>(
   {
+    ownerId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      index: true,
+    },
     role: { type: String, required: true, trim: true },
     company: { type: String, required: true, trim: true },
     companyUrl: { type: String, default: "" },

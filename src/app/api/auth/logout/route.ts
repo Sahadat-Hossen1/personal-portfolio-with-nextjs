@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { ADMIN_COOKIE_NAME } from "@/lib/auth";
+import { USER_COOKIE_NAME } from "@/lib/auth";
 
 export async function POST() {
   const response = NextResponse.json({
@@ -7,8 +7,10 @@ export async function POST() {
     message: "Logged out successfully",
   });
 
+  // Clear ONLY the User authentication cookie.
+  // Legacy portfolio_admin_token is preserved to keep legacy Superadmin access active during transition.
   response.cookies.set({
-    name: ADMIN_COOKIE_NAME,
+    name: USER_COOKIE_NAME,
     value: "",
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",

@@ -83,6 +83,7 @@ export interface ProfileData {
 
   // Metadata
   _id?: string;
+  ownerId?: string;
   createdAt?: string | Date;
   updatedAt?: string | Date;
 }
@@ -90,6 +91,7 @@ export interface ProfileData {
 export interface ProjectData {
   _id?: string;
   id?: string;
+  ownerId?: string;
   title: string;
   description: string;
   longDesc: string;
@@ -108,6 +110,7 @@ export interface ProjectData {
 export interface SkillData {
   _id?: string;
   id?: string;
+  ownerId?: string;
   name: string;
   icon: string;
   level: number;
@@ -121,6 +124,7 @@ export interface SkillData {
 export interface ExperienceData {
   _id?: string;
   id?: string;
+  ownerId?: string;
   role: string;
   company: string;
   companyUrl: string;

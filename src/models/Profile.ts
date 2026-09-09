@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document, Model } from "mongoose";
+import mongoose, { Schema, Document, Model, Types } from "mongoose";
 
 export interface IFloatingBadge {
   label: string;
@@ -41,6 +41,7 @@ export interface ISectionVisibility {
 export type TemplateId = "developer" | "video-editor" | "digital-marketer" | "doctor";
 
 export interface IProfile extends Document {
+  ownerId?: Types.ObjectId;
   // Hero section
   name: string;
   roles: string[];
@@ -76,6 +77,13 @@ export interface IProfile extends Document {
 
 const ProfileSchema = new Schema<IProfile>(
   {
+    ownerId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      index: true,
+      sparse: true,
+      unique: true,
+    },
     name: { type: String, required: true, default: "Sahadat Hossen" },
     roles: {
       type: [String],

@@ -1,6 +1,7 @@
-import mongoose, { Schema, Document, Model } from "mongoose";
+import mongoose, { Schema, Document, Model, Types } from "mongoose";
 
 export interface IProject extends Document {
+  ownerId?: Types.ObjectId;
   title: string;
   description: string;
   longDesc: string;
@@ -18,6 +19,11 @@ export interface IProject extends Document {
 
 const ProjectSchema = new Schema<IProject>(
   {
+    ownerId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      index: true,
+    },
     title: { type: String, required: true, trim: true },
     description: { type: String, required: true },
     longDesc: { type: String, default: "" },

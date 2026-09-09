@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
-import { verifyAdminRequest } from "@/lib/auth";
+import { requireAuth, isValidObjectId } from "@/lib/authorization";
 import SkillTag from "@/models/SkillTag";
 
 export async function DELETE(
@@ -8,17 +8,22 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const admin = await verifyAdminRequest(request);
-    if (!admin) {
+    const auth = await requireAuth(request);
+    if (auth.errorResponse) return auth.errorResponse;
+
+    const { id } = await params;
+    if (!isValidObjectId(id)) {
       return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { success: false, error: "Tag not found" },
+        { status: 404 }
       );
     }
 
-    const { id } = await params;
     await connectToDatabase();
-    const tag = await SkillTag.findByIdAndDelete(id);
+    const tag = await SkillTag.findOneAndDelete({
+      _id: id,
+      ownerId: auth.user.ownerId,
+    });
 
     if (!tag) {
       return NextResponse.json(

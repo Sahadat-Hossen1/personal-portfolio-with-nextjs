@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
-import { hashPassword } from "@/lib/auth";
+import { hashPassword, verifyAdminRequest } from "@/lib/auth";
 import Admin from "@/models/Admin";
 import Profile from "@/models/Profile";
 import Project from "@/models/Project";
@@ -15,9 +15,37 @@ import {
   initialExperiences,
 } from "@/lib/initialData";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    // 1. Production Guard: Strictly disable destructive seeding in production
+    if (process.env.NODE_ENV === "production") {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Database seeding is strictly disabled in production environments.",
+        },
+        { status: 403 }
+      );
+    }
+
     await connectToDatabase();
+
+    // 2. Authorization Guard:
+    // If an Admin already exists in the database, require valid admin authorization.
+    // Unauthenticated seeding is only permitted during initial zero-state bootstrap.
+    const totalAdmins = await Admin.countDocuments();
+    if (totalAdmins > 0) {
+      const adminSession = await verifyAdminRequest(request);
+      if (!adminSession) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "Unauthorized: Admin session required to seed existing database.",
+          },
+          { status: 401 }
+        );
+      }
+    }
 
     const url = new URL(request.url);
     const force = url.searchParams.get("force") === "true";
@@ -106,6 +134,6 @@ export async function POST(request: Request) {
 
 export async function GET() {
   return NextResponse.json({
-    message: "Send a POST request to this endpoint to seed database.",
+    message: "Send an authorized POST request to this endpoint to seed database in development.",
   });
 }

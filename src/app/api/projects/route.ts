@@ -1,12 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
-import { verifyAdminRequest } from "@/lib/auth";
+import { requireAuth, sanitizeRequestBody } from "@/lib/authorization";
 import Project from "@/models/Project";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const auth = await requireAuth(request);
+    if (auth.errorResponse) return auth.errorResponse;
+
     await connectToDatabase();
-    const projects = await Project.find().sort({ order: 1, createdAt: -1 });
+    const projects = await Project.find({ ownerId: auth.user.ownerId }).sort({
+      order: 1,
+      createdAt: -1,
+    });
     return NextResponse.json({ success: true, data: projects });
   } catch (error) {
     console.error("GET Projects error:", error);
@@ -19,22 +25,21 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const admin = await verifyAdminRequest(request);
-    if (!admin) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    const auth = await requireAuth(request);
+    if (auth.errorResponse) return auth.errorResponse;
 
     await connectToDatabase();
-    const body = await request.json();
+    const rawBody = await request.json();
+    const body = sanitizeRequestBody(rawBody);
 
-    const maxOrderDoc = await Project.findOne().sort({ order: -1 });
+    const maxOrderDoc = await Project.findOne({
+      ownerId: auth.user.ownerId,
+    }).sort({ order: -1 });
     const nextOrder = maxOrderDoc ? (maxOrderDoc.order || 0) + 1 : 1;
 
     const project = await Project.create({
       ...body,
+      ownerId: auth.user.ownerId,
       order: body.order ?? nextOrder,
     });
 

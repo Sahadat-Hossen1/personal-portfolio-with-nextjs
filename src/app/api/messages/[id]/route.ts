@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
-import { verifyAdminRequest } from "@/lib/auth";
+import { requireAuth, isValidObjectId } from "@/lib/authorization";
 import Message from "@/models/Message";
 
 export async function PATCH(
@@ -8,21 +8,23 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const admin = await verifyAdminRequest(request);
-    if (!admin) {
+    const auth = await requireAuth(request);
+    if (auth.errorResponse) return auth.errorResponse;
+
+    const { id } = await params;
+    if (!isValidObjectId(id)) {
       return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { success: false, error: "Message not found" },
+        { status: 404 }
       );
     }
 
-    const { id } = await params;
     await connectToDatabase();
     const body = await request.json();
 
-    const message = await Message.findByIdAndUpdate(
-      id,
-      { read: body.read },
+    const message = await Message.findOneAndUpdate(
+      { _id: id, ownerId: auth.user.ownerId },
+      { read: Boolean(body.read) },
       { new: true }
     );
 
@@ -52,17 +54,22 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const admin = await verifyAdminRequest(request);
-    if (!admin) {
+    const auth = await requireAuth(request);
+    if (auth.errorResponse) return auth.errorResponse;
+
+    const { id } = await params;
+    if (!isValidObjectId(id)) {
       return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { success: false, error: "Message not found" },
+        { status: 404 }
       );
     }
 
-    const { id } = await params;
     await connectToDatabase();
-    const message = await Message.findByIdAndDelete(id);
+    const message = await Message.findOneAndDelete({
+      _id: id,
+      ownerId: auth.user.ownerId,
+    });
 
     if (!message) {
       return NextResponse.json(

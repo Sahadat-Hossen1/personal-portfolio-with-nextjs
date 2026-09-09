@@ -1,12 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
-import { verifyAdminRequest } from "@/lib/auth";
+import { requireAuth, sanitizeRequestBody } from "@/lib/authorization";
 import Experience from "@/models/Experience";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const auth = await requireAuth(request);
+    if (auth.errorResponse) return auth.errorResponse;
+
     await connectToDatabase();
-    const experiences = await Experience.find().sort({ order: 1, createdAt: -1 });
+    const experiences = await Experience.find({
+      ownerId: auth.user.ownerId,
+    }).sort({ order: 1, createdAt: -1 });
+
     return NextResponse.json({ success: true, data: experiences });
   } catch (error) {
     console.error("GET Experiences error:", error);
@@ -19,22 +25,21 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const admin = await verifyAdminRequest(request);
-    if (!admin) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    const auth = await requireAuth(request);
+    if (auth.errorResponse) return auth.errorResponse;
 
     await connectToDatabase();
-    const body = await request.json();
+    const rawBody = await request.json();
+    const body = sanitizeRequestBody(rawBody, { allowRole: true });
 
-    const maxDoc = await Experience.findOne().sort({ order: -1 });
+    const maxDoc = await Experience.findOne({
+      ownerId: auth.user.ownerId,
+    }).sort({ order: -1 });
     const nextOrder = maxDoc ? (maxDoc.order || 0) + 1 : 1;
 
     const experience = await Experience.create({
       ...body,
+      ownerId: auth.user.ownerId,
       order: body.order ?? nextOrder,
     });
 
