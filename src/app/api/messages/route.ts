@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { Types } from "mongoose";
 import { connectToDatabase } from "@/lib/mongodb";
 import { requireAuth } from "@/lib/authorization";
 import Message from "@/models/Message";
@@ -8,8 +9,16 @@ import User from "@/models/User";
 export async function POST(request: Request) {
   try {
     await connectToDatabase();
-    const rawBody = await request.json();
-    const { name, email, subject, message } = rawBody;
+    const rawBody = await request.json().catch(() => null);
+
+    if (!rawBody || typeof rawBody !== "object") {
+      return NextResponse.json(
+        { success: false, error: "Invalid request payload" },
+        { status: 400 }
+      );
+    }
+
+    const { name, email, subject, message, username } = rawBody;
 
     if (!name || !email || !message) {
       return NextResponse.json(
@@ -18,20 +27,56 @@ export async function POST(request: Request) {
       );
     }
 
-    // SECURITY: Client-supplied ownerId is NEVER trusted or accepted.
-    // In Phase 4 (single-portfolio compatibility mode prior to /p/[username]),
-    // resolve recipient server-side to the system default portfolio owner (superadmin).
-    const defaultOwner =
-      (await User.findOne({ role: "superadmin" })) ||
-      (await User.findOne().sort({ createdAt: 1 }));
+    let recipientOwnerId: Types.ObjectId | null = null;
 
+    // Phase 11: Public tenant portfolio contact resolution (/p/[username])
+    if (username !== undefined) {
+      if (typeof username !== "string" || !username.trim()) {
+        return NextResponse.json(
+          { success: false, error: "A valid username is required" },
+          { status: 400 }
+        );
+      }
+
+      const normalizedUsername = username.trim().toLowerCase();
+      const targetUser = await User.findOne({ username: normalizedUsername })
+        .select("_id")
+        .lean();
+
+      if (!targetUser) {
+        return NextResponse.json(
+          { success: false, error: "Recipient portfolio not found" },
+          { status: 404 }
+        );
+      }
+
+      recipientOwnerId = targetUser._id as Types.ObjectId;
+    } else {
+      // Legacy root "/" compatibility fallback: resolve to system default owner (superadmin)
+      const defaultOwner =
+        (await User.findOne({ role: "superadmin" })) ||
+        (await User.findOne().sort({ createdAt: 1 }));
+
+      if (defaultOwner) {
+        recipientOwnerId = defaultOwner._id as Types.ObjectId;
+      }
+    }
+
+    if (!recipientOwnerId) {
+      return NextResponse.json(
+        { success: false, error: "Unable to determine message recipient" },
+        { status: 500 }
+      );
+    }
+
+    // SECURITY: Client-supplied ownerId and userId are NEVER trusted, accepted, or stored.
     const newMessage = await Message.create({
+      ownerId: recipientOwnerId,
       name: String(name).trim(),
       email: String(email).trim(),
       subject: (subject ? String(subject) : "").trim(),
       message: String(message).trim(),
       read: false,
-      ...(defaultOwner ? { ownerId: defaultOwner._id } : {}),
     });
 
     return NextResponse.json(
@@ -50,6 +95,7 @@ export async function POST(request: Request) {
     );
   }
 }
+
 
 // Private endpoint: List messages for authenticated user's inbox
 export async function GET(request: NextRequest) {

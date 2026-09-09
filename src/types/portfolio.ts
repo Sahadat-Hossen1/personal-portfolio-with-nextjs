@@ -147,6 +147,12 @@ export interface PortfolioData {
   experiences: ExperienceData[];
 }
 
+export interface PublicPortfolioContext {
+  username: string;
+}
+
 export interface TemplateProps {
   data: PortfolioData;
+  publicContext?: PublicPortfolioContext;
 }
+

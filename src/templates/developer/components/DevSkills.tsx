@@ -52,9 +52,10 @@ export default function DevSkills({
 }: DevSkillsProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const activeSkills =
-    propSkills && propSkills.length > 0 ? propSkills : defaultSkills;
+    propSkills !== undefined ? propSkills : defaultSkills;
   const activeTags =
-    propTags && propTags.length > 0 ? propTags : defaultTags;
+    propTags !== undefined ? propTags : defaultTags;
+
 
   const categories = [
     "All",
@@ -132,77 +133,88 @@ export default function DevSkills({
           user interactions.
         </p>
 
-        {/* Category Tabs */}
-        <div className="reveal flex flex-wrap gap-2 mb-10">
-          {categories.map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`px-4 py-2 rounded-xl text-xs font-semibold tracking-wide transition-all duration-300 border ${
-                activeTab === tab
-                  ? "bg-cyan-500/15 text-cyan-700 dark:text-cyan-300 border-cyan-500/40 shadow-lg shadow-cyan-500/10"
-                  : "glass text-muted-foreground border-border hover:text-foreground hover:border-primary/40"
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
-
-        {/* Skill Cards Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-          {filteredSkills.map((skill) => (
-            <div
-              key={skill.name}
-              onClick={() => trackSkillClick(skill.name, skill.category)}
-              className="reveal group glass rounded-2xl p-4 border border-border hover:border-primary/40 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl flex flex-col items-center text-center cursor-pointer"
-            >
-              <div
-                className="text-3xl mb-3 group-hover:scale-110 transition-transform duration-300"
-                role="img"
-                aria-label={skill.name}
-              >
-                {skill.icon}
-              </div>
-              <span className="text-xs sm:text-sm font-semibold text-foreground mb-2 line-clamp-1">
-                {skill.name}
-              </span>
-
-              {/* Proficiency Bar */}
-              <div className="w-full h-1.5 rounded-full bg-muted overflow-hidden mt-auto">
-                <div
-                  data-progress={skill.level}
-                  className="h-full rounded-full transition-all duration-1000 ease-out"
-                  style={{
-                    width: `${skill.level}%`,
-                    background: `linear-gradient(90deg, ${skill.color}88, ${skill.color})`,
-                  }}
-                />
-              </div>
-              <span className="text-[10px] font-mono text-muted-foreground mt-1.5">
-                {skill.level}%
-              </span>
-            </div>
-          ))}
-        </div>
-
-        {/* Extra Competency Tags */}
-        <div className="reveal mt-16 text-center">
-          <p className="text-xs text-muted-foreground font-mono mb-4 tracking-widest uppercase">
-            Also Familiar With & Tracking Methods
-          </p>
-          <div className="flex flex-wrap gap-2.5 justify-center max-w-4xl mx-auto">
-            {activeTags.map((tag) => (
-              <span
-                key={tag}
-                onClick={() => trackSkillClick(tag, "Familiarity & Tracking")}
-                className="text-xs px-3.5 py-1.5 rounded-full glass border border-border text-muted-foreground hover:text-primary hover:border-primary/30 transition-all duration-200 cursor-pointer"
-              >
-                {tag}
-              </span>
-            ))}
+        {activeSkills.length === 0 ? (
+          <div className="glass rounded-2xl p-12 text-center border border-border">
+            <p className="text-muted-foreground text-sm">Skills will be showcased here soon.</p>
           </div>
-        </div>
+        ) : (
+          <>
+            {/* Category Tabs */}
+            <div className="reveal flex flex-wrap gap-2 mb-10">
+              {categories.map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`px-4 py-2 rounded-xl text-xs font-semibold tracking-wide transition-all duration-300 border ${
+                    activeTab === tab
+                      ? "bg-cyan-500/15 text-cyan-700 dark:text-cyan-300 border-cyan-500/40 shadow-lg shadow-cyan-500/10"
+                      : "glass text-muted-foreground border-border hover:text-foreground hover:border-primary/40"
+                  }`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+
+            {/* Skill Cards Grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+              {filteredSkills.map((skill) => (
+                <div
+                  key={skill.name}
+                  onClick={() => trackSkillClick(skill.name, skill.category)}
+                  className="reveal group glass rounded-2xl p-4 border border-border hover:border-primary/40 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl flex flex-col items-center text-center cursor-pointer"
+                >
+                  <div
+                    className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-3 transition-transform duration-300 group-hover:scale-110"
+                    style={{ background: `${skill.color}15` }}
+                  >
+                    {skill.icon}
+                  </div>
+                  <span className="font-semibold text-foreground text-xs mb-1 text-center line-clamp-1">
+                    {skill.name}
+                  </span>
+                  <span className="text-[10px] text-muted-foreground mb-3 text-center line-clamp-1">
+                    {skill.category}
+                  </span>
+
+                  {/* Level bar */}
+                  <div className="w-full h-1 rounded-full bg-border overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all duration-700"
+                      style={{
+                        width: `${skill.level}%`,
+                        backgroundColor: skill.color,
+                      }}
+                    />
+                  </div>
+                  <span className="text-[10px] font-mono text-muted-foreground mt-1.5">
+                    {skill.level}%
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {/* Extra Competency Tags */}
+            {activeTags.length > 0 && (
+              <div className="reveal mt-16 text-center">
+                <p className="text-xs text-muted-foreground font-mono mb-4 tracking-widest uppercase">
+                  Also Familiar With &amp; Technologies
+                </p>
+                <div className="flex flex-wrap gap-2.5 justify-center max-w-4xl mx-auto">
+                  {activeTags.map((tag) => (
+                    <span
+                      key={tag}
+                      onClick={() => trackSkillClick(tag, "Familiarity")}
+                      className="text-xs px-3.5 py-1.5 rounded-full glass border border-border text-muted-foreground hover:text-primary hover:border-primary/30 transition-all duration-200 cursor-pointer"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
+        )}
       </div>
     </section>
   );

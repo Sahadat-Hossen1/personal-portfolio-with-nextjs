@@ -14,12 +14,13 @@ interface FloatingChatWidgetProps {
 }
 
 export default function FloatingChatWidget({
-  whatsappNumber = "8801606081657",
-  whatsappMessage = "Hi Sahadat, I visited your portfolio and would like to connect!",
-  messengerUrl = "https://m.me/sahadat.hossen.1435",
+  whatsappNumber,
+  whatsappMessage = "Hi, I visited your portfolio and would like to connect!",
+  messengerUrl,
   whatsappEnabled = true,
   messengerEnabled = true,
 }: FloatingChatWidgetProps) {
+
   const [isOpen, setIsOpen] = useState(false);
   const widgetRef = useRef<HTMLDivElement>(null);
 

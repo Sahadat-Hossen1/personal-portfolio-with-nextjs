@@ -13,44 +13,6 @@ import {
 import { Github, Linkedin, Whatsapp } from "@/components/icons";
 import { trackContactSubmit, trackSocialClick } from "@/lib/gtm";
 
-const defaultSocials = [
-  {
-    id: "contact-github",
-    platform: "github",
-    icon: Github,
-    label: "GitHub",
-    value: "github.com/Sahadat-Hossen1",
-    href: "https://github.com/Sahadat-Hossen1",
-    color: "hover:text-foreground",
-  },
-  {
-    id: "contact-linkedin",
-    platform: "linkedin",
-    icon: Linkedin,
-    label: "LinkedIn",
-    value: "linkedin.com/in/sahadathossen",
-    href: "https://linkedin.com/in/sahadathossen",
-    color: "hover:text-blue-400",
-  },
-  {
-    id: "contact-whatsapp",
-    platform: "whatsapp",
-    icon: Whatsapp,
-    label: "Whatsapp",
-    value: "+8801606081657",
-    href: "https://wa.me/8801606081657",
-    color: "hover:text-green-400",
-  },
-  {
-    id: "contact-email",
-    platform: "email",
-    icon: Mail,
-    label: "Email",
-    value: "sahadat.hossen1435@gmail.com",
-    href: "mailto:sahadat.hossen1435@gmail.com",
-    color: "hover:text-primary",
-  },
-];
 
 type FormState = {
   name: string;
@@ -69,9 +31,8 @@ const socialIconMap: Record<string, ComponentType<{ size?: number; className?: s
 };
 
 interface DevContactProps {
+  username?: string;
   profile?: {
-    email?: string;
-    phone?: string;
     location?: string;
     socials?: {
       platform: string;
@@ -83,12 +44,12 @@ interface DevContactProps {
   };
 }
 
-export default function DevContact({ profile }: DevContactProps) {
+export default function DevContact({ username, profile }: DevContactProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const activeSocials =
     profile?.socials && profile.socials.length > 0
       ? profile.socials
-          .filter((s) => s.enabled !== false)
+          .filter((s) => s.enabled !== false && s.href)
           .map((s) => ({
             id: `contact-${s.platform}`,
             platform: s.platform,
@@ -103,7 +64,7 @@ export default function DevContact({ profile }: DevContactProps) {
                 ? "hover:text-emerald-500 dark:hover:text-green-400"
                 : "hover:text-foreground",
           }))
-      : defaultSocials;
+      : [];
 
   const [form, setForm] = useState<FormState>({
     name: "",
@@ -147,10 +108,11 @@ export default function DevContact({ profile }: DevContactProps) {
     });
 
     try {
+      const payload = username ? { ...form, username } : form;
       const res = await fetch("/api/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify(payload),
       });
       const data = await res.json();
       if (res.ok && data.success) {
@@ -228,7 +190,7 @@ export default function DevContact({ profile }: DevContactProps) {
                 <div>
                   <p className="text-xs text-muted-foreground">Based in</p>
                   <p className="font-semibold text-foreground text-sm">
-                    {profile?.location || "Dhaka, Bangladesh"}
+                    {profile?.location || "Remote"}
                   </p>
                   <p className="text-xs text-muted-foreground">
                     Open to remote worldwide

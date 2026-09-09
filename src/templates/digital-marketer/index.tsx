@@ -16,7 +16,7 @@ import FloatingChatWidget from "@/components/FloatingChatWidget";
  * Focus: Marketing results, growth metrics, case studies (Challenge -> Execution -> Outcome),
  *        MarTech growth stack, strategic engagements timeline, consultative booking CTA.
  */
-export default function DigitalMarketerTemplate({ data }: TemplateProps) {
+export default function DigitalMarketerTemplate({ data, publicContext }: TemplateProps) {
   const { profile, projects, skills, skillTags, experiences } = data;
 
   const sections = profile?.sections || {
@@ -68,9 +68,10 @@ export default function DigitalMarketerTemplate({ data }: TemplateProps) {
         )}
 
         {sections.contact !== false && (
-          <MarketingContact profile={profile} />
+          <MarketingContact profile={profile} username={publicContext?.username} />
         )}
       </main>
+
 
       <MarketingFooter profile={profile} />
 

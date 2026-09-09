@@ -95,8 +95,18 @@ export async function PUT(request: NextRequest) {
     if (auth.errorResponse) return auth.errorResponse;
 
     await connectToDatabase();
-    const rawBody = await request.json();
-    const body = sanitizeRequestBody(rawBody);
+    let rawBody: unknown;
+    try {
+      rawBody = await request.json();
+    } catch {
+      return NextResponse.json(
+        { success: false, error: "Invalid JSON request body" },
+        { status: 400 }
+      );
+    }
+    const body = sanitizeRequestBody(
+      rawBody && typeof rawBody === "object" ? (rawBody as Record<string, unknown>) : {}
+    );
 
     let userDoc = null;
 
@@ -182,10 +192,13 @@ export async function PUT(request: NextRequest) {
     }
 
     await profile.save();
+    const profileData = profile.toObject ? profile.toObject() : { ...profile };
+    delete (profileData as Record<string, unknown>).__v;
+
     return NextResponse.json({
       success: true,
       message: "Profile updated successfully",
-      data: profile,
+      data: profileData,
     });
   } catch (error) {
     console.error("PUT Profile error:", error);

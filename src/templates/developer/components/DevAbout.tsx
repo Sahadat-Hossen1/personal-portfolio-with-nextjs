@@ -134,7 +134,7 @@ export default function DevAbout({ profile }: DevAboutProps) {
               <div className="w-64 h-64 sm:w-72 sm:h-72 rounded-3xl glass gradient-border overflow-hidden shadow-2xl group relative">
                 <Image
                   src={avatarSrc}
-                  alt={profile?.name || "Sahadat Hossen"}
+                  alt={profile?.name || "Profile Photo"}
                   fill
                   sizes="(max-width: 640px) 256px, 288px"
                   className="object-cover object-top group-hover:scale-105 transition-transform duration-500"

@@ -109,11 +109,12 @@ interface DevProjectsProps {
 export default function DevProjects({
   projects: propProjects,
   githubEnabled = true,
-  githubUrl = "https://github.com/Sahadat-Hossen1",
+  githubUrl = "",
 }: DevProjectsProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const activeProjects =
-    propProjects && propProjects.length > 0 ? propProjects : defaultProjects;
+    propProjects !== undefined ? propProjects : defaultProjects;
+
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -158,9 +159,16 @@ export default function DevProjects({
           client projects built with modern web technologies.
         </p>
 
-        {/* Featured Projects Grid */}
-        <div className="space-y-12 mb-16">
-          {featured.map((project, i) => (
+        {activeProjects.length === 0 ? (
+          <div className="glass rounded-2xl p-12 text-center border border-border mb-16">
+            <p className="text-muted-foreground text-sm">Projects will be showcased here soon.</p>
+          </div>
+        ) : (
+          <>
+            {/* Featured Projects Grid */}
+            <div className="space-y-12 mb-16">
+              {featured.map((project, i) => (
+
             <article
               key={project._id || project.id || `featured-${i}`}
               id={project.id || project._id || `featured-${i}`}
@@ -354,9 +362,12 @@ export default function DevProjects({
             </article>
           ))}
         </div>
+      </>
+    )}
+
 
         {/* View All on GitHub */}
-        {githubEnabled !== false && (
+        {githubEnabled !== false && !!githubUrl && (
           <div className="reveal text-center mt-12">
             <a
               href={githubUrl}
@@ -377,6 +388,7 @@ export default function DevProjects({
             </a>
           </div>
         )}
+
       </div>
     </section>
   );

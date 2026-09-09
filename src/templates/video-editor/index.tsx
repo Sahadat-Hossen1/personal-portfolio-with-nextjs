@@ -15,7 +15,7 @@ import FloatingChatWidget from "@/components/FloatingChatWidget";
  * Visual style: Cinematic, visual-first, media-heavy, minimal unnecessary text.
  * Focus: Showreel, Video portfolio, 16:9 thumbnails, Editing tools, Credits, Direct CTA.
  */
-export default function VideoEditorTemplate({ data }: TemplateProps) {
+export default function VideoEditorTemplate({ data, publicContext }: TemplateProps) {
   const { profile, projects, skills, skillTags, experiences } = data;
 
   const sections = profile?.sections || {
@@ -54,10 +54,11 @@ export default function VideoEditorTemplate({ data }: TemplateProps) {
           <VideoAbout profile={profile} />
         )}
         {sections.contact !== false && (
-          <VideoContact profile={profile} />
+          <VideoContact profile={profile} username={publicContext?.username} />
         )}
       </main>
       <VideoFooter profile={profile} />
+
 
       {/* Shared Floating Chat Widget */}
       {sections.floatingChat !== false && (

@@ -9,7 +9,6 @@ import {
   Sparkles,
   Layers,
   UserCheck,
-  ShieldAlert,
 } from "lucide-react";
 import { getAuthenticatedUser } from "@/lib/authorization";
 import { connectToDatabase } from "@/lib/mongodb";
@@ -243,7 +242,7 @@ export default async function DashboardPage() {
               <h2 className="font-bold text-base text-foreground">Template Status</h2>
             </div>
             <Link
-              href="/dashboard/profile"
+              href="/dashboard/settings"
               className="text-xs font-semibold text-indigo-400 hover:text-indigo-300"
             >
               Change Template →

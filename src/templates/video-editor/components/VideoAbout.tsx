@@ -10,7 +10,7 @@ interface VideoAboutProps {
 
 export default function VideoAbout({ profile }: VideoAboutProps) {
   const avatarSrc = profile?.avatarUrl || "/profile.jpg";
-  const displayName = profile?.name || "Sahadat Hossen";
+  const displayName = profile?.name || "Creative Editor";
   const aboutTitle = profile?.aboutTitle || "Shaping Emotion Through Cut & Color";
   const p1 =
     profile?.aboutP1 ||

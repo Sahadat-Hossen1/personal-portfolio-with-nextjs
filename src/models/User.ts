@@ -76,6 +76,36 @@ export const User: Model<IUser> =
   mongoose.models.User || mongoose.model<IUser>("User", UserSchema);
 
 /**
+ * Reserved system route names and keywords that cannot be used as tenant usernames.
+ */
+export const RESERVED_USERNAMES: ReadonlySet<string> = new Set([
+  "admin",
+  "api",
+  "dashboard",
+  "login",
+  "register",
+  "p",
+  "settings",
+  "profile",
+  "explore",
+  "terms",
+  "privacy",
+  "help",
+  "support",
+  "null",
+  "undefined",
+  "root",
+  "superadmin",
+]);
+
+/**
+ * Checks whether a given string is a reserved system keyword.
+ */
+export function isReservedUsername(username: string): boolean {
+  return RESERVED_USERNAMES.has(username.trim().toLowerCase());
+}
+
+/**
  * Normalizes a display name into a URL-friendly slug.
  */
 export function slugifyName(name: string): string {
@@ -90,14 +120,18 @@ export function slugifyName(name: string): string {
 
 /**
  * Deterministically generates a unique username slug based on a user's name,
- * safely resolving collisions with numbered suffixes (e.g., "john-doe", "john-doe-2").
+ * safely resolving collisions and reserved keyword conflicts.
  */
 export async function generateUniqueUsername(name: string): Promise<string> {
-  const baseSlug = slugifyName(name);
+  let baseSlug = slugifyName(name);
+  if (isReservedUsername(baseSlug)) {
+    baseSlug = `${baseSlug}-user`;
+  }
+
   let candidate = baseSlug;
   let counter = 1;
 
-  while (await User.exists({ username: candidate })) {
+  while (isReservedUsername(candidate) || (await User.exists({ username: candidate }))) {
     counter++;
     candidate = `${baseSlug}-${counter}`;
   }
@@ -106,3 +140,4 @@ export async function generateUniqueUsername(name: string): Promise<string> {
 }
 
 export default User;
+

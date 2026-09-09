@@ -8,6 +8,7 @@ import type { ProfileData } from "@/types/portfolio";
 
 interface VideoContactProps {
   profile: ProfileData;
+  username?: string;
 }
 
 type FormState = {
@@ -26,7 +27,7 @@ const socialIconMap: Record<string, ComponentType<{ size?: number; className?: s
   email: Mail,
 };
 
-export default function VideoContact({ profile }: VideoContactProps) {
+export default function VideoContact({ profile, username }: VideoContactProps) {
   const [form, setForm] = useState<FormState>({
     name: "",
     email: "",
@@ -51,11 +52,13 @@ export default function VideoContact({ profile }: VideoContactProps) {
     });
 
     try {
+      const payload = username ? { ...form, username } : form;
       const res = await fetch("/api/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify(payload),
       });
+
       const data = await res.json();
       if (res.ok && data.success) {
         setStatus("success");

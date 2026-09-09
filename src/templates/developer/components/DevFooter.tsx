@@ -13,13 +13,6 @@ const navLinks = [
   { label: "Contact", href: "#contact" },
 ];
 
-const defaultSocials = [
-  { icon: Github, href: "https://github.com/Sahadat-Hossen1", label: "GitHub" },
-  { icon: Linkedin, href: "https://linkedin.com/in/sahadathossen", label: "LinkedIn" },
-  { icon: Twitter, href: "https://twitter.com", label: "Twitter" },
-  { icon: Mail, href: "mailto:sahadat.hossen1435@gmail.com", label: "Email" },
-];
-
 const socialIconMap: Record<string, ComponentType<{ size?: number; className?: string }>> = {
   github: Github,
   linkedin: Linkedin,
@@ -54,7 +47,7 @@ interface DevFooterProps {
 
 export default function DevFooter({ profile, sections }: DevFooterProps) {
   const currentYear = new Date().getFullYear();
-  const displayName = profile?.name || "Sahadat Hossen";
+  const displayName = profile?.name || "Portfolio";
   const effectiveSections = sections || profile?.sections;
 
   const activeNavLinks = navLinks.filter((link) => {
@@ -68,13 +61,14 @@ export default function DevFooter({ profile, sections }: DevFooterProps) {
   const activeSocials =
     profile?.socials && profile.socials.length > 0
       ? profile.socials
-          .filter((s) => s.enabled !== false)
+          .filter((s) => s.enabled !== false && s.href)
           .map((s) => ({
             icon: socialIconMap[s.platform] || Mail,
             href: s.href,
             label: s.label,
           }))
-      : defaultSocials;
+      : [];
+
 
   return (
     <footer className="relative border-t border-border mt-8">
@@ -98,15 +92,16 @@ export default function DevFooter({ profile, sections }: DevFooterProps) {
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}
             className="flex items-center gap-2 group"
-            aria-label="Sahadat Hossen - Back to top"
+            aria-label="Back to top"
           >
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg group-hover:shadow-indigo-500/40 transition-all duration-300 group-hover:scale-110">
               <Code2 size={16} className="text-white" />
             </div>
             <span className="font-bold text-lg tracking-tight gradient-text">
-              Sahadat.dev
+              {displayName}
             </span>
           </Link>
+
 
           {/* Nav links */}
           <nav aria-label="Footer navigation">

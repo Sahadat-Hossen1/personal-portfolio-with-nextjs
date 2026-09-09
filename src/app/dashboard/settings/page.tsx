@@ -1,51 +1,80 @@
 import Link from "next/link";
-import { Sliders, ArrowLeft, Clock } from "lucide-react";
-import { getAuthenticatedUser } from "@/lib/authorization";
 import { redirect } from "next/navigation";
+import { ArrowLeft, Sliders } from "lucide-react";
+import { getAuthenticatedUser } from "@/lib/authorization";
+import { connectToDatabase } from "@/lib/mongodb";
+import User from "@/models/User";
+import Profile from "@/models/Profile";
+import TemplateSwitcher from "@/components/dashboard/TemplateSwitcher";
+import { SUPPORTED_TEMPLATE_IDS } from "@/templates/index";
+import type { TemplateId } from "@/types/portfolio";
 
 export default async function DashboardSettingsPage() {
   const authUser = await getAuthenticatedUser();
-  if (!authUser) redirect("/login");
+  if (!authUser) {
+    redirect("/login");
+  }
+
+  await connectToDatabase();
+
+  const userDoc = await User.findById(authUser.ownerId)
+    .select("name email username profession allowedTemplates role plan")
+    .lean();
+
+  if (!userDoc) {
+    redirect("/login");
+  }
+
+  const profileDoc = await Profile.findOne({ ownerId: authUser.ownerId })
+    .select("selectedTemplate")
+    .lean();
+
+  // Superadmins have access to all supported templates; normal users are authorized via userDoc.allowedTemplates
+  const allowedTemplates: TemplateId[] = (
+    userDoc.role === "superadmin"
+      ? [...SUPPORTED_TEMPLATE_IDS]
+      : userDoc.allowedTemplates && userDoc.allowedTemplates.length > 0
+      ? userDoc.allowedTemplates
+      : [userDoc.profession || "developer"]
+  ) as TemplateId[];
+
+  const selectedTemplate: TemplateId =
+    (profileDoc?.selectedTemplate as TemplateId) ||
+    allowedTemplates[0] ||
+    "developer";
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6 animate-fade-in max-w-5xl mx-auto pb-12">
+      {/* Top Header */}
       <div className="flex items-center gap-3">
         <Link
           href="/dashboard"
           className="p-2 rounded-xl border border-border bg-card hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+          aria-label="Back to dashboard"
         >
           <ArrowLeft size={16} />
         </Link>
         <div>
-          <h1 className="text-2xl font-black text-foreground tracking-tight">
-            Account & Portfolio Settings
-          </h1>
+          <div className="flex items-center gap-2">
+            <div className="p-1 rounded-lg bg-indigo-500/10 text-indigo-400">
+              <Sliders size={18} />
+            </div>
+            <h1 className="text-2xl font-black text-foreground tracking-tight">
+              Portfolio & Template Settings
+            </h1>
+          </div>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Manage account preferences, credentials, and portfolio options
+            Configure your active portfolio presentation template and visual appearance
           </p>
         </div>
       </div>
 
-      <div className="p-8 rounded-3xl bg-card border border-border text-center space-y-4 max-w-xl mx-auto my-12">
-        <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center mx-auto">
-          <Sliders size={32} />
-        </div>
-        <div>
-          <h2 className="text-lg font-bold text-foreground">
-            Settings Foundation
-          </h2>
-          <p className="text-xs text-muted-foreground mt-1 max-w-md mx-auto">
-            Account security, password updates, and advanced portfolio configurations will
-            be available in Phase 6.
-          </p>
-        </div>
-        <div className="pt-2">
-          <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted text-[11px] font-medium text-muted-foreground">
-            <Clock size={12} />
-            <span>Settings modules coming in Phase 6</span>
-          </span>
-        </div>
-      </div>
+      {/* Interactive Template Switcher */}
+      <TemplateSwitcher
+        initialSelectedTemplate={selectedTemplate}
+        allowedTemplates={allowedTemplates}
+        userRole={userDoc.role}
+      />
     </div>
   );
 }

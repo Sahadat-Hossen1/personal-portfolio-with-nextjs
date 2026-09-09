@@ -52,16 +52,16 @@ export default function DevHero({ profile }: DevHeroProps) {
     profile?.floatingBadges && profile.floatingBadges.length > 0
       ? profile.floatingBadges
       : defaultFloatingBadges;
-  const displayName = profile?.name || "Sahadat Hossen";
+  const displayName = profile?.name || "Developer";
   const bioBlurb =
     profile?.bioBlurb ||
-    "I build scalable, performant web applications from database to deployment. Passionate about clean code, great UX, and the MERN stack.";
+    "I build scalable, performant web applications with modern technologies.";
   const statusText = profile?.statusText || "Available for new opportunities";
   const isAvailable = profile?.statusAvailable ?? true;
   const avatarSrc = profile?.avatarUrl || "/profile.jpg";
   const githubItem = profile?.socials?.find((s) => s.platform === "github");
-  const isGithubEnabled = githubItem ? githubItem.enabled !== false : true;
-  const githubLink = githubItem?.href || "https://github.com/Sahadat-Hossen1";
+  const isGithubEnabled = Boolean(githubItem && githubItem.enabled !== false && githubItem.href);
+  const githubLink = githubItem?.href || "";
 
   const [roleIndex, setRoleIndex] = useState(0);
   const [displayed, setDisplayed] = useState("");

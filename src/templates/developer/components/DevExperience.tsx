@@ -71,9 +71,8 @@ export default function DevExperience({
 }: DevExperienceProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const activeExperiences =
-    propExperiences && propExperiences.length > 0
-      ? propExperiences
-      : defaultExperiences;
+    propExperiences !== undefined ? propExperiences : defaultExperiences;
+
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -120,8 +119,14 @@ export default function DevExperience({
           Work <span className="gradient-text">journey</span>
         </h2>
 
-        {/* Timeline */}
-        <div className="relative">
+        {activeExperiences.length === 0 ? (
+          <div className="glass rounded-2xl p-12 text-center border border-border">
+            <p className="text-muted-foreground text-sm">Experience details will be added soon.</p>
+          </div>
+        ) : (
+          /* Timeline */
+          <div className="relative">
+
           {/* Vertical line */}
           <div
             className="absolute left-5 sm:left-8 top-8 bottom-8 w-px bg-gradient-to-b from-primary/50 via-primary/20 to-transparent pointer-events-none"
@@ -234,7 +239,9 @@ export default function DevExperience({
             ))}
           </div>
         </div>
+        )}
       </div>
     </section>
+
   );
 }

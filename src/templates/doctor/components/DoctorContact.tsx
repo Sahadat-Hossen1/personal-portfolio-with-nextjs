@@ -17,9 +17,10 @@ import type { ProfileData } from "@/types/portfolio";
 
 interface DoctorContactProps {
   profile?: ProfileData;
+  username?: string;
 }
 
-export default function DoctorContact({ profile }: DoctorContactProps) {
+export default function DoctorContact({ profile, username }: DoctorContactProps) {
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -31,9 +32,9 @@ export default function DoctorContact({ profile }: DoctorContactProps) {
   );
   const [errorMessage, setErrorMessage] = useState("");
 
-  const email = profile?.email || "doctor@example.com";
+  const email = profile?.email;
   const phone = profile?.phone;
-  const location = profile?.location || "Private Practice";
+  const location = profile?.location || "Consulting Rooms";
   const socials = (profile?.socials || []).filter((s) => s.enabled !== false);
 
   const getSocialIcon = (platform: string) => {
@@ -57,11 +58,13 @@ export default function DoctorContact({ profile }: DoctorContactProps) {
         subject: form.subject,
       });
 
+      const payload = username ? { ...form, username } : form;
       const res = await fetch("/api/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify(payload),
       });
+
       const data = await res.json();
 
       if (res.ok && data.success) {

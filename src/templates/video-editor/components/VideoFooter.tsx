@@ -10,7 +10,7 @@ interface VideoFooterProps {
 
 export default function VideoFooter({ profile }: VideoFooterProps) {
   const currentYear = new Date().getFullYear();
-  const displayName = profile?.name || "Sahadat Hossen";
+  const displayName = profile?.name || "Video Editor";
 
   return (
     <footer className="border-t border-zinc-900 bg-zinc-950 py-12 px-4 relative">

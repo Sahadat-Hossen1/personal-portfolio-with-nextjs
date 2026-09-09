@@ -49,15 +49,9 @@ export default function DevNavbar({ sections, socials }: DevNavbarProps = {}) {
 
   const showContact = sections ? sections.contact !== false : true;
 
-  const githubSocial = socials
-    ? socials.find((s) => s.platform === "github")
-    : { href: "https://github.com/Sahadat-Hossen1", enabled: true };
-  const linkedinSocial = socials
-    ? socials.find((s) => s.platform === "linkedin")
-    : { href: "https://linkedin.com/in/sahadathossen", enabled: true };
-  const twitterSocial = socials
-    ? socials.find((s) => s.platform === "twitter")
-    : { href: "https://twitter.com", enabled: true };
+  const githubSocial = socials?.find((s) => s.platform === "github" && s.enabled !== false && s.href);
+  const linkedinSocial = socials?.find((s) => s.platform === "linkedin" && s.enabled !== false && s.href);
+  const twitterSocial = socials?.find((s) => s.platform === "twitter" && s.enabled !== false && s.href);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -102,21 +96,22 @@ export default function DevNavbar({ sections, socials }: DevNavbarProps = {}) {
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}
             className="flex items-center gap-2.5 group"
-            aria-label="Sahadat Hossen Portfolio Home"
+            aria-label="Portfolio Home"
           >
             <div className="relative w-8 h-8 rounded-full overflow-hidden border border-indigo-500/50 shadow-md group-hover:shadow-indigo-500/40 transition-all duration-300 group-hover:scale-110">
               <Image
                 src="/profile.jpg"
-                alt="Sahadat Hossen"
+                alt="Portfolio"
                 fill
                 sizes="32px"
                 className="object-cover object-top"
               />
             </div>
             <span className="font-bold text-lg tracking-tight gradient-text">
-              Sahadat.dev
+              Portfolio
             </span>
           </Link>
+
 
           {/* Desktop nav */}
           <div className="hidden md:flex items-center gap-1">
@@ -151,7 +146,7 @@ export default function DevNavbar({ sections, socials }: DevNavbarProps = {}) {
           <div className="hidden md:flex items-center gap-2">
             {githubSocial && githubSocial.enabled !== false && (
               <a
-                href={githubSocial.href || "https://github.com/Sahadat-Hossen1"}
+                href={githubSocial.href}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="GitHub"
@@ -159,7 +154,7 @@ export default function DevNavbar({ sections, socials }: DevNavbarProps = {}) {
                   trackSocialClick(
                     "github",
                     "navbar",
-                    githubSocial.href || "https://github.com/Sahadat-Hossen1"
+                    githubSocial.href
                   )
                 }
                 className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted"
@@ -169,10 +164,7 @@ export default function DevNavbar({ sections, socials }: DevNavbarProps = {}) {
             )}
             {linkedinSocial && linkedinSocial.enabled !== false && (
               <a
-                href={
-                  linkedinSocial.href ||
-                  "https://linkedin.com/in/sahadathossen"
-                }
+                href={linkedinSocial.href}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="LinkedIn"
@@ -180,8 +172,7 @@ export default function DevNavbar({ sections, socials }: DevNavbarProps = {}) {
                   trackSocialClick(
                     "linkedin",
                     "navbar",
-                    linkedinSocial.href ||
-                      "https://linkedin.com/in/sahadathossen"
+                    linkedinSocial.href
                   )
                 }
                 className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted"
@@ -189,6 +180,7 @@ export default function DevNavbar({ sections, socials }: DevNavbarProps = {}) {
                 <Linkedin size={18} />
               </a>
             )}
+
 
             {/* Dark/Light Mode Toggle */}
             <ModeToggle />
@@ -244,10 +236,7 @@ export default function DevNavbar({ sections, socials }: DevNavbarProps = {}) {
               <div className="flex items-center gap-3">
                 {githubSocial && githubSocial.enabled !== false && (
                   <a
-                    href={
-                      githubSocial.href ||
-                      "https://github.com/Sahadat-Hossen1"
-                    }
+                    href={githubSocial.href}
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="GitHub"
@@ -255,8 +244,7 @@ export default function DevNavbar({ sections, socials }: DevNavbarProps = {}) {
                       trackSocialClick(
                         "github",
                         "navbar",
-                        githubSocial.href ||
-                          "https://github.com/Sahadat-Hossen1"
+                        githubSocial.href
                       )
                     }
                     className="p-2 text-muted-foreground hover:text-foreground transition-colors"
@@ -266,10 +254,7 @@ export default function DevNavbar({ sections, socials }: DevNavbarProps = {}) {
                 )}
                 {linkedinSocial && linkedinSocial.enabled !== false && (
                   <a
-                    href={
-                      linkedinSocial.href ||
-                      "https://linkedin.com/in/sahadathossen"
-                    }
+                    href={linkedinSocial.href}
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="LinkedIn"
@@ -277,8 +262,7 @@ export default function DevNavbar({ sections, socials }: DevNavbarProps = {}) {
                       trackSocialClick(
                         "linkedin",
                         "navbar",
-                        linkedinSocial.href ||
-                          "https://linkedin.com/in/sahadathossen"
+                        linkedinSocial.href
                       )
                     }
                     className="p-2 text-muted-foreground hover:text-foreground transition-colors"
@@ -286,6 +270,7 @@ export default function DevNavbar({ sections, socials }: DevNavbarProps = {}) {
                     <Linkedin size={18} />
                   </a>
                 )}
+
                 {twitterSocial && twitterSocial.enabled !== false && (
                   <a
                     href={twitterSocial.href || "https://twitter.com"}

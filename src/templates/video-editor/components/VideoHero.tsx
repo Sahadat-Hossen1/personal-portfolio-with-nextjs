@@ -18,7 +18,7 @@ export default function VideoHero({
 }: VideoHeroProps) {
   const [modalOpen, setModalOpen] = useState(false);
 
-  const displayName = profile?.name || "Sahadat Hossen";
+  const displayName = profile?.name || "Video Editor & Filmmaker";
   const statusText = profile?.statusText || "Available for Commercial & Indie Projects";
   const bioBlurb =
     profile?.bioBlurb ||

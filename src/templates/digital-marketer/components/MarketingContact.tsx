@@ -8,6 +8,7 @@ import type { ProfileData } from "@/types/portfolio";
 
 interface MarketingContactProps {
   profile: ProfileData;
+  username?: string;
 }
 
 type FormState = {
@@ -34,7 +35,7 @@ const inquirySubjects = [
   "General Strategic Advisory Inquiry",
 ];
 
-export default function MarketingContact({ profile }: MarketingContactProps) {
+export default function MarketingContact({ profile, username }: MarketingContactProps) {
   const [form, setForm] = useState<FormState>({
     name: "",
     email: "",
@@ -59,11 +60,13 @@ export default function MarketingContact({ profile }: MarketingContactProps) {
     });
 
     try {
+      const payload = username ? { ...form, username } : form;
       const res = await fetch("/api/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify(payload),
       });
+
       const data = await res.json();
       if (res.ok && data.success) {
         setStatus("success");

@@ -16,7 +16,7 @@ import FloatingChatWidget from "@/components/FloatingChatWidget";
  * Focus: Professional credentials, clinical competencies, research & featured initiatives,
  *        career appointments journey, direct consultation inquiries.
  */
-export default function DoctorTemplate({ data }: TemplateProps) {
+export default function DoctorTemplate({ data, publicContext }: TemplateProps) {
   const { profile, projects, skills, skillTags, experiences } = data;
 
   const sections = profile?.sections || {
@@ -51,9 +51,10 @@ export default function DoctorTemplate({ data }: TemplateProps) {
           <DoctorExperience experiences={experiences} />
         )}
         {sections.contact !== false && (
-          <DoctorContact profile={profile} />
+          <DoctorContact profile={profile} username={publicContext?.username} />
         )}
       </main>
+
 
       <DoctorFooter profile={profile} sections={sections} />
 

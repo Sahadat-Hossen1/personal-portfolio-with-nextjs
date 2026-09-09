@@ -15,7 +15,7 @@ import FloatingChatWidget from "@/components/FloatingChatWidget";
  * Visual style: Modern, clean, technical, professional SaaS/developer aesthetic.
  * Focus: Technical skills, Projects, Technologies, Experience, GitHub/live demos.
  */
-export default function DeveloperTemplate({ data }: TemplateProps) {
+export default function DeveloperTemplate({ data, publicContext }: TemplateProps) {
   const { profile, projects, skills, skillTags, experiences } = data;
 
   const sections = profile?.sections || {
@@ -29,8 +29,8 @@ export default function DeveloperTemplate({ data }: TemplateProps) {
   };
 
   const githubItem = profile?.socials?.find((s) => s.platform === "github");
-  const isGithubEnabled = githubItem ? githubItem.enabled !== false : true;
-  const githubUrl = githubItem?.href || "https://github.com/Sahadat-Hossen1";
+  const isGithubEnabled = githubItem ? githubItem.enabled !== false : false;
+  const githubUrl = githubItem?.href || "";
 
   return (
     <>
@@ -51,9 +51,12 @@ export default function DeveloperTemplate({ data }: TemplateProps) {
         {sections.experience !== false && (
           <DevExperience experiences={experiences} />
         )}
-        {sections.contact !== false && <DevContact profile={profile} />}
+        {sections.contact !== false && (
+          <DevContact profile={profile} username={publicContext?.username} />
+        )}
       </main>
       <DevFooter profile={profile} sections={sections} />
+
       {sections.floatingChat !== false && (
         <FloatingChatWidget
           whatsappNumber={profile?.whatsappNumber}

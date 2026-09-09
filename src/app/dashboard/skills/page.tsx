@@ -1,64 +1,42 @@
-import Link from "next/link";
-import { Cpu, ArrowLeft, Clock } from "lucide-react";
+import { redirect } from "next/navigation";
 import { getAuthenticatedUser } from "@/lib/authorization";
 import { connectToDatabase } from "@/lib/mongodb";
 import Skill from "@/models/Skill";
 import SkillTag from "@/models/SkillTag";
-import { redirect } from "next/navigation";
+import SkillsClient, { DashboardSkill, DashboardSkillTag } from "./SkillsClient";
 
 export default async function DashboardSkillsPage() {
   const authUser = await getAuthenticatedUser();
-  if (!authUser) redirect("/login");
+  if (!authUser) {
+    redirect("/login");
+  }
 
   await connectToDatabase();
-  const [skillCount, tagCount] = await Promise.all([
-    Skill.countDocuments({ ownerId: authUser.ownerId }),
-    SkillTag.countDocuments({ ownerId: authUser.ownerId }),
+
+  // Query only skills and tags belonging to the authenticated tenant owner
+  const [skills, tags] = await Promise.all([
+    Skill.find({ ownerId: authUser.ownerId }).sort({ order: 1, createdAt: 1 }).lean(),
+    SkillTag.find({ ownerId: authUser.ownerId }).sort({ order: 1, createdAt: 1 }).lean(),
   ]);
 
-  return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="flex items-center gap-3">
-        <Link
-          href="/dashboard"
-          className="p-2 rounded-xl border border-border bg-card hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <ArrowLeft size={16} />
-        </Link>
-        <div>
-          <h1 className="text-2xl font-black text-foreground tracking-tight">
-            Skills & Tags Management
-          </h1>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Manage your technical skill bars and categorization tags
-          </p>
-        </div>
-      </div>
+  // Serialize Mongoose docs into plain JSON-safe objects (omitting ownerId)
+  const serializedSkills: DashboardSkill[] = skills.map((s) => ({
+    _id: s._id.toString(),
+    name: s.name,
+    icon: s.icon || "⚡",
+    level: typeof s.level === "number" ? s.level : 80,
+    color: s.color || "#38bdf8",
+    category: s.category || "Web Development",
+    order: typeof s.order === "number" ? s.order : 0,
+    createdAt: s.createdAt ? new Date(s.createdAt).toISOString() : undefined,
+    updatedAt: s.updatedAt ? new Date(s.updatedAt).toISOString() : undefined,
+  }));
 
-      <div className="p-8 rounded-3xl bg-card border border-border text-center space-y-4 max-w-xl mx-auto my-12">
-        <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center mx-auto">
-          <Cpu size={32} />
-        </div>
-        <div>
-          <h2 className="text-lg font-bold text-foreground">
-            Skills Management Foundation
-          </h2>
-          <p className="text-xs text-muted-foreground mt-1 max-w-md mx-auto">
-            You currently have{" "}
-            <span className="font-semibold text-cyan-400">{skillCount}</span> skill
-            {skillCount === 1 ? "" : "s"} and{" "}
-            <span className="font-semibold text-cyan-400">{tagCount}</span> tag
-            {tagCount === 1 ? "" : "s"} saved. Full interactive management interface will be
-            unveiled in Phase 6.
-          </p>
-        </div>
-        <div className="pt-2">
-          <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted text-[11px] font-medium text-muted-foreground">
-            <Clock size={12} />
-            <span>Interactive CRUD coming in Phase 6</span>
-          </span>
-        </div>
-      </div>
-    </div>
-  );
+  const serializedTags: DashboardSkillTag[] = tags.map((t) => ({
+    _id: t._id.toString(),
+    name: t.name,
+    order: typeof t.order === "number" ? t.order : 0,
+  }));
+
+  return <SkillsClient initialSkills={serializedSkills} initialTags={serializedTags} />;
 }
