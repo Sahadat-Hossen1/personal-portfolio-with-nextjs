@@ -53,6 +53,18 @@ export async function POST(request: Request) {
       );
     }
 
+    // Step 5: Check account status
+    if (user.accountStatus === "suspended") {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Your account has been suspended.",
+          code: "ACCOUNT_SUSPENDED",
+        },
+        { status: 403 }
+      );
+    }
+
     // Generate standard User session token
     const userToken = await signUserToken({
       id: user._id.toString(),

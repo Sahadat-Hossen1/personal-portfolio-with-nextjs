@@ -29,6 +29,7 @@ interface AdminUser {
   plan: "free" | "premium";
   allowedTemplates: string[];
   selectedTemplate: string;
+  accountStatus?: "active" | "suspended";
   featureOverrides?: Partial<Record<FeatureKey, boolean>>;
   effectiveEntitlements?: Record<FeatureKey, boolean>;
   createdAt: string;
@@ -76,11 +77,13 @@ export default function AdminUsersPage() {
   const [professionFilter, setProfessionFilter] = useState("");
   const [planFilter, setPlanFilter] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
 
   // Modal State
   const [activeUser, setActiveUser] = useState<AdminUser | null>(null);
   const [modalLoading, setModalLoading] = useState(false);
   const [modalDetails, setModalDetails] = useState<UserDetailResponse | null>(null);
+  const [editAccountStatus, setEditAccountStatus] = useState<"active" | "suspended">("active");
   const [editPlan, setEditPlan] = useState<"free" | "premium">("free");
   const [editAllowedTemplates, setEditAllowedTemplates] = useState<string[]>([]);
   const [editFeatureOverrides, setEditFeatureOverrides] = useState<
@@ -110,6 +113,7 @@ export default function AdminUsersPage() {
       if (professionFilter) params.set("profession", professionFilter);
       if (planFilter) params.set("plan", planFilter);
       if (roleFilter) params.set("role", roleFilter);
+      if (statusFilter) params.set("status", statusFilter);
 
       const res = await fetch(`/api/admin/users?${params.toString()}`);
       const data = await res.json();
@@ -124,7 +128,7 @@ export default function AdminUsersPage() {
     } finally {
       setLoading(false);
     }
-  }, [page, limit, search, professionFilter, planFilter, roleFilter]);
+  }, [page, limit, search, professionFilter, planFilter, roleFilter, statusFilter]);
 
   useEffect(() => {
     let ignore = false;
@@ -135,6 +139,7 @@ export default function AdminUsersPage() {
     if (professionFilter) params.set("profession", professionFilter);
     if (planFilter) params.set("plan", planFilter);
     if (roleFilter) params.set("role", roleFilter);
+    if (statusFilter) params.set("status", statusFilter);
 
     fetch(`/api/admin/users?${params.toString()}`)
       .then((res) => res.json())
@@ -157,10 +162,11 @@ export default function AdminUsersPage() {
     return () => {
       ignore = true;
     };
-  }, [page, limit, search, professionFilter, planFilter, roleFilter]);
+  }, [page, limit, search, professionFilter, planFilter, roleFilter, statusFilter]);
 
   const handleOpenModal = async (user: AdminUser) => {
     setActiveUser(user);
+    setEditAccountStatus(user.accountStatus || "active");
     setEditPlan(user.plan);
     setEditAllowedTemplates([...user.allowedTemplates]);
 
@@ -190,6 +196,9 @@ export default function AdminUsersPage() {
       const data = await res.json();
       if (data.success && data.data) {
         setModalDetails(data.data);
+        if (data.data.user?.accountStatus) {
+          setEditAccountStatus(data.data.user.accountStatus);
+        }
         if (data.data.user?.featureOverrides) {
           const fetchedOverrides = { ...initialOverrides };
           for (const [k, v] of Object.entries(data.data.user.featureOverrides)) {
@@ -249,6 +258,7 @@ export default function AdminUsersPage() {
           plan: editPlan,
           allowedTemplates: editAllowedTemplates,
           featureOverrides: editFeatureOverrides,
+          accountStatus: editAccountStatus,
         }),
       });
 
@@ -270,6 +280,7 @@ export default function AdminUsersPage() {
                 ...u,
                 plan: editPlan,
                 allowedTemplates: editAllowedTemplates,
+                accountStatus: editAccountStatus,
                 featureOverrides: Object.fromEntries(
                   Object.entries(editFeatureOverrides).filter(
                     ([, v]) => typeof v === "boolean"
@@ -401,6 +412,19 @@ export default function AdminUsersPage() {
             <option value="user">User</option>
             <option value="superadmin">Superadmin</option>
           </select>
+
+          <select
+            value={statusFilter}
+            onChange={(e) => {
+              setStatusFilter(e.target.value);
+              setPage(1);
+            }}
+            className="px-3 py-2 text-xs rounded-xl border border-border bg-background text-foreground focus:outline-none focus:border-indigo-500/50 cursor-pointer"
+          >
+            <option value="">All Statuses</option>
+            <option value="active">Active</option>
+            <option value="suspended">Suspended</option>
+          </select>
         </div>
       </div>
 
@@ -415,6 +439,7 @@ export default function AdminUsersPage() {
                 <th className="py-3 px-4">Profession</th>
                 <th className="py-3 px-4">Plan</th>
                 <th className="py-3 px-4">Role</th>
+                <th className="py-3 px-4">Status</th>
                 <th className="py-3 px-4">Selected Template</th>
                 <th className="py-3 px-4">Allowed</th>
                 <th className="py-3 px-4">Registered</th>
@@ -424,14 +449,14 @@ export default function AdminUsersPage() {
             <tbody className="divide-y divide-border">
               {loading ? (
                 <tr>
-                  <td colSpan={9} className="py-12 text-center text-muted-foreground">
+                  <td colSpan={10} className="py-12 text-center text-muted-foreground">
                     <Loader2 size={24} className="animate-spin mx-auto text-indigo-400 mb-2" />
                     <span>Loading platform users...</span>
                   </td>
                 </tr>
               ) : users.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="py-12 text-center text-muted-foreground">
+                  <td colSpan={10} className="py-12 text-center text-muted-foreground">
                     No platform users found matching criteria.
                   </td>
                 </tr>
@@ -505,6 +530,19 @@ export default function AdminUsersPage() {
                         }`}
                       >
                         {user.role}
+                      </span>
+                    </td>
+
+                    {/* Status */}
+                    <td className="py-3.5 px-4">
+                      <span
+                        className={`capitalize px-2 py-0.5 rounded-full text-[10px] font-bold border ${
+                          user.accountStatus === "suspended"
+                            ? "bg-rose-500/10 text-rose-400 border-rose-500/30"
+                            : "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
+                        }`}
+                      >
+                        {user.accountStatus || "active"}
                       </span>
                     </td>
 
@@ -654,6 +692,58 @@ export default function AdminUsersPage() {
                     </div>
                   </div>
                 )}
+
+                {/* Account Status Control */}
+                <div>
+                  <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                    Account Status
+                  </label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setEditAccountStatus("active")}
+                      className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+                        editAccountStatus === "active"
+                          ? "bg-emerald-500/10 border-emerald-500/50 text-foreground shadow-sm"
+                          : "bg-muted/20 border-border text-muted-foreground hover:bg-muted/40"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-bold text-xs text-emerald-400">Active</span>
+                        {editAccountStatus === "active" && (
+                          <div className="w-4 h-4 rounded-full bg-emerald-500 text-white flex items-center justify-center">
+                            <Check size={10} />
+                          </div>
+                        )}
+                      </div>
+                      <p className="text-[11px] text-muted-foreground">
+                        Normal portfolio and platform access
+                      </p>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setEditAccountStatus("suspended")}
+                      className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+                        editAccountStatus === "suspended"
+                          ? "bg-rose-500/10 border-rose-500/50 text-foreground shadow-sm"
+                          : "bg-muted/20 border-border text-muted-foreground hover:bg-muted/40"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-bold text-xs text-rose-400">Suspended</span>
+                        {editAccountStatus === "suspended" && (
+                          <div className="w-4 h-4 rounded-full bg-rose-500 text-white flex items-center justify-center">
+                            <Check size={10} />
+                          </div>
+                        )}
+                      </div>
+                      <p className="text-[11px] text-muted-foreground">
+                        Suspend login, dashboard, and public portfolio
+                      </p>
+                    </button>
+                  </div>
+                </div>
 
                 {/* Plan Selection */}
                 <div>

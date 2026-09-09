@@ -62,6 +62,14 @@ export async function GET(request: NextRequest) {
       filterQuery.profession = professionFilter as UserProfession;
     }
 
+    const statusFilter = searchParams.get("status") || searchParams.get("accountStatus");
+    if (statusFilter === "suspended") {
+      filterQuery.accountStatus = "suspended";
+    } else if (statusFilter === "active") {
+      filterQuery.accountStatus = { $ne: "suspended" };
+    }
+
+
     // 4. Sorting
     const sortBy = searchParams.get("sortBy") || "createdAt";
     const sortOrder = searchParams.get("sortOrder") === "asc" ? 1 : -1;
@@ -73,7 +81,7 @@ export async function GET(request: NextRequest) {
       User.countDocuments(filterQuery),
       User.find(filterQuery)
         .select(
-          "_id name email username profession role plan allowedTemplates featureOverrides createdAt updatedAt"
+          "_id name email username profession role plan allowedTemplates featureOverrides accountStatus createdAt updatedAt"
         )
         .sort({ [validSortField]: sortOrder })
         .skip(skip)
@@ -102,6 +110,7 @@ export async function GET(request: NextRequest) {
       profession: u.profession,
       role: u.role,
       plan: u.plan,
+      accountStatus: u.accountStatus || "active",
       allowedTemplates: u.allowedTemplates || [u.profession || "developer"],
       selectedTemplate:
         profileTemplateMap.get(u._id.toString()) ||

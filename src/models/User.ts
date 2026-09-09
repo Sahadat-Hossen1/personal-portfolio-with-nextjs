@@ -4,6 +4,7 @@ import type { FeatureKey } from "@/lib/entitlements/features";
 
 export type UserRole = "superadmin" | "user";
 export type UserPlan = "free" | "premium";
+export type AccountStatus = "active" | "suspended";
 export type UserProfession =
   | "developer"
   | "digital-marketer"
@@ -21,6 +22,7 @@ export interface IUser extends Document {
   passwordHash: string;
   role: UserRole;
   plan: UserPlan;
+  accountStatus?: AccountStatus;
   username: string;
   allowedTemplates: TemplateId[];
   featureOverrides?: Map<string, boolean> | FeatureOverrides;
@@ -76,6 +78,11 @@ const UserSchema = new Schema<IUser>(
       type: Map,
       of: Boolean,
       default: () => new Map(),
+    },
+    accountStatus: {
+      type: String,
+      enum: ["active", "suspended"],
+      default: "active",
     },
   },
   { timestamps: true }

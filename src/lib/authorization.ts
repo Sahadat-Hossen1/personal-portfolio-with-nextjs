@@ -32,6 +32,7 @@ const FORBIDDEN_FIELDS = [
   "plan",
   "allowedTemplates",
   "featureOverrides",
+  "accountStatus",
   "createdAt",
   "updatedAt",
   "__v",
@@ -152,12 +153,33 @@ export async function requireAuth(request?: NextRequest): Promise<AuthResult> {
       ),
     };
   }
+
+  // Authoritative DB check for account suspension
+  await connectToDatabase();
+  const userDoc = await User.findById(user.userId)
+    .select("accountStatus")
+    .lean();
+
+  if (userDoc?.accountStatus === "suspended") {
+    return {
+      errorResponse: NextResponse.json(
+        {
+          success: false,
+          error: "Your account has been suspended.",
+          code: "ACCOUNT_SUSPENDED",
+        },
+        { status: 403 }
+      ),
+    };
+  }
+
   return { user };
 }
 
 /**
  * Requires an authenticated user with the 'superadmin' role.
- * Returns 401 if unauthenticated, 403 if authenticated but not superadmin.
+ * Returns 401 if unauthenticated, 403 if authenticated but not superadmin,
+ * and 403 ACCOUNT_SUSPENDED if the superadmin account is suspended.
  */
 export async function requireSuperadmin(request?: NextRequest): Promise<AuthResult> {
   const user = await getAuthenticatedUser(request);
@@ -174,6 +196,25 @@ export async function requireSuperadmin(request?: NextRequest): Promise<AuthResu
     return {
       errorResponse: NextResponse.json(
         { success: false, error: "Forbidden: Superadmin access required" },
+        { status: 403 }
+      ),
+    };
+  }
+
+  // Authoritative DB check for account suspension
+  await connectToDatabase();
+  const userDoc = await User.findById(user.userId)
+    .select("accountStatus")
+    .lean();
+
+  if (userDoc?.accountStatus === "suspended") {
+    return {
+      errorResponse: NextResponse.json(
+        {
+          success: false,
+          error: "Your account has been suspended.",
+          code: "ACCOUNT_SUSPENDED",
+        },
         { status: 403 }
       ),
     };

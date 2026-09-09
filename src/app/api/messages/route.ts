@@ -40,10 +40,10 @@ export async function POST(request: Request) {
 
       const normalizedUsername = username.trim().toLowerCase();
       const targetUser = await User.findOne({ username: normalizedUsername })
-        .select("_id")
+        .select("_id accountStatus")
         .lean();
 
-      if (!targetUser) {
+      if (!targetUser || targetUser.accountStatus === "suspended") {
         return NextResponse.json(
           { success: false, error: "Recipient portfolio not found" },
           { status: 404 }

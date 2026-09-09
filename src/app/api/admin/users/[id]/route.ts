@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
 import { requireSuperadmin, isValidObjectId } from "@/lib/authorization";
-import User, { UserPlan } from "@/models/User";
+import User, { UserPlan, AccountStatus } from "@/models/User";
 import Profile from "@/models/Profile";
 import Project from "@/models/Project";
 import Skill from "@/models/Skill";
@@ -42,7 +42,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     // Query user without passwordHash
     const user = await User.findById(id)
       .select(
-        "_id name email username profession role plan allowedTemplates featureOverrides createdAt updatedAt"
+        "_id name email username profession role plan allowedTemplates featureOverrides accountStatus createdAt updatedAt"
       )
       .lean();
 
@@ -82,6 +82,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
           allowedTemplates: user.allowedTemplates || [user.profession || "developer"],
           featureOverrides,
           effectiveEntitlements,
+          accountStatus: user.accountStatus || "active",
           createdAt: user.createdAt,
           updatedAt: user.updatedAt,
         },
@@ -292,11 +293,42 @@ async function handleUpdate(
       modified = true;
     }
 
+    // 4. Validate and apply 'accountStatus'
+    if ("accountStatus" in rawBody && rawBody.accountStatus !== undefined) {
+      const accountStatus = rawBody.accountStatus;
+      if (accountStatus !== "active" && accountStatus !== "suspended") {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "Invalid account status. Supported values: 'active', 'suspended'.",
+          },
+          { status: 400 }
+        );
+      }
+
+      // Self-suspension guard using authenticated user's real ID
+      if (
+        accountStatus === "suspended" &&
+        (auth.user.userId === id || auth.user.userId === userDoc._id.toString())
+      ) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "Self-suspension is not permitted.",
+          },
+          { status: 400 }
+        );
+      }
+
+      userDoc.accountStatus = accountStatus as AccountStatus;
+      modified = true;
+    }
+
     if (!modified) {
       return NextResponse.json(
         {
           success: false,
-          error: "No valid entitlement fields ('plan', 'allowedTemplates', or 'featureOverrides') provided for update.",
+          error: "No valid management fields ('plan', 'allowedTemplates', 'featureOverrides', or 'accountStatus') provided for update.",
         },
         { status: 400 }
       );
@@ -335,6 +367,7 @@ async function handleUpdate(
           allowedTemplates: userDoc.allowedTemplates,
           featureOverrides: updatedFeatureOverrides,
           effectiveEntitlements: updatedEffectiveEntitlements,
+          accountStatus: userDoc.accountStatus || "active",
           updatedAt: userDoc.updatedAt,
         },
       },

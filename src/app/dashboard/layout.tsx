@@ -16,15 +16,15 @@ export default async function DashboardLayout({
   }
 
   await connectToDatabase();
-  const userDoc = await User.findById(authUser.ownerId)
-    .select("name email username profession allowedTemplates role plan")
+  const userDoc = await User.findById(authUser.userId)
+    .select("name email username profession allowedTemplates role plan accountStatus")
     .lean();
 
-  if (!userDoc) {
+  if (!userDoc || userDoc.accountStatus === "suspended") {
     redirect("/login");
   }
 
-  const profileDoc = await Profile.findOne({ ownerId: authUser.ownerId })
+  const profileDoc = await Profile.findOne({ ownerId: authUser.userId })
     .select("selectedTemplate")
     .lean();
 

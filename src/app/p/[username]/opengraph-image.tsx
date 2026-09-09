@@ -27,10 +27,10 @@ export default async function OpenGraphImage({ params }: OpenGraphImageProps) {
     try {
       await connectToDatabase();
       const user = await User.findOne({ username: normalizedUsername })
-        .select("name username profession")
+        .select("name username profession accountStatus")
         .lean();
 
-      if (user) {
+      if (user && user.accountStatus !== "suspended") {
         name = user.name || name;
         profession = user.profession
           ? user.profession.replace(/-/g, " ")

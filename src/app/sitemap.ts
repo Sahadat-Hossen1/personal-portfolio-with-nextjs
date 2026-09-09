@@ -20,7 +20,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   try {
     await connectToDatabase();
-    const users = await User.find({})
+    const users = await User.find({
+      accountStatus: { $ne: "suspended" },
+    })
       .select("username updatedAt")
       .lean();
 

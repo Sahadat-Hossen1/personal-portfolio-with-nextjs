@@ -45,10 +45,10 @@ export async function generateMetadata(
   try {
     await connectToDatabase();
     const user = await User.findOne({ username: normalizedUsername })
-      .select("name username profession")
+      .select("name username profession accountStatus")
       .lean();
 
-    if (!user) {
+    if (!user || user.accountStatus === "suspended") {
       return {
         title: "Portfolio Not Found",
         description: "The requested portfolio could not be found.",
@@ -131,10 +131,10 @@ export default async function PublicPortfolioPage(
 
   // 1. Resolve User safely using minimal projection (never expose credentials or auth fields)
   const user = await User.findOne({ username: normalizedUsername })
-    .select("_id name username profession plan featureOverrides updatedAt")
+    .select("_id name username profession plan featureOverrides accountStatus updatedAt")
     .lean();
 
-  if (!user) {
+  if (!user || user.accountStatus === "suspended") {
     notFound();
   }
 
