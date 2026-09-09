@@ -8,6 +8,8 @@ import {
   getAdminSession,
 } from "@/lib/auth";
 import User, { UserRole } from "@/models/User";
+import type { FeatureKey } from "@/lib/entitlements/features";
+import { hasFeatureAccess } from "@/lib/entitlements/resolver";
 
 // ==========================================
 // 1. Authenticated User Interface
@@ -29,6 +31,7 @@ const FORBIDDEN_FIELDS = [
   "role",
   "plan",
   "allowedTemplates",
+  "featureOverrides",
   "createdAt",
   "updatedAt",
   "__v",
@@ -178,3 +181,44 @@ export async function requireSuperadmin(request?: NextRequest): Promise<AuthResu
 
   return { user };
 }
+
+/**
+ * Requires an authenticated user with active entitlement access to the specified feature.
+ * Returns 401 if unauthenticated, 403 if authenticated but feature access is not enabled.
+ */
+export async function requireFeature(
+  feature: FeatureKey,
+  request?: NextRequest
+): Promise<AuthResult> {
+  const auth = await requireAuth(request);
+  if (auth.errorResponse) {
+    return auth;
+  }
+
+  // Superadmin has access to all features by default
+  if (auth.user.role === "superadmin") {
+    return { user: auth.user };
+  }
+
+  await connectToDatabase();
+  const userDoc = await User.findById(auth.user.ownerId)
+    .select("plan role featureOverrides")
+    .lean();
+
+  if (!userDoc || !hasFeatureAccess(userDoc, feature)) {
+    return {
+      errorResponse: NextResponse.json(
+        {
+          success: false,
+          error: `Feature '${feature}' is not available on your current plan.`,
+          code: "FEATURE_UNAVAILABLE",
+          feature,
+        },
+        { status: 403 }
+      ),
+    };
+  }
+
+  return { user: auth.user };
+}
+

@@ -6,6 +6,7 @@ import Profile from "@/models/Profile";
 import User from "@/models/User";
 import type { TemplateId } from "@/types/portfolio";
 import { isSupportedTemplateId, SUPPORTED_TEMPLATE_IDS } from "@/templates/index";
+import { hasFeatureAccess } from "@/lib/entitlements/resolver";
 
 /**
  * Constructs a clean, zero-state Profile root for a user without copying
@@ -143,6 +144,50 @@ export async function PUT(request: NextRequest) {
           },
           { status: 403 }
         );
+      }
+    }
+
+    // Enforce feature entitlements on profile sections
+    if (body.sections && typeof body.sections === "object") {
+      const sec = body.sections as Record<string, unknown>;
+
+      // 1. floating_chat entitlement check
+      if (sec.floatingChat === true) {
+        if (!userDoc) {
+          userDoc = await User.findById(auth.user.ownerId);
+        }
+        if (!hasFeatureAccess(userDoc, "floating_chat")) {
+          return NextResponse.json(
+            {
+              success: false,
+              error: "Feature 'floating_chat' is not available on your current plan.",
+              code: "FEATURE_UNAVAILABLE",
+              feature: "floating_chat",
+            },
+            { status: 403 }
+          );
+        }
+      }
+
+      // 2. custom_sections entitlement check (hiding any standard section requires custom_sections)
+      const standardKeys = ["hero", "about", "skills", "projects", "experience", "contact"];
+      const triesToHideSection = standardKeys.some((k) => sec[k] === false);
+
+      if (triesToHideSection) {
+        if (!userDoc) {
+          userDoc = await User.findById(auth.user.ownerId);
+        }
+        if (!hasFeatureAccess(userDoc, "custom_sections")) {
+          return NextResponse.json(
+            {
+              success: false,
+              error: "Feature 'custom_sections' is not available on your current plan.",
+              code: "FEATURE_UNAVAILABLE",
+              feature: "custom_sections",
+            },
+            { status: 403 }
+          );
+        }
       }
     }
 

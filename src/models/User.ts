@@ -1,5 +1,6 @@
 import mongoose, { Schema, Document, Model, Types } from "mongoose";
 import type { TemplateId } from "@/types/portfolio";
+import type { FeatureKey } from "@/lib/entitlements/features";
 
 export type UserRole = "superadmin" | "user";
 export type UserPlan = "free" | "premium";
@@ -8,6 +9,8 @@ export type UserProfession =
   | "digital-marketer"
   | "video-editor"
   | "doctor";
+
+export type FeatureOverrides = Partial<Record<FeatureKey, boolean>>;
 
 export interface IUser extends Document {
   _id: Types.ObjectId;
@@ -20,6 +23,7 @@ export interface IUser extends Document {
   plan: UserPlan;
   username: string;
   allowedTemplates: TemplateId[];
+  featureOverrides?: Map<string, boolean> | FeatureOverrides;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -67,6 +71,11 @@ const UserSchema = new Schema<IUser>(
       type: [String],
       enum: ["developer", "video-editor", "digital-marketer", "doctor"],
       default: ["developer", "video-editor", "digital-marketer", "doctor"],
+    },
+    featureOverrides: {
+      type: Map,
+      of: Boolean,
+      default: () => new Map(),
     },
   },
   { timestamps: true }

@@ -10,6 +10,7 @@ import {
   resolveTemplateId,
 } from "@/templates/index";
 import type { TemplateId } from "@/types/portfolio";
+import { hasFeatureAccess } from "@/lib/entitlements/resolver";
 
 export const dynamic = "force-dynamic";
 
@@ -130,7 +131,7 @@ export default async function PublicPortfolioPage(
 
   // 1. Resolve User safely using minimal projection (never expose credentials or auth fields)
   const user = await User.findOne({ username: normalizedUsername })
-    .select("_id name username profession updatedAt")
+    .select("_id name username profession plan featureOverrides updatedAt")
     .lean();
 
   if (!user) {
@@ -144,7 +145,23 @@ export default async function PublicPortfolioPage(
     notFound();
   }
 
-  // 3. Resolve active template
+  // 3. Enforce presentation-level feature entitlements
+  if (data.profile.sections) {
+    if (!hasFeatureAccess(user, "floating_chat")) {
+      data.profile.sections.floatingChat = false;
+    }
+    if (!hasFeatureAccess(user, "custom_sections")) {
+      // Free users without custom_sections cannot suppress core sections
+      data.profile.sections.hero = true;
+      data.profile.sections.about = true;
+      data.profile.sections.skills = true;
+      data.profile.sections.projects = true;
+      data.profile.sections.experience = true;
+      data.profile.sections.contact = true;
+    }
+  }
+
+  // 4. Resolve active template
   // Profile.selectedTemplate is authoritative.
   // Query parameters (?template=... or ?p=...) are strictly IGNORED on /p/[username].
   const requestedTemplate = data.profile.selectedTemplate;

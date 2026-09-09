@@ -13,6 +13,11 @@ import {
   X,
   AlertCircle,
 } from "lucide-react";
+import {
+  FeatureKey,
+  getAllFeatureDefinitions,
+} from "@/lib/entitlements/features";
+import { getPlanDefaultEntitlements } from "@/lib/entitlements/plans";
 
 interface AdminUser {
   _id: string;
@@ -24,6 +29,8 @@ interface AdminUser {
   plan: "free" | "premium";
   allowedTemplates: string[];
   selectedTemplate: string;
+  featureOverrides?: Partial<Record<FeatureKey, boolean>>;
+  effectiveEntitlements?: Record<FeatureKey, boolean>;
   createdAt: string;
   updatedAt: string;
 }
@@ -76,6 +83,17 @@ export default function AdminUsersPage() {
   const [modalDetails, setModalDetails] = useState<UserDetailResponse | null>(null);
   const [editPlan, setEditPlan] = useState<"free" | "premium">("free");
   const [editAllowedTemplates, setEditAllowedTemplates] = useState<string[]>([]);
+  const [editFeatureOverrides, setEditFeatureOverrides] = useState<
+    Record<FeatureKey, boolean | null>
+  >({
+    projects: null,
+    skills: null,
+    experience: null,
+    messages: null,
+    custom_sections: null,
+    floating_chat: null,
+    advanced_seo: null,
+  });
   const [modalSaving, setModalSaving] = useState(false);
   const [modalFeedback, setModalFeedback] = useState<{
     type: "success" | "error";
@@ -145,6 +163,25 @@ export default function AdminUsersPage() {
     setActiveUser(user);
     setEditPlan(user.plan);
     setEditAllowedTemplates([...user.allowedTemplates]);
+
+    const initialOverrides: Record<FeatureKey, boolean | null> = {
+      projects: null,
+      skills: null,
+      experience: null,
+      messages: null,
+      custom_sections: null,
+      floating_chat: null,
+      advanced_seo: null,
+    };
+    if (user.featureOverrides) {
+      for (const [k, v] of Object.entries(user.featureOverrides)) {
+        if (typeof v === "boolean") {
+          initialOverrides[k as FeatureKey] = v;
+        }
+      }
+    }
+    setEditFeatureOverrides(initialOverrides);
+
     setModalFeedback(null);
     setModalLoading(true);
 
@@ -153,6 +190,15 @@ export default function AdminUsersPage() {
       const data = await res.json();
       if (data.success && data.data) {
         setModalDetails(data.data);
+        if (data.data.user?.featureOverrides) {
+          const fetchedOverrides = { ...initialOverrides };
+          for (const [k, v] of Object.entries(data.data.user.featureOverrides)) {
+            if (typeof v === "boolean") {
+              fetchedOverrides[k as FeatureKey] = v;
+            }
+          }
+          setEditFeatureOverrides(fetchedOverrides);
+        }
       }
     } catch (err) {
       console.error("Failed to load user details:", err);
@@ -202,6 +248,7 @@ export default function AdminUsersPage() {
         body: JSON.stringify({
           plan: editPlan,
           allowedTemplates: editAllowedTemplates,
+          featureOverrides: editFeatureOverrides,
         }),
       });
 
@@ -219,7 +266,16 @@ export default function AdminUsersPage() {
       setUsers((prev) =>
         prev.map((u) =>
           u._id === activeUser._id
-            ? { ...u, plan: editPlan, allowedTemplates: editAllowedTemplates }
+            ? {
+                ...u,
+                plan: editPlan,
+                allowedTemplates: editAllowedTemplates,
+                featureOverrides: Object.fromEntries(
+                  Object.entries(editFeatureOverrides).filter(
+                    ([, v]) => typeof v === "boolean"
+                  )
+                ) as Partial<Record<FeatureKey, boolean>>,
+              }
             : u
         )
       );
@@ -521,7 +577,7 @@ export default function AdminUsersPage() {
       {/* User Entitlements Management Modal */}
       {activeUser && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-fade-in">
-          <div className="w-full max-w-lg rounded-3xl bg-card border border-border p-6 shadow-2xl relative">
+          <div className="w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-3xl bg-card border border-border p-6 shadow-2xl relative">
             {/* Close Button */}
             <button
               onClick={handleCloseModal}
@@ -688,6 +744,109 @@ export default function AdminUsersPage() {
                   </div>
                   <p className="text-[10px] text-muted-foreground mt-1.5">
                     User can switch between any of these templates in their dashboard.
+                  </p>
+                </div>
+
+                {/* Feature Access Overrides (Entitlements) */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                      Feature Access Overrides (Entitlements)
+                    </label>
+                    <span className="text-[10px] text-muted-foreground font-mono">
+                      User Override &gt; Plan Default
+                    </span>
+                  </div>
+                  <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                    {getAllFeatureDefinitions().map((feat) => {
+                      const planDefaults = getPlanDefaultEntitlements(editPlan);
+                      const isDefaultEnabled = planDefaults[feat.key];
+                      const currentOverride = editFeatureOverrides[feat.key];
+
+                      return (
+                        <div
+                          key={feat.key}
+                          className="p-2.5 rounded-xl border border-border bg-muted/20 flex flex-col sm:flex-row sm:items-center justify-between gap-2"
+                        >
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs font-bold text-foreground">
+                                {feat.name}
+                              </span>
+                              <span
+                                className={`text-[9px] px-1.5 py-0.5 rounded font-semibold ${
+                                  isDefaultEnabled
+                                    ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                                    : "bg-muted text-muted-foreground border border-border"
+                                }`}
+                              >
+                                {editPlan}: {isDefaultEnabled ? "Enabled" : "Disabled"}
+                              </span>
+                            </div>
+                            <p className="text-[10px] text-muted-foreground line-clamp-1 mt-0.5">
+                              {feat.description}
+                            </p>
+                          </div>
+
+                          <div className="flex items-center gap-1 shrink-0 self-end sm:self-center">
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setEditFeatureOverrides((prev) => ({
+                                  ...prev,
+                                  [feat.key]: null,
+                                }))
+                              }
+                              className={`px-2 py-1 text-[10px] font-semibold rounded-lg transition-all cursor-pointer ${
+                                currentOverride === null
+                                  ? "bg-indigo-500/15 text-indigo-300 border border-indigo-500/30"
+                                  : "text-muted-foreground hover:text-foreground border border-transparent"
+                              }`}
+                              title="Inherit state from plan default"
+                            >
+                              Default
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setEditFeatureOverrides((prev) => ({
+                                  ...prev,
+                                  [feat.key]: true,
+                                }))
+                              }
+                              className={`px-2 py-1 text-[10px] font-semibold rounded-lg transition-all cursor-pointer ${
+                                currentOverride === true
+                                  ? "bg-emerald-500 text-white shadow-xs"
+                                  : "text-muted-foreground hover:text-emerald-400 border border-transparent"
+                              }`}
+                              title="Force enable feature override"
+                            >
+                              Force ON
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setEditFeatureOverrides((prev) => ({
+                                  ...prev,
+                                  [feat.key]: false,
+                                }))
+                              }
+                              className={`px-2 py-1 text-[10px] font-semibold rounded-lg transition-all cursor-pointer ${
+                                currentOverride === false
+                                  ? "bg-rose-500 text-white shadow-xs"
+                                  : "text-muted-foreground hover:text-rose-400 border border-transparent"
+                              }`}
+                              title="Force disable feature override"
+                            >
+                              Force OFF
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <p className="text-[10px] text-muted-foreground mt-1.5">
+                    Setting an override explicitly forces a feature ON or OFF. &quot;Default&quot; inherits directly from the {editPlan} plan.
                   </p>
                 </div>
 

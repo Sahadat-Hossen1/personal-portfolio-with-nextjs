@@ -9,6 +9,14 @@ import Experience from "@/models/Experience";
 import Message from "@/models/Message";
 import { SUPPORTED_TEMPLATE_IDS, isSupportedTemplateId } from "@/templates/index";
 import type { TemplateId } from "@/types/portfolio";
+import {
+  FEATURE_KEYS,
+  isSupportedFeatureKey,
+} from "@/lib/entitlements/features";
+import {
+  resolveEffectiveEntitlements,
+  extractNormalizedOverrides,
+} from "@/lib/entitlements/resolver";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -34,7 +42,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     // Query user without passwordHash
     const user = await User.findById(id)
       .select(
-        "_id name email username profession role plan allowedTemplates createdAt updatedAt"
+        "_id name email username profession role plan allowedTemplates featureOverrides createdAt updatedAt"
       )
       .lean();
 
@@ -57,6 +65,9 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         Message.countDocuments({ ownerId: user._id }),
       ]);
 
+    const featureOverrides = extractNormalizedOverrides(user.featureOverrides);
+    const effectiveEntitlements = resolveEffectiveEntitlements(user);
+
     return NextResponse.json({
       success: true,
       data: {
@@ -69,6 +80,8 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
           role: user.role,
           plan: user.plan,
           allowedTemplates: user.allowedTemplates || [user.profession || "developer"],
+          featureOverrides,
+          effectiveEntitlements,
           createdAt: user.createdAt,
           updatedAt: user.updatedAt,
         },
@@ -217,11 +230,73 @@ async function handleUpdate(
       modified = true;
     }
 
+    // 3. Validate and apply 'featureOverrides'
+    if ("featureOverrides" in rawBody && rawBody.featureOverrides !== undefined) {
+      const overrides = rawBody.featureOverrides;
+      if (!overrides || typeof overrides !== "object" || Array.isArray(overrides)) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "featureOverrides must be an object mapping feature keys to boolean or null.",
+          },
+          { status: 400 }
+        );
+      }
+
+      // Validate every key and value
+      for (const [key, val] of Object.entries(overrides)) {
+        if (!isSupportedFeatureKey(key)) {
+          return NextResponse.json(
+            {
+              success: false,
+              error: `Invalid feature key: '${key}'. Supported features: ${FEATURE_KEYS.join(", ")}.`,
+            },
+            { status: 400 }
+          );
+        }
+        if (val !== null && typeof val !== "boolean") {
+          return NextResponse.json(
+            {
+              success: false,
+              error: `Invalid override value for '${key}'. Expected boolean (true/false) or null (to remove override).`,
+            },
+            { status: 400 }
+          );
+        }
+      }
+
+      // Initialize map if needed
+      if (!userDoc.featureOverrides) {
+        userDoc.featureOverrides = new Map<string, boolean>();
+      }
+
+      const overridesMap: Map<string, boolean> =
+        userDoc.featureOverrides instanceof Map
+          ? (userDoc.featureOverrides as Map<string, boolean>)
+          : new Map<string, boolean>(
+              Object.entries(
+                (userDoc.featureOverrides as Record<string, boolean>) || {}
+              )
+            );
+
+      // Apply overrides (null deletes the override, reverting to plan default)
+      for (const [key, val] of Object.entries(overrides)) {
+        if (val === null) {
+          overridesMap.delete(key);
+        } else {
+          overridesMap.set(key, val as boolean);
+        }
+      }
+      userDoc.featureOverrides = overridesMap;
+      userDoc.markModified("featureOverrides");
+      modified = true;
+    }
+
     if (!modified) {
       return NextResponse.json(
         {
           success: false,
-          error: "No valid entitlement fields ('plan' or 'allowedTemplates') provided for update.",
+          error: "No valid entitlement fields ('plan', 'allowedTemplates', or 'featureOverrides') provided for update.",
         },
         { status: 400 }
       );
@@ -229,7 +304,7 @@ async function handleUpdate(
 
     await userDoc.save();
 
-    // 3. Keep Profile.selectedTemplate synchronized if current template is no longer authorized
+    // 4. Keep Profile.selectedTemplate synchronized if current template is no longer authorized
     if (userDoc.allowedTemplates && userDoc.allowedTemplates.length > 0) {
       const profileDoc = await Profile.findOne({ ownerId: userDoc._id });
       if (
@@ -241,6 +316,9 @@ async function handleUpdate(
         await profileDoc.save();
       }
     }
+
+    const updatedFeatureOverrides = extractNormalizedOverrides(userDoc.featureOverrides);
+    const updatedEffectiveEntitlements = resolveEffectiveEntitlements(userDoc);
 
     return NextResponse.json({
       success: true,
@@ -255,6 +333,8 @@ async function handleUpdate(
           role: userDoc.role,
           plan: userDoc.plan,
           allowedTemplates: userDoc.allowedTemplates,
+          featureOverrides: updatedFeatureOverrides,
+          effectiveEntitlements: updatedEffectiveEntitlements,
           updatedAt: userDoc.updatedAt,
         },
       },

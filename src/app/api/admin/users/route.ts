@@ -3,6 +3,10 @@ import { connectToDatabase } from "@/lib/mongodb";
 import { requireSuperadmin } from "@/lib/authorization";
 import User, { UserRole, UserPlan, UserProfession } from "@/models/User";
 import Profile from "@/models/Profile";
+import {
+  resolveEffectiveEntitlements,
+  extractNormalizedOverrides,
+} from "@/lib/entitlements/resolver";
 
 export async function GET(request: NextRequest) {
   try {
@@ -69,7 +73,7 @@ export async function GET(request: NextRequest) {
       User.countDocuments(filterQuery),
       User.find(filterQuery)
         .select(
-          "_id name email username profession role plan allowedTemplates createdAt updatedAt"
+          "_id name email username profession role plan allowedTemplates featureOverrides createdAt updatedAt"
         )
         .sort({ [validSortField]: sortOrder })
         .skip(skip)
@@ -104,6 +108,8 @@ export async function GET(request: NextRequest) {
         u.allowedTemplates?.[0] ||
         u.profession ||
         "developer",
+      featureOverrides: extractNormalizedOverrides(u.featureOverrides),
+      effectiveEntitlements: resolveEffectiveEntitlements(u),
       createdAt: u.createdAt,
       updatedAt: u.updatedAt,
     }));
