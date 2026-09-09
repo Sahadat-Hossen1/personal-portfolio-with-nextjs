@@ -18,6 +18,9 @@ import {
   AlertCircle,
   Loader2,
   Sliders,
+  Users,
+  BarChart3,
+  ShieldCheck,
 } from "lucide-react";
 
 interface DashboardStats {
@@ -175,6 +178,42 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="space-y-8">
+      {/* Platform Control Plane Quick Access */}
+      <div className="p-5 rounded-3xl bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-transparent border border-indigo-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20 shrink-0">
+            <ShieldCheck size={20} />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-bold text-foreground">Platform Control Plane</span>
+              <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                Superadmin
+              </span>
+            </div>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Manage SaaS tenant users, account plans, template entitlements, and view platform metrics.
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2.5 w-full sm:w-auto">
+          <Link
+            href="/admin/users"
+            className="flex-1 sm:flex-initial px-4 py-2 rounded-xl bg-card border border-border hover:border-indigo-500/50 hover:bg-muted text-xs font-semibold text-foreground flex items-center justify-center gap-1.5 transition-all shadow-sm"
+          >
+            <Users size={14} className="text-indigo-400" />
+            <span>Tenant Users</span>
+          </Link>
+          <Link
+            href="/admin/stats"
+            className="flex-1 sm:flex-initial px-4 py-2 rounded-xl bg-card border border-border hover:border-indigo-500/50 hover:bg-muted text-xs font-semibold text-foreground flex items-center justify-center gap-1.5 transition-all shadow-sm"
+          >
+            <BarChart3 size={14} className="text-indigo-400" />
+            <span>Platform Stats</span>
+          </Link>
+        </div>
+      </div>
+
       {/* Top Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 glass rounded-3xl p-6 border border-border relative overflow-hidden">
         <div

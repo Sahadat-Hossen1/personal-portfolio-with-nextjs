@@ -15,14 +15,20 @@ import {
   ExternalLink,
   Menu,
   X,
-  Database,
   Sparkles,
   ShieldCheck,
+  Users,
+  BarChart3,
 } from "lucide-react";
 import { ModeToggle } from "@/components/mode-toggle";
 
-const navItems = [
+const platformNavItems = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
+  { label: "Tenant Users", href: "/admin/users", icon: Users },
+  { label: "Platform Stats", href: "/admin/stats", icon: BarChart3 },
+];
+
+const portfolioNavItems = [
   { label: "Hero & About", href: "/admin/hero-about", icon: User },
   { label: "Projects", href: "/admin/projects", icon: FolderGit2 },
   { label: "Skills & Tags", href: "/admin/skills", icon: Cpu },
@@ -141,36 +147,73 @@ export default function AdminLayout({
         </div>
 
         {/* Navigation Links */}
-        <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
-          {navItems.map((item) => {
-            const active = pathname === item.href;
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setMobileOpen(false)}
-                className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
-                  active
-                    ? "bg-gradient-to-r from-indigo-500/20 to-purple-500/20 text-foreground border border-indigo-500/40 shadow-sm"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <Icon
-                    size={18}
-                    className={active ? "text-indigo-400" : "text-muted-foreground"}
-                  />
-                  <span>{item.label}</span>
-                </div>
-                {item.href === "/admin/messages" && unreadCount > 0 && (
-                  <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30 animate-pulse">
-                    {unreadCount}
-                  </span>
-                )}
-              </Link>
-            );
-          })}
+        <nav className="flex-1 p-3 space-y-4 overflow-y-auto">
+          {/* Platform Management Section */}
+          <div className="space-y-1">
+            <div className="px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70">
+              Platform Control Plane
+            </div>
+            {platformNavItems.map((item) => {
+              const active = pathname === item.href;
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setMobileOpen(false)}
+                  className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+                    active
+                      ? "bg-gradient-to-r from-indigo-500/20 to-purple-500/20 text-foreground border border-indigo-500/40 shadow-sm"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <Icon
+                      size={18}
+                      className={active ? "text-indigo-400" : "text-muted-foreground"}
+                    />
+                    <span>{item.label}</span>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+
+          {/* Creator Portfolio Section */}
+          <div className="space-y-1 pt-2 border-t border-border/50">
+            <div className="px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70">
+              Creator Portfolio (Legacy)
+            </div>
+            {portfolioNavItems.map((item) => {
+              const active = pathname === item.href;
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setMobileOpen(false)}
+                  className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+                    active
+                      ? "bg-gradient-to-r from-indigo-500/20 to-purple-500/20 text-foreground border border-indigo-500/40 shadow-sm"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <Icon
+                      size={18}
+                      className={active ? "text-indigo-400" : "text-muted-foreground"}
+                    />
+                    <span>{item.label}</span>
+                  </div>
+                  {item.href === "/admin/messages" && unreadCount > 0 && (
+                    <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30 animate-pulse">
+                      {unreadCount}
+                    </span>
+                  )}
+                </Link>
+              );
+            })}
+          </div>
         </nav>
 
         {/* Bottom Footer Actions */}
