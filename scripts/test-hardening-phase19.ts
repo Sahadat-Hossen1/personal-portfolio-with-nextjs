@@ -260,20 +260,25 @@ async function runTests() {
   try {
     const adminPagePath = path.join(srcDir, "app", "admin", "page.tsx");
     const adminLayoutPath = path.join(srcDir, "app", "admin", "layout.tsx");
+    const adminShellPath = path.join(srcDir, "components", "AdminShell.tsx");
     const adminPageContent = fs.readFileSync(adminPagePath, "utf-8");
     const adminLayoutContent = fs.readFileSync(adminLayoutPath, "utf-8");
+    const adminShellContent = fs.existsSync(adminShellPath)
+      ? fs.readFileSync(adminShellPath, "utf-8")
+      : "";
+    const combinedLayoutContent = adminLayoutContent + "\n" + adminShellContent;
 
     const pageLinksUsers = adminPageContent.includes("/admin/users");
     const pageLinksStats = adminPageContent.includes("/admin/stats");
-    const layoutLinksUsers = adminLayoutContent.includes("/admin/users");
-    const layoutLinksStats = adminLayoutContent.includes("/admin/stats");
+    const layoutLinksUsers = combinedLayoutContent.includes("/admin/users");
+    const layoutLinksStats = combinedLayoutContent.includes("/admin/stats");
 
     const passed = pageLinksUsers && pageLinksStats && layoutLinksUsers && layoutLinksStats;
     assert(
       9,
       "/admin links to platform management",
       passed,
-      `Page: users=${pageLinksUsers}, stats=${pageLinksStats} | Layout: users=${layoutLinksUsers}, stats=${layoutLinksStats}`
+      `Page: users=${pageLinksUsers}, stats=${pageLinksStats} | Layout/Shell: users=${layoutLinksUsers}, stats=${layoutLinksStats}`
     );
   } catch (err: unknown) {
     assert(9, "/admin links to platform management", false, String(err));
@@ -284,13 +289,18 @@ async function runTests() {
   // -------------------------------------------------------------
   try {
     const adminLayoutPath = path.join(srcDir, "app", "admin", "layout.tsx");
+    const adminShellPath = path.join(srcDir, "components", "AdminShell.tsx");
     const adminPagePath = path.join(srcDir, "app", "admin", "page.tsx");
     const adminLayoutContent = fs.readFileSync(adminLayoutPath, "utf-8");
+    const adminShellContent = fs.existsSync(adminShellPath)
+      ? fs.readFileSync(adminShellPath, "utf-8")
+      : "";
+    const combinedLayoutContent = adminLayoutContent + "\n" + adminShellContent;
     const adminPageContent = fs.readFileSync(adminPagePath, "utf-8");
 
     const layoutHasReturn =
-      adminLayoutContent.includes("/dashboard") &&
-      adminLayoutContent.includes("Return to My Portfolio Dashboard");
+      combinedLayoutContent.includes("/dashboard") &&
+      combinedLayoutContent.includes("Return to My Portfolio Dashboard");
     const pageHasReturn = adminPageContent.includes("/dashboard");
 
     const passed = layoutHasReturn && pageHasReturn;
@@ -298,7 +308,7 @@ async function runTests() {
       10,
       "/admin has return path to /dashboard",
       passed,
-      `Layout has return link: ${layoutHasReturn}, Page has dashboard link: ${pageHasReturn}`
+      `Layout/Shell has return link: ${layoutHasReturn}, Page has dashboard link: ${pageHasReturn}`
     );
   } catch (err: unknown) {
     assert(10, "/admin has return path to /dashboard", false, String(err));

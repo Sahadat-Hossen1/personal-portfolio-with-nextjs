@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { TrendingUp, ArrowUp, Lock } from "lucide-react";
+import { TrendingUp, ArrowUp } from "lucide-react";
 import type { ProfileData } from "@/types/portfolio";
 
 interface MarketingFooterProps {
@@ -40,14 +39,6 @@ export default function MarketingFooter({ profile }: MarketingFooterProps) {
 
         {/* Action links */}
         <div className="flex items-center gap-4">
-          <Link
-            href="/admin"
-            className="flex items-center gap-1 text-slate-500 hover:text-slate-300 transition-colors"
-          >
-            <Lock size={12} />
-            <span>Portal</span>
-          </Link>
-
           <button
             onClick={scrollToTop}
             className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-800 transition-colors"

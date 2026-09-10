@@ -43,16 +43,9 @@ export default function VideoFooter({ profile }: VideoFooterProps) {
           FRAME RATE: 24.000 FPS // TC: 23:59:59:00
         </div>
 
-        {/* Copyright & Admin Link */}
+        {/* Copyright */}
         <div className="flex items-center gap-4 text-xs font-mono text-zinc-500">
           <span>© {currentYear} ALL RIGHTS RESERVED</span>
-          <span>•</span>
-          <Link
-            href="/admin"
-            className="text-zinc-500 hover:text-red-400 transition-colors"
-          >
-            ADMIN PORTAL
-          </Link>
         </div>
       </div>
     </footer>

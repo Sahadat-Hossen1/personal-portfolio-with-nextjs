@@ -135,7 +135,7 @@ export default function DevFooter({ profile, sections }: DevFooterProps) {
             ))}
           </div>
 
-          {/* Copyright & Admin Link */}
+          {/* Copyright */}
           <div className="flex flex-col items-center gap-2 text-xs text-muted-foreground text-center">
             <p className="flex items-center gap-1.5">
               © {currentYear} {displayName}. Built with{" "}
@@ -145,12 +145,6 @@ export default function DevFooter({ profile, sections }: DevFooterProps) {
               />{" "}
               using Next.js, MongoDB & Tailwind CSS
             </p>
-            <a
-              href="/admin"
-              className="text-[11px] text-muted-foreground hover:text-primary transition-colors"
-            >
-              Admin Portal
-            </a>
           </div>
         </div>
       </div>

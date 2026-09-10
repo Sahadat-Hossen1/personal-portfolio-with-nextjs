@@ -11,6 +11,7 @@ import {
   Layers,
   RotateCw,
   Loader2,
+  AlertCircle,
 } from "lucide-react";
 
 interface PlatformStatsData {
@@ -46,17 +47,25 @@ interface PlatformStatsData {
 export default function AdminStatsPage() {
   const [data, setData] = useState<PlatformStatsData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const handleRefresh = async () => {
     setLoading(true);
+    setError("");
     try {
       const res = await fetch("/api/admin/stats");
       const json = await res.json();
       if (json.success && json.data) {
         setData(json.data);
+      } else {
+        setError(json.error || "Failed to load platform stats.");
       }
     } catch (err) {
-      console.error("Failed to load platform stats:", err);
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to connect to platform administration"
+      );
     } finally {
       setLoading(false);
     }
@@ -69,10 +78,18 @@ export default function AdminStatsPage() {
       .then((json) => {
         if (!ignore && json.success && json.data) {
           setData(json.data);
+        } else if (!ignore) {
+          setError(json.error || "Failed to load platform stats.");
         }
       })
       .catch((err) => {
-        console.error("Failed to load platform stats:", err);
+        if (!ignore) {
+          setError(
+            err instanceof Error
+              ? err.message
+              : "Failed to connect to platform administration"
+          );
+        }
       })
       .finally(() => {
         if (!ignore) {
@@ -84,13 +101,38 @@ export default function AdminStatsPage() {
     };
   }, []);
 
-  if (loading || !data) {
+  if (loading && !data) {
     return (
-      <div className="py-24 text-center text-muted-foreground">
+      <div className="py-24 text-center text-muted-foreground animate-fade-in">
         <Loader2 size={32} className="animate-spin mx-auto text-indigo-400 mb-3" />
         <span className="text-sm">Calculating platform analytics & statistics...</span>
       </div>
     );
+  }
+
+  if (error && !data) {
+    return (
+      <div className="py-24 text-center space-y-4 animate-fade-in">
+        <div className="w-12 h-12 rounded-2xl bg-rose-500/10 text-rose-400 flex items-center justify-center mx-auto">
+          <AlertCircle size={24} />
+        </div>
+        <div className="space-y-1">
+          <h2 className="text-base font-bold text-foreground">Failed to Load Platform Statistics</h2>
+          <p className="text-xs text-muted-foreground max-w-sm mx-auto">{error}</p>
+        </div>
+        <button
+          onClick={handleRefresh}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-card border border-border hover:bg-muted text-xs font-medium text-foreground transition-colors cursor-pointer"
+        >
+          <RotateCw size={14} />
+          <span>Retry</span>
+        </button>
+      </div>
+    );
+  }
+
+  if (!data) {
+    return null;
   }
 
   const totalUsers = data.users.total || 1;
@@ -101,6 +143,12 @@ export default function AdminStatsPage() {
 
   return (
     <div className="space-y-8 animate-fade-in pb-12">
+      {error && (
+        <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs flex items-center gap-3">
+          <AlertCircle size={16} />
+          <span>{error}</span>
+        </div>
+      )}
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>

@@ -79,6 +79,18 @@ export function sanitizeRequestBody<T extends Record<string, unknown>>(
 export async function getAuthenticatedUser(
   request?: NextRequest
 ): Promise<AuthenticatedUser | null> {
+  if (
+    process.env.NODE_ENV !== "production" &&
+    typeof globalThis !== "undefined" &&
+    (globalThis as unknown as { __TEST_AUTH_USER__?: AuthenticatedUser | null })
+      .__TEST_AUTH_USER__ !== undefined
+  ) {
+    return (
+      (globalThis as unknown as { __TEST_AUTH_USER__?: AuthenticatedUser | null })
+        .__TEST_AUTH_USER__ ?? null
+    );
+  }
+
   const userPayload = request
     ? await verifyUserRequest(request)
     : await getUserSession();
