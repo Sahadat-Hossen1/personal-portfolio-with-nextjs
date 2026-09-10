@@ -34,7 +34,12 @@ export default function DeveloperTemplate({ data, publicContext }: TemplateProps
 
   return (
     <>
-      <DevNavbar sections={sections} socials={profile?.socials} />
+      <DevNavbar
+        name={profile?.name}
+        avatar={profile?.avatarUrl}
+        sections={sections}
+        socials={profile?.socials}
+      />
       <main className="flex-1">
         {sections.hero !== false && <DevHero profile={profile} />}
         {sections.about !== false && <DevAbout profile={profile} />}
@@ -59,6 +64,7 @@ export default function DeveloperTemplate({ data, publicContext }: TemplateProps
 
       {sections.floatingChat !== false && (
         <FloatingChatWidget
+          name={profile?.name}
           whatsappNumber={profile?.whatsappNumber}
           whatsappMessage={profile?.whatsappMessage}
           messengerUrl={profile?.messengerUrl}

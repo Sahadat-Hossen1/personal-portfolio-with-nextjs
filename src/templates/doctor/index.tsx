@@ -61,6 +61,7 @@ export default function DoctorTemplate({ data, publicContext }: TemplateProps) {
       {/* Shared Floating Chat Widget */}
       {sections.floatingChat !== false && (
         <FloatingChatWidget
+          name={profile?.name}
           whatsappNumber={profile?.whatsappNumber}
           whatsappMessage={profile?.whatsappMessage}
           messengerUrl={profile?.messengerUrl}

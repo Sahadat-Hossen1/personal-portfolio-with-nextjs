@@ -82,9 +82,12 @@ export function trackSocialClick(
 /**
  * Event Tracker: Download CV
  */
-export function trackDownloadCV(location: "hero_section" | "navbar" | "footer" = "hero_section") {
+export function trackDownloadCV(
+  location: "hero_section" | "navbar" | "footer" = "hero_section",
+  fileName: string = "resume.pdf"
+) {
   pushToDataLayer("download_cv", {
-    file_name: "Sahadat_Hossen_CV.pdf",
+    file_name: fileName,
     location,
   });
 }

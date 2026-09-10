@@ -1,28 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ArrowDown, Download, ExternalLink, Sparkles } from "lucide-react";
 import { Github } from "@/components/icons";
 import { trackDownloadCV, trackSocialClick } from "@/lib/gtm";
-
-const defaultRoles = [
-  "Full Stack MERN Developer",
-  "React Specialist",
-  "Node.js Engineer",
-  "MongoDB Architect",
-  "API Designer",
-];
-
-const defaultFloatingBadges = [
-  { label: "MongoDB", color: "from-green-500 to-emerald-600", delay: "0s", top: "15%", left: "8%" },
-  { label: "Express", color: "from-gray-500 to-gray-700", delay: "1.5s", top: "70%", left: "5%" },
-  { label: "React", color: "from-cyan-400 to-blue-500", delay: "0.8s", top: "20%", right: "8%" },
-  { label: "Node.js", color: "from-green-400 to-lime-600", delay: "2s", top: "65%", right: "6%" },
-  { label: "TypeScript", color: "from-blue-500 to-blue-700", delay: "1.2s", top: "45%", left: "3%" },
-  { label: "Next.js", color: "from-slate-600 to-slate-800", delay: "2.5s", top: "40%", right: "4%" },
-];
 
 interface DevHeroProps {
   profile?: {
@@ -42,23 +25,25 @@ interface DevHeroProps {
       right?: string;
     }[];
     socials?: { platform: string; href: string; enabled?: boolean }[];
+    stats?: { value: string; label: string }[];
   };
 }
 
 export default function DevHero({ profile }: DevHeroProps) {
-  const activeRoles =
-    profile?.roles && profile.roles.length > 0 ? profile.roles : defaultRoles;
+  const activeRoles = useMemo(
+    () => (profile?.roles && profile.roles.length > 0 ? profile.roles : []),
+    [profile]
+  );
   const activeBadges =
     profile?.floatingBadges && profile.floatingBadges.length > 0
       ? profile.floatingBadges
-      : defaultFloatingBadges;
+      : [];
   const displayName = profile?.name || "Developer";
-  const bioBlurb =
-    profile?.bioBlurb ||
-    "I build scalable, performant web applications with modern technologies.";
-  const statusText = profile?.statusText || "Available for new opportunities";
+  const bioBlurb = profile?.bioBlurb || "";
+  const statusText = profile?.statusText || "Available for opportunities";
   const isAvailable = profile?.statusAvailable ?? true;
-  const avatarSrc = profile?.avatarUrl || "/profile.jpg";
+  const avatarSrc = profile?.avatarUrl;
+  const hasAvatar = Boolean(avatarSrc && avatarSrc.trim().length > 0);
   const githubItem = profile?.socials?.find((s) => s.platform === "github");
   const isGithubEnabled = Boolean(githubItem && githubItem.enabled !== false && githubItem.href);
   const githubLink = githubItem?.href || "";
@@ -71,7 +56,8 @@ export default function DevHero({ profile }: DevHeroProps) {
 
   // Typewriter effect
   useEffect(() => {
-    const current = activeRoles[roleIndex % activeRoles.length] || "Developer";
+    if (activeRoles.length === 0) return;
+    const current = activeRoles[roleIndex % activeRoles.length] || "";
     const speed = isDeleting ? 40 : 80;
 
     const timer = setTimeout(() => {
@@ -249,15 +235,21 @@ export default function DevHero({ profile }: DevHeroProps) {
       <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
         {/* Status badge */}
         <div className="inline-flex items-center gap-2.5 glass px-4 py-1.5 rounded-full text-xs font-medium border border-emerald-500/20 mb-8 animate-fade-up">
-          <div className="relative w-6 h-6 rounded-full overflow-hidden border border-emerald-400/40 flex-shrink-0">
-            <Image
-              src={avatarSrc}
-              alt={displayName}
-              fill
-              sizes="24px"
-              className="object-cover object-top"
-            />
-          </div>
+          {hasAvatar && avatarSrc ? (
+            <div className="relative w-6 h-6 rounded-full overflow-hidden border border-emerald-400/40 flex-shrink-0">
+              <Image
+                src={avatarSrc}
+                alt={displayName}
+                fill
+                sizes="24px"
+                className="object-cover object-top"
+              />
+            </div>
+          ) : (
+            <div className="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-[10px] font-bold flex-shrink-0">
+              {displayName.charAt(0).toUpperCase()}
+            </div>
+          )}
           <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-medium">
             {isAvailable && (
               <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
@@ -280,15 +272,19 @@ export default function DevHero({ profile }: DevHeroProps) {
         </h1>
 
         {/* Typewriter role */}
-        <div className="text-xl sm:text-2xl lg:text-3xl font-semibold text-muted-foreground mb-6 h-10 flex items-center justify-center gap-2">
-          <span className="shimmer-text">{displayed}</span>
-          <span className="w-0.5 h-8 bg-primary animate-pulse rounded-full" />
-        </div>
+        {activeRoles.length > 0 && (
+          <div className="text-xl sm:text-2xl lg:text-3xl font-semibold text-muted-foreground mb-6 h-10 flex items-center justify-center gap-2">
+            <span className="shimmer-text">{displayed}</span>
+            <span className="w-0.5 h-8 bg-primary animate-pulse rounded-full" />
+          </div>
+        )}
 
         {/* Bio blurb */}
-        <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
-          {bioBlurb}
-        </p>
+        {bioBlurb ? (
+          <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
+            {bioBlurb}
+          </p>
+        ) : null}
 
         {/* CTAs */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
@@ -304,19 +300,21 @@ export default function DevHero({ profile }: DevHeroProps) {
             />
             View My Work
           </Button>
-          <Button
-            id="hero-download-resume"
-            onClick={handleDownloadCV}
-            size="lg"
-            variant="outline"
-            className="group w-full sm:w-auto px-8 h-12 gradient-border border-0 text-foreground hover:text-foreground bg-transparent hover:bg-muted transition-all duration-300 hover:scale-[1.04] text-base font-semibold rounded-xl"
-          >
-            <Download
-              size={18}
-              className="group-hover:translate-y-0.5 transition-transform"
-            />
-            Download CV
-          </Button>
+          {profile?.cvUrl && (
+            <Button
+              id="hero-download-resume"
+              onClick={handleDownloadCV}
+              size="lg"
+              variant="outline"
+              className="group w-full sm:w-auto px-8 h-12 gradient-border border-0 text-foreground hover:text-foreground bg-transparent hover:bg-muted transition-all duration-300 hover:scale-[1.04] text-base font-semibold rounded-xl"
+            >
+              <Download
+                size={18}
+                className="group-hover:translate-y-0.5 transition-transform"
+              />
+              Download CV
+            </Button>
+          )}
           {isGithubEnabled && (
             <a
               href={githubLink}
@@ -333,23 +331,20 @@ export default function DevHero({ profile }: DevHeroProps) {
         </div>
 
         {/* Stats */}
-        <div className="flex items-center justify-center gap-8 sm:gap-12">
-          {[
-            { value: "3+", label: "Years Exp." },
-            { value: "25+", label: "Projects" },
-            { value: "10+", label: "Clients" },
-            { value: "99%", label: "Satisfaction" },
-          ].map((stat) => (
-            <div key={stat.label} className="text-center">
-              <div className="text-2xl sm:text-3xl font-black gradient-text">
-                {stat.value}
+        {profile?.stats && profile.stats.length > 0 && (
+          <div className="flex items-center justify-center gap-8 sm:gap-12">
+            {profile.stats.map((stat) => (
+              <div key={stat.label} className="text-center">
+                <div className="text-2xl sm:text-3xl font-black gradient-text">
+                  {stat.value}
+                </div>
+                <div className="text-xs text-muted-foreground mt-0.5">
+                  {stat.label}
+                </div>
               </div>
-              <div className="text-xs text-muted-foreground mt-0.5">
-                {stat.label}
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Scroll arrow */}

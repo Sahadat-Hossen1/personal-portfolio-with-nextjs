@@ -90,83 +90,86 @@ const ProfileSchema = new Schema<IProfile>(
       sparse: true,
       unique: true,
     },
-    name: { type: String, required: true, default: "Sahadat Hossen" },
+    name: { type: String, default: "" },
     roles: {
       type: [String],
-      default: [
-        "Full Stack MERN Developer",
-        "React Specialist",
-        "Node.js Engineer",
-        "MongoDB Architect",
-        "API Designer",
-      ],
+      default: [],
     },
     bioBlurb: {
       type: String,
-      default:
-        "I build scalable, performant web applications from database to deployment. Passionate about clean code, great UX, and the MERN stack.",
+      default: "",
     },
-    statusText: { type: String, default: "Available for new opportunities" },
+    statusText: { type: String, default: "Available for opportunities" },
     statusAvailable: { type: Boolean, default: true },
-    avatarUrl: { type: String, default: "/profile.jpg" },
-    cvUrl: { type: String, default: "/resume.pdf" },
-    floatingBadges: [
-      {
-        label: { type: String, required: true },
-        color: { type: String, default: "from-green-500 to-emerald-600" },
-        delay: { type: String, default: "0s" },
-        top: { type: String },
-        left: { type: String },
-        right: { type: String },
-      },
-    ],
+    avatarUrl: { type: String, default: "" },
+    cvUrl: { type: String, default: "" },
+    floatingBadges: {
+      type: [
+        {
+          label: { type: String, required: true },
+          color: { type: String, default: "from-green-500 to-emerald-600" },
+          delay: { type: String, default: "0s" },
+          top: { type: String },
+          left: { type: String },
+          right: { type: String },
+        },
+      ],
+      default: [],
+    },
 
-    aboutTitle: { type: String, default: "Crafting digital experiences" },
+    aboutTitle: { type: String, default: "" },
     aboutP1: {
       type: String,
-      default:
-        "I'm a full-stack developer with 1+ years of experience building modern web applications. My core stack centers on MongoDB, Express, React, and Node.js (MERN), supplemented with TypeScript and Next.js.",
+      default: "",
     },
     aboutP2: {
       type: String,
-      default:
-        "Beyond code, I specialize in web analytics, conversion tracking (GA4, GTM, Meta Pixel), and technical SEO. I love building things that look stunning, perform flawlessly, and deliver measurable business value.",
+      default: "",
     },
-    currentlyBuilding: { type: String, default: "SaaS Dashboard App" },
-    stats: [
-      {
-        iconName: { type: String, default: "Briefcase" },
-        value: { type: String, default: "1+" },
-        label: { type: String, default: "Years of Experience" },
-      },
-    ],
-    highlights: [
-      {
-        emoji: { type: String, default: "⚡" },
-        text: { type: String, default: "Building real-time apps" },
-      },
-    ],
+    currentlyBuilding: { type: String, default: "" },
+    stats: {
+      type: [
+        {
+          iconName: { type: String, default: "Briefcase" },
+          value: { type: String, default: "" },
+          label: { type: String, default: "" },
+        },
+      ],
+      default: [],
+    },
+    highlights: {
+      type: [
+        {
+          emoji: { type: String, default: "" },
+          text: { type: String, default: "" },
+        },
+      ],
+      default: [],
+    },
 
-    email: { type: String, default: "sahadat.hossen1435@gmail.com" },
-    phone: { type: String, default: "+8801606081657" },
-    whatsappNumber: { type: String, default: "8801606081657" },
+    email: { type: String, default: "" },
+    phone: { type: String, default: "" },
+    whatsappNumber: { type: String, default: "" },
     whatsappMessage: {
       type: String,
-      default: "Hi Sahadat, I visited your portfolio and would like to connect!",
+      default: "",
     },
-    messengerUrl: { type: String, default: "https://m.me/sahadat.hossen.1435" },
-    chatWhatsAppEnabled: { type: Boolean, default: true },
-    chatMessengerEnabled: { type: Boolean, default: true },
-    location: { type: String, default: "Dhaka, Bangladesh" },
-    socials: [
-      {
-        platform: { type: String, required: true },
-        label: { type: String, required: true },
-        value: { type: String, required: true },
-        href: { type: String, required: true },
-        enabled: { type: Boolean, default: true },
-      },
-    ],
+    messengerUrl: { type: String, default: "" },
+    chatWhatsAppEnabled: { type: Boolean, default: false },
+    chatMessengerEnabled: { type: Boolean, default: false },
+    location: { type: String, default: "" },
+    socials: {
+      type: [
+        {
+          platform: { type: String, required: true },
+          label: { type: String, required: true },
+          value: { type: String, required: true },
+          href: { type: String, required: true },
+          enabled: { type: Boolean, default: true },
+        },
+      ],
+      default: [],
+    },
     sections: {
       hero: { type: Boolean, default: true },
       about: { type: Boolean, default: true },
@@ -174,7 +177,7 @@ const ProfileSchema = new Schema<IProfile>(
       projects: { type: Boolean, default: true },
       experience: { type: Boolean, default: true },
       contact: { type: Boolean, default: true },
-      floatingChat: { type: Boolean, default: true },
+      floatingChat: { type: Boolean, default: false },
     },
     selectedTemplate: {
       type: String,

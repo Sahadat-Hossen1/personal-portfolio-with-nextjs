@@ -4,43 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { trackSkillClick } from "@/lib/gtm";
 import type { SkillData } from "@/types/portfolio";
 
-const defaultSkills = [
-  { name: "React", icon: "⚛️", level: 95, color: "#38bdf8", category: "Web Development" },
-  { name: "Next.js", icon: "▲", level: 90, color: "#64748b", category: "Web Development" },
-  { name: "JavaScript", icon: "🟡", level: 97, color: "#eab308", category: "Web Development" },
-  { name: "TypeScript", icon: "🔷", level: 88, color: "#3b82f6", category: "Web Development" },
-  { name: "Node.js", icon: "🟢", level: 93, color: "#84cc16", category: "Web Development" },
-  { name: "Express.js", icon: "⚡", level: 90, color: "#94a3b8", category: "Web Development" },
-  { name: "MongoDB", icon: "🍃", level: 92, color: "#10b981", category: "Web Development" },
-  { name: "Tailwind CSS", icon: "🎨", level: 92, color: "#06b6d4", category: "Web Development" },
-  { name: "Redux", icon: "🔮", level: 82, color: "#7c3aed", category: "Web Development" },
-  { name: "REST APIs", icon: "🔗", level: 95, color: "#f59e0b", category: "Web Development" },
-  { name: "Git & GitHub", icon: "🐙", level: 95, color: "#a78bfa", category: "Web Development" },
-  { name: "Vercel & Netlify", icon: "▲", level: 90, color: "#00c7b7", category: "Web Development" },
-
-  { name: "Google Tag Manager", icon: "🏷️", level: 95, color: "#4285f4", category: "Analytics & Tracking" },
-  { name: "Google Analytics 4", icon: "📊", level: 92, color: "#ea4335", category: "Analytics & Tracking" },
-  { name: "Meta Pixel & CAPI", icon: "♾️", level: 90, color: "#0081fb", category: "Analytics & Tracking" },
-  { name: "Google Ads Tracking", icon: "🎯", level: 88, color: "#fbbc04", category: "Analytics & Tracking" },
-  { name: "LinkedIn Insight Tag", icon: "💼", level: 85, color: "#0a66c2", category: "Analytics & Tracking" },
-  { name: "TikTok Pixel Tracking", icon: "🎵", level: 85, color: "#fe2c55", category: "Analytics & Tracking" },
-];
-
-const defaultTags = [
-  "DataLayer Architecture",
-  "Server-Side Tracking",
-  "E-commerce Purchase Tracking",
-  "Enhanced Conversions",
-  "Custom Event Triggers",
-  "Consent Mode (v2)",
-  "Mongoose",
-  "JWT",
-  "Postman",
-  "Vite",
-  "Figma",
-  "ESLint",
-];
-
 interface DevSkillsProps {
   skills?: SkillData[];
   tags?: string[];
@@ -51,10 +14,8 @@ export default function DevSkills({
   tags: propTags,
 }: DevSkillsProps) {
   const sectionRef = useRef<HTMLElement>(null);
-  const activeSkills =
-    propSkills !== undefined ? propSkills : defaultSkills;
-  const activeTags =
-    propTags !== undefined ? propTags : defaultTags;
+  const activeSkills = propSkills || [];
+  const activeTags = propTags || [];
 
 
   const categories = [

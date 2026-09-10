@@ -1,9 +1,12 @@
 import { redirect } from "next/navigation";
 import { getAuthenticatedUser } from "@/lib/authorization";
 import { connectToDatabase } from "@/lib/mongodb";
-import User from "@/models/User";
+import User, { UserPlan } from "@/models/User";
 import Profile from "@/models/Profile";
 import DashboardShell from "@/components/dashboard/DashboardShell";
+import { EntitlementsProvider } from "@/components/dashboard/EntitlementsContext";
+import { resolveEffectiveEntitlements } from "@/lib/entitlements/resolver";
+import { getAllFeatureDefinitions } from "@/lib/entitlements/features";
 
 export default async function DashboardLayout({
   children,
@@ -17,7 +20,9 @@ export default async function DashboardLayout({
 
   await connectToDatabase();
   const userDoc = await User.findById(authUser.userId)
-    .select("name email username profession allowedTemplates role plan accountStatus")
+    .select(
+      "name email username profession allowedTemplates role plan accountStatus featureOverrides"
+    )
     .lean();
 
   if (!userDoc || userDoc.accountStatus === "suspended") {
@@ -34,19 +39,35 @@ export default async function DashboardLayout({
     userDoc.profession ||
     "developer";
 
+  // Centralized Entitlement Authority: resolve effective capabilities server-side
+  const effectiveEntitlements = resolveEffectiveEntitlements(userDoc);
+  const features = getAllFeatureDefinitions();
+  const plan = (userDoc.plan as UserPlan) || "free";
+
   return (
-    <DashboardShell
-      user={{
-        name: userDoc.name || authUser.username,
-        email: userDoc.email || authUser.email,
-        username: userDoc.username || authUser.username,
-        profession: userDoc.profession || "developer",
-        selectedTemplate,
-        allowedTemplates: userDoc.allowedTemplates || [selectedTemplate],
+    <EntitlementsProvider
+      initialData={{
+        plan,
         role: userDoc.role || "user",
+        effectiveEntitlements,
+        features,
       }}
     >
-      {children}
-    </DashboardShell>
+      <DashboardShell
+        user={{
+          name: userDoc.name || authUser.username,
+          email: userDoc.email || authUser.email,
+          username: userDoc.username || authUser.username,
+          profession: userDoc.profession || "developer",
+          selectedTemplate,
+          allowedTemplates: userDoc.allowedTemplates || [selectedTemplate],
+          role: userDoc.role || "user",
+          plan,
+        }}
+      >
+        {children}
+      </DashboardShell>
+    </EntitlementsProvider>
   );
 }
+

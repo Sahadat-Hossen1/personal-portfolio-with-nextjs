@@ -33,7 +33,12 @@ export default function VideoEditorTemplate({ data, publicContext }: TemplatePro
 
   return (
     <div className="min-h-screen flex flex-col bg-zinc-950 text-zinc-100 selection:bg-red-600 selection:text-white">
-      <VideoNavbar sections={sections} socials={profile?.socials} />
+      <VideoNavbar
+        name={profile?.name}
+        avatar={profile?.avatarUrl}
+        sections={sections}
+        socials={profile?.socials}
+      />
       <main className="flex-1">
         {sections.hero !== false && (
           <VideoHero
@@ -63,6 +68,7 @@ export default function VideoEditorTemplate({ data, publicContext }: TemplatePro
       {/* Shared Floating Chat Widget */}
       {sections.floatingChat !== false && (
         <FloatingChatWidget
+          name={profile?.name}
           whatsappNumber={profile?.whatsappNumber}
           whatsappMessage={profile?.whatsappMessage}
           messengerUrl={profile?.messengerUrl}

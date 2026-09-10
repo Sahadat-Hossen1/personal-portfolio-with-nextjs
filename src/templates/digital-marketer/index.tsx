@@ -78,6 +78,7 @@ export default function DigitalMarketerTemplate({ data, publicContext }: Templat
       {/* Shared Floating Chat Widget */}
       {sections.floatingChat !== false && (
         <FloatingChatWidget
+          name={profile?.name}
           whatsappNumber={profile?.whatsappNumber}
           whatsappMessage={profile?.whatsappMessage}
           messengerUrl={profile?.messengerUrl}

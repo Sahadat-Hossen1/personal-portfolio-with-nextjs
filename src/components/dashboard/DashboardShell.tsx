@@ -21,8 +21,10 @@ import {
   TrendingUp,
   Stethoscope,
   ShieldCheck,
+  Sparkles,
 } from "lucide-react";
 import { ModeToggle } from "@/components/mode-toggle";
+import { useEntitlements } from "./EntitlementsContext";
 
 export interface DashboardUserIdentity {
   name: string;
@@ -32,6 +34,7 @@ export interface DashboardUserIdentity {
   selectedTemplate: string;
   allowedTemplates: string[];
   role: string;
+  plan?: string;
 }
 
 const navItems = [
@@ -67,8 +70,11 @@ export default function DashboardShell({
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const { openUpgradeModal } = useEntitlements();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const isPremium = user.plan === "premium";
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
@@ -163,6 +169,21 @@ export default function DashboardShell({
               {user.selectedTemplate}
             </span>
           </div>
+          <div className="flex items-center justify-between text-[11px]">
+            <span className="text-muted-foreground flex items-center gap-1">
+              <Sparkles size={12} className={isPremium ? "text-purple-400" : "text-indigo-400"} />
+              Account Plan:
+            </span>
+            <span
+              className={`font-semibold capitalize px-2 py-0.5 rounded border ${
+                isPremium
+                  ? "bg-purple-500/15 border-purple-500/30 text-purple-400 dark:text-purple-300"
+                  : "bg-muted/60 border-border/60 text-muted-foreground"
+              }`}
+            >
+              {isPremium ? "Premium Tier" : "Free Tier"}
+            </span>
+          </div>
         </div>
 
         {/* Navigation Links */}
@@ -210,9 +231,32 @@ export default function DashboardShell({
               </Link>
             );
           })}
+
+          {/* Upgrade Discovery Card for Free Users */}
+          {!isPremium && (
+            <div className="pt-3">
+              <div className="p-3.5 rounded-2xl bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-transparent border border-indigo-500/20 space-y-2">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-foreground">
+                  <Sparkles size={14} className="text-purple-400" />
+                  <span>Unlock Premium</span>
+                </div>
+                <p className="text-[11px] text-muted-foreground leading-snug">
+                  Floating chat, section toggling & advanced SEO capabilities.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => openUpgradeModal()}
+                  className="w-full py-1.5 px-2.5 rounded-xl text-xs font-semibold bg-indigo-500 hover:bg-indigo-600 text-white shadow-sm transition-all cursor-pointer text-center"
+                >
+                  Explore Capabilities
+                </button>
+              </div>
+            </div>
+          )}
         </nav>
 
         {/* Bottom Actions */}
+
         <div className="p-3 border-t border-border space-y-1 bg-muted/20">
           <Link
             href={user.username ? `/p/${user.username}` : "/"}

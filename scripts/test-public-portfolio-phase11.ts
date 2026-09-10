@@ -30,7 +30,6 @@ import Message from "@/models/Message";
 
 // Utilities & Data Loaders
 import { getPortfolioDataByOwnerId } from "@/lib/getData";
-import { initialProjects, initialSkills } from "@/lib/initialData";
 import {
   TEMPLATE_MAP,
   DEFAULT_TEMPLATE_ID,
@@ -248,7 +247,11 @@ export async function runPublicPortfolioPhase11Tests() {
   // --- 5. No initialData Fallback ---
   {
     const dataC = await getPortfolioDataByOwnerId(userC._id);
-    const initialProjectTitles = new Set(initialProjects.map((p) => p.title));
+    const initialProjectTitles = new Set([
+      "Next.js Full-Stack SaaS",
+      "Real-Time Chat Application",
+      "Interactive Developer Portfolio",
+    ]);
     const leakedInitialProject = dataC?.projects.some((p) =>
       initialProjectTitles.has(p.title)
     );

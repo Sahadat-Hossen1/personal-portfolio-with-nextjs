@@ -8,6 +8,7 @@ import FeatureGrid from "@/components/landing/FeatureGrid";
 import PricingComparison from "@/components/landing/PricingComparison";
 import LandingCTA from "@/components/landing/LandingCTA";
 import LandingFooter from "@/components/landing/LandingFooter";
+import JsonLd from "@/components/JsonLd";
 
 export const dynamic = "force-dynamic";
 
@@ -44,6 +45,7 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col selection:bg-indigo-500/30">
+      <JsonLd />
       {/* SaaS Landing Header */}
       <LandingNavbar authState={authState} />
 

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import JsonLd from "@/components/JsonLd";
 import GTMProvider from "@/components/GTMProvider";
 import { ThemeProvider } from "@/components/theme-provider";
 
@@ -17,7 +16,7 @@ const geistMono = Geist_Mono({
 
 const baseUrl =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, "") ||
-  "https://sahadathossen.dev";
+  "http://localhost:3000";
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
@@ -106,9 +105,6 @@ export default function RootLayout({
       data-scroll-behavior="smooth"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <head>
-        <JsonLd />
-      </head>
       <body
         suppressHydrationWarning
         className="min-h-full flex flex-col bg-background text-foreground transition-colors duration-300"

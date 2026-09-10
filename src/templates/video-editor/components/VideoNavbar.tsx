@@ -18,6 +18,8 @@ const navLinks = [
 ];
 
 interface VideoNavbarProps {
+  name?: string;
+  avatar?: string;
   sections?: {
     hero?: boolean;
     about?: boolean;
@@ -35,7 +37,12 @@ interface VideoNavbarProps {
   }[];
 }
 
-export default function VideoNavbar({ sections, socials }: VideoNavbarProps = {}) {
+export default function VideoNavbar({
+  name = "Editorial Studio",
+  avatar,
+  sections,
+  socials,
+}: VideoNavbarProps = {}) {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("");
@@ -95,22 +102,28 @@ export default function VideoNavbar({ sections, socials }: VideoNavbarProps = {}
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}
             className="flex items-center gap-3 group"
-            aria-label="Editorial Studio Home"
+            aria-label={`${name} Home`}
           >
-            <div className="relative w-9 h-9 rounded-xl overflow-hidden border border-red-500/40 shadow-lg shadow-red-950/50 group-hover:scale-105 transition-transform duration-300">
-              <Image
-                src="/profile.jpg"
-                alt="Studio"
-                fill
-                sizes="36px"
-                className="object-cover object-top"
-              />
-            </div>
+            {avatar ? (
+              <div className="relative w-9 h-9 rounded-xl overflow-hidden border border-red-500/40 shadow-lg shadow-red-950/50 group-hover:scale-105 transition-transform duration-300">
+                <Image
+                  src={avatar}
+                  alt={name}
+                  fill
+                  sizes="36px"
+                  className="object-cover object-top"
+                />
+              </div>
+            ) : (
+              <div className="w-9 h-9 rounded-xl bg-red-950/80 border border-red-500/40 text-red-400 flex items-center justify-center shadow-lg shadow-red-950/50 group-hover:scale-105 transition-transform duration-300">
+                <Film size={18} />
+              </div>
+            )}
 
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
                 <span className="font-mono text-base font-black tracking-wider uppercase text-white group-hover:text-red-400 transition-colors">
-                  Editorial // Studio
+                  {name}
                 </span>
 
                 <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-red-950/80 border border-red-600/40 text-[9px] font-mono font-bold text-red-400">

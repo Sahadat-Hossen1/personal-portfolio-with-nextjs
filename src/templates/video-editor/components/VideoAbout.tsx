@@ -9,7 +9,8 @@ interface VideoAboutProps {
 }
 
 export default function VideoAbout({ profile }: VideoAboutProps) {
-  const avatarSrc = profile?.avatarUrl || "/profile.jpg";
+  const avatarSrc = profile?.avatarUrl;
+  const hasAvatar = Boolean(avatarSrc && avatarSrc.trim().length > 0);
   const displayName = profile?.name || "Creative Editor";
   const aboutTitle = profile?.aboutTitle || "Shaping Emotion Through Cut & Color";
   const p1 =
@@ -25,14 +26,21 @@ export default function VideoAbout({ profile }: VideoAboutProps) {
         <div className="grid lg:grid-cols-12 gap-12 items-center">
           {/* Left: Cinematic 4:5 Portrait Frame */}
           <div className="lg:col-span-5 relative flex justify-center">
-            <div className="relative w-72 sm:w-80 aspect-[4/5] rounded-3xl overflow-hidden bg-zinc-950 border border-zinc-800 shadow-2xl group">
-              <Image
-                src={avatarSrc}
-                alt={displayName}
-                fill
-                sizes="(max-width: 640px) 288px, 320px"
-                className="object-cover object-top filter grayscale contrast-110 group-hover:grayscale-0 transition-all duration-700"
-              />
+            <div className="relative w-72 sm:w-80 aspect-[4/5] rounded-3xl overflow-hidden bg-zinc-950 border border-zinc-800 shadow-2xl group flex items-center justify-center">
+              {hasAvatar && avatarSrc ? (
+                <Image
+                  src={avatarSrc}
+                  alt={displayName}
+                  fill
+                  sizes="(max-width: 640px) 288px, 320px"
+                  className="object-cover object-top filter grayscale contrast-110 group-hover:grayscale-0 transition-all duration-700"
+                />
+              ) : (
+                <div className="w-full h-full flex flex-col items-center justify-center text-zinc-600 gap-3 bg-zinc-900/50">
+                  <Clapperboard size={48} className="text-zinc-700" />
+                  <span className="text-xs font-mono text-zinc-500 uppercase">{displayName}</span>
+                </div>
+              )}
 
               {/* Film Grain & Letterbox Framing */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-black/30 pointer-events-none" />
@@ -80,12 +88,14 @@ export default function VideoAbout({ profile }: VideoAboutProps) {
             </div>
 
             {/* Studio Location & Availability */}
-            <div className="flex items-center gap-4 pt-4 border-t border-zinc-800 text-xs font-mono text-zinc-400">
-              <div className="flex items-center gap-1.5">
-                <MapPin size={13} className="text-red-500" />
-                <span>Studio: {profile?.location || "Dhaka, Bangladesh (Remote Worldwide)"}</span>
+            {profile?.location && (
+              <div className="flex items-center gap-4 pt-4 border-t border-zinc-800 text-xs font-mono text-zinc-400">
+                <div className="flex items-center gap-1.5">
+                  <MapPin size={13} className="text-red-500" />
+                  <span>Studio: {profile.location}</span>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>

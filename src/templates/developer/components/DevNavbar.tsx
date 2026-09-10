@@ -17,6 +17,8 @@ const navLinks = [
 ];
 
 interface DevNavbarProps {
+  name?: string;
+  avatar?: string;
   sections?: {
     hero?: boolean;
     about?: boolean;
@@ -34,7 +36,12 @@ interface DevNavbarProps {
   }[];
 }
 
-export default function DevNavbar({ sections, socials }: DevNavbarProps = {}) {
+export default function DevNavbar({
+  name = "Portfolio",
+  avatar,
+  sections,
+  socials,
+}: DevNavbarProps = {}) {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("");
@@ -96,19 +103,25 @@ export default function DevNavbar({ sections, socials }: DevNavbarProps = {}) {
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}
             className="flex items-center gap-2.5 group"
-            aria-label="Portfolio Home"
+            aria-label={`${name} Home`}
           >
-            <div className="relative w-8 h-8 rounded-full overflow-hidden border border-indigo-500/50 shadow-md group-hover:shadow-indigo-500/40 transition-all duration-300 group-hover:scale-110">
-              <Image
-                src="/profile.jpg"
-                alt="Portfolio"
-                fill
-                sizes="32px"
-                className="object-cover object-top"
-              />
-            </div>
+            {avatar ? (
+              <div className="relative w-8 h-8 rounded-full overflow-hidden border border-indigo-500/50 shadow-md group-hover:shadow-indigo-500/40 transition-all duration-300 group-hover:scale-110">
+                <Image
+                  src={avatar}
+                  alt={name}
+                  fill
+                  sizes="32px"
+                  className="object-cover object-top"
+                />
+              </div>
+            ) : (
+              <div className="w-8 h-8 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 flex items-center justify-center font-bold text-xs shadow-md group-hover:scale-110 transition-transform">
+                {name ? name.charAt(0).toUpperCase() : "P"}
+              </div>
+            )}
             <span className="font-bold text-lg tracking-tight gradient-text">
-              Portfolio
+              {name}
             </span>
           </Link>
 

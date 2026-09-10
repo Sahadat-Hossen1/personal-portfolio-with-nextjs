@@ -18,7 +18,8 @@ export default function DoctorHero({ profile }: DoctorHeroProps) {
     "Dedicated to providing exceptional, evidence-based care and clinical excellence.";
   const statusText = profile?.statusText || "Available for consultations";
   const statusAvailable = profile?.statusAvailable ?? true;
-  const avatarUrl = profile?.avatarUrl || "/profile.jpg";
+  const avatarUrl = profile?.avatarUrl;
+  const hasAvatar = Boolean(avatarUrl && avatarUrl.trim().length > 0);
   const cvUrl = profile?.cvUrl;
   const floatingBadges = profile?.floatingBadges || [];
 
@@ -113,15 +114,26 @@ export default function DoctorHero({ profile }: DoctorHeroProps) {
               <div className="absolute inset-0 bg-gradient-to-tr from-teal-500/20 via-cyan-500/15 to-transparent rounded-3xl -rotate-2 transform scale-102 filter blur-sm"></div>
 
               {/* Portrait Container */}
-              <div className="relative w-full h-full rounded-3xl overflow-hidden border-2 border-teal-500/30 dark:border-teal-500/20 bg-card shadow-xl">
-                <Image
-                  src={avatarUrl}
-                  alt={name}
-                  fill
-                  priority
-                  sizes="(max-width: 768px) 100vw, 380px"
-                  className="object-cover object-top hover:scale-105 transition-transform duration-700 ease-out"
-                />
+              <div className="relative w-full h-full rounded-3xl overflow-hidden border-2 border-teal-500/30 dark:border-teal-500/20 bg-card shadow-xl flex items-center justify-center">
+                {hasAvatar && avatarUrl ? (
+                  <Image
+                    src={avatarUrl}
+                    alt={name}
+                    fill
+                    priority
+                    sizes="(max-width: 768px) 100vw, 380px"
+                    className="object-cover object-top hover:scale-105 transition-transform duration-700 ease-out"
+                  />
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center text-teal-600/60 dark:text-teal-400/60 gap-4 bg-teal-500/5">
+                    <div className="w-24 h-24 rounded-3xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-4xl font-bold">
+                      {name ? name.charAt(0).toUpperCase() : "Dr"}
+                    </div>
+                    <span className="text-xs font-semibold tracking-wider uppercase text-muted-foreground">
+                      {name}
+                    </span>
+                  </div>
+                )}
 
                 {/* Subtle bottom gradient overlay for contrast */}
                 <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent opacity-60"></div>

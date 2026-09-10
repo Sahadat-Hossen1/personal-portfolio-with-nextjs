@@ -19,6 +19,8 @@ import Skill from "@/models/Skill";
 import Experience from "@/models/Experience";
 import Message from "@/models/Message";
 import PublicationControl from "@/components/dashboard/PublicationControl";
+import PlanBadge from "@/components/dashboard/PlanBadge";
+import FeatureStatusCard from "@/components/dashboard/FeatureStatusCard";
 
 export default async function DashboardPage() {
   const authUser = await getAuthenticatedUser();
@@ -235,9 +237,7 @@ export default async function DashboardPage() {
             </div>
             <div>
               <span className="text-muted-foreground block mb-0.5">Account Plan</span>
-              <span className="uppercase tracking-wider font-bold text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 inline-block">
-                {userDoc.plan}
-              </span>
+              <PlanBadge plan={userDoc.plan} showUpgradeButton={true} size="sm" />
             </div>
           </div>
         </div>
@@ -309,6 +309,9 @@ export default async function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* Entitlement & Plan Capabilities Breakdown */}
+      <FeatureStatusCard />
     </div>
   );
 }

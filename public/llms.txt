@@ -1,29 +1,22 @@
-# Sahadat Hossen — Full Stack MERN Developer
+# PortfolioOS — Multi-Tenant SaaS Portfolio Platform
 
-> Personal Portfolio & Technical Context for AI Crawlers & Large Language Models (LLMs).
+> Technical Context & Architectural Documentation for AI Crawlers & Large Language Models (LLMs).
 
 ## Overview
-Sahadat Hossen is a Full Stack MERN Developer based in Dhaka, Bangladesh, specializing in modern web development, scalable frontend & backend architectures, and high-performance user interfaces.
+PortfolioOS is a high-performance multi-tenant SaaS portfolio platform designed for modern professionals across multiple disciplines: Software Developers, Video Editors, Digital Marketers, and Medical Doctors.
 
-## Key Qualifications & Expertise
-- **Frontend Development**: React 19, Next.js (App Router), TypeScript, Tailwind CSS, Redux / Context API, HTML5, CSS3, Responsive Design, Glassmorphism & UI/UX Best Practices.
-- **Backend Development**: Node.js, Express.js, RESTful API Architecture, JWT Authentication, Middleware Design, Serverless API Routes.
-- **Database & Cloud**: MongoDB, Mongoose ORM, Database Modeling, Aggregation Pipelines, Vercel Deployment.
-- **Development Tools**: Git, GitHub, VS Code, Postman, npm, Vite, ESLint.
+The platform provides isolated tenant portfolio hosting, purpose-built presentation templates, granular section visibility controls, plan-based feature entitlements, and dynamic SEO/OpenGraph metadata.
 
-## Professional Experience & Availability
-- **Role**: Open for full-time roles, contract work, and freelance MERN stack projects worldwide.
-- **Location**: Dhaka, Bangladesh (Available for 100% remote roles globally).
-- **Response Time**: Typically within 24 hours.
+## Core Architecture
+- **Framework**: Next.js 16 (App Router), React 19, TypeScript.
+- **Styling**: Tailwind CSS v4, Modern Dark/Light theme design with smooth transitions.
+- **Database & Multitenancy**: MongoDB with Mongoose ORM. Strict owner-scoped isolation where all tenant resources (profiles, projects, skills, experiences, messages) are partitioned by verified owner identity.
+- **Public Portfolio Routing**: `/p/[username]` dynamically resolves active tenant portfolios, publication status, and custom template selections.
+- **Entitlements System**: Granular feature flags with plan defaults (Free vs. Premium) and administrator override capabilities.
+- **SEO & Discoverability**: Dynamic OpenGraph images, Schema.org Person & ProfilePage JSON-LD, multi-tenant XML sitemaps, and strict robots.txt crawler policies.
 
-## Key Portfolio Highlights
-1. **Interactive Portfolio Site**: Built using Next.js 16, React 19, TypeScript, Tailwind CSS v4, and dynamic floating chat integration (WhatsApp & Messenger).
-2. **Full Stack Applications**: Custom e-commerce platforms, RESTful APIs, and responsive management dashboards.
-
-## Direct Contact & Social Links
-- **Official Website**: [https://sahadathossen.dev](https://sahadathossen.dev)
-- **Email**: [sahadat.hossen1435@gmail.com](mailto:sahadat.hossen1435@gmail.com)
-- **WhatsApp**: [https://wa.me/8801606081657](https://wa.me/8801606081657) (+8801606081657)
-- **Messenger**: [https://m.me/sahadat.hossen.1435](https://m.me/sahadat.hossen.1435)
-- **GitHub**: [https://github.com/Sahadat-Hossen1](https://github.com/Sahadat-Hossen1)
-- **LinkedIn**: [https://linkedin.com/in/sahadathossen](https://linkedin.com/in/sahadathossen)
+## Template Offerings
+1. **Software Developer**: Terminal aesthetics, interactive tech badges, GitHub integrations, project case studies, and live demo links.
+2. **Video Editor**: High-contrast cinematic dark room, letterbox framing, showreel banners, and video project embeds.
+3. **Digital Marketer**: Data-driven KPI impact metrics, growth campaign showcases, conversion proofs, and analytics badges.
+4. **Medical Doctor**: Trust-first clinical layout, specialty credentials, verified professional badges, and patient consultation channels.

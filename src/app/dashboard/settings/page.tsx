@@ -7,6 +7,7 @@ import User from "@/models/User";
 import Profile from "@/models/Profile";
 import TemplateSwitcher from "@/components/dashboard/TemplateSwitcher";
 import PublicationControl from "@/components/dashboard/PublicationControl";
+import FeatureStatusCard from "@/components/dashboard/FeatureStatusCard";
 import { SUPPORTED_TEMPLATE_IDS } from "@/templates/index";
 import type { TemplateId } from "@/types/portfolio";
 
@@ -85,6 +86,9 @@ export default async function DashboardSettingsPage() {
         allowedTemplates={allowedTemplates}
         userRole={userDoc.role}
       />
+
+      {/* Plan & Entitlements Overview */}
+      <FeatureStatusCard />
     </div>
   );
 }

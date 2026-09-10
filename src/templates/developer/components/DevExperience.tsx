@@ -4,53 +4,6 @@ import { useEffect, useRef } from "react";
 import { MapPin, ExternalLink } from "lucide-react";
 import type { ExperienceData } from "@/types/portfolio";
 
-const defaultExperiences: ExperienceData[] = [
-  {
-    id: "exp-inspiresoft",
-    role: "Full-Stack Developer & Analytics Specialist",
-    company: "Inspire Soft",
-    companyUrl: "https://example.com",
-    location: "Dhaka, Bangladesh",
-    period: "May 2026 – Present (4 Months)",
-    type: "Full-time",
-    current: true,
-    bullets: [
-      "Developing responsive, modern web applications using React, Next.js, and Node.js with clean UI and API integrations.",
-      "Implementing end-to-end web tracking via Google Tag Manager (GTM), setting up GA4 custom events and DataLayer architecture.",
-      "Configuring Meta Pixel and standard/custom conversion tracking to ensure accurate data capture.",
-      "Collaborating with team members to optimize code performance, fix UI bugs, and streamline client project workflows.",
-    ],
-    tags: ["React", "Next.js", "Node.js", "MongoDB", "GTM", "GA4", "Meta Pixel"],
-    order: 1,
-  },
-  {
-    id: "exp-freelance",
-    role: "Freelance Web Developer & Tracking Expert",
-    company: "Self-Employed (Freelance)",
-    companyUrl: "https://example.com",
-    location: "Remote",
-    period: "2025 – Present",
-    type: "Freelance",
-    current: false,
-    bullets: [
-      "Successfully delivered 5+ full-stack and front-end web development projects with tailored client requirements.",
-      "Configured precise tracking setups using GTM, GA4, Meta Pixel, TikTok Pixel, and LinkedIn Insight Tags.",
-      "Built custom e-commerce and business websites with interactive UI, secure backends, and full event tracking capabilities.",
-      "Ensured high performance, responsive layouts, and cross-browser compatibility across all client deliverables.",
-    ],
-    tags: [
-      "MERN Stack",
-      "Tailwind CSS",
-      "GTM",
-      "GA4",
-      "Meta Pixel",
-      "TikTok Pixel",
-      "LinkedIn Tag",
-    ],
-    order: 2,
-  },
-];
-
 const typeColors: Record<string, string> = {
   "Full-time":
     "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
@@ -70,8 +23,7 @@ export default function DevExperience({
   experiences: propExperiences,
 }: DevExperienceProps) {
   const sectionRef = useRef<HTMLElement>(null);
-  const activeExperiences =
-    propExperiences !== undefined ? propExperiences : defaultExperiences;
+  const activeExperiences = propExperiences || [];
 
 
   useEffect(() => {

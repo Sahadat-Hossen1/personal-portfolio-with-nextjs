@@ -6,6 +6,7 @@ import { Whatsapp, Messenger } from "@/components/icons";
 import { trackSocialClick } from "@/lib/gtm";
 
 interface FloatingChatWidgetProps {
+  name?: string;
   whatsappNumber?: string;
   whatsappMessage?: string;
   messengerUrl?: string;
@@ -14,6 +15,7 @@ interface FloatingChatWidgetProps {
 }
 
 export default function FloatingChatWidget({
+  name,
   whatsappNumber,
   whatsappMessage = "Hi, I visited your portfolio and would like to connect!",
   messengerUrl,
@@ -23,6 +25,17 @@ export default function FloatingChatWidget({
 
   const [isOpen, setIsOpen] = useState(false);
   const widgetRef = useRef<HTMLDivElement>(null);
+
+  const displayName = name || "Portfolio";
+  const initials = name
+    ? name
+        .split(" ")
+        .map((n) => n[0])
+        .filter(Boolean)
+        .slice(0, 2)
+        .join("")
+        .toUpperCase()
+    : "P";
 
   // Close on click outside or ESC key
   useEffect(() => {
@@ -59,15 +72,17 @@ export default function FloatingChatWidget({
     return null;
   }
 
-  const statusSubtitle =
-    hasWhatsApp && hasMessenger
-      ? "● Available on WhatsApp & Messenger"
-      : hasWhatsApp
-      ? "● Available on WhatsApp"
-      : "● Available on Messenger";
-
+  // Sanitized links
+  const sanitizedWhatsAppNumber = (whatsappNumber || "").replace(/[^0-9]/g, "");
   const encodedMessage = encodeURIComponent(whatsappMessage);
-  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+  const whatsappUrl = `https://wa.me/${sanitizedWhatsAppNumber}?text=${encodedMessage}`;
+
+  // Ensure messenger url is safe
+  const formattedMessengerUrl = messengerUrl?.startsWith("http")
+    ? messengerUrl
+    : `https://m.me/${messengerUrl || ""}`;
+
+  const statusSubtitle = "Typically replies within a few hours";
 
   return (
     <div
@@ -85,13 +100,13 @@ export default function FloatingChatWidget({
             <div className="flex items-center gap-3">
               <div className="relative">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-white text-sm shadow-md">
-                  SH
+                  {initials}
                 </div>
                 <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-500 dark:bg-emerald-400 ring-2 ring-background animate-pulse" />
               </div>
               <div>
                 <h4 className="text-sm font-bold text-foreground flex items-center gap-1.5">
-                  Sahadat Hossen
+                  {displayName}
                   <Sparkles size={14} className="text-amber-400" />
                 </h4>
                 <p className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
@@ -146,10 +161,10 @@ export default function FloatingChatWidget({
             {hasMessenger && (
               <a
                 id="chat-widget-messenger"
-                href={messengerUrl}
+                href={formattedMessengerUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={() => trackSocialClick("messenger", "floating_widget", messengerUrl)}
+                onClick={() => trackSocialClick("messenger", "floating_widget", formattedMessengerUrl)}
                 className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/25 hover:border-blue-500/40 text-blue-600 dark:text-blue-400 transition-all duration-200 group hover:-translate-y-0.5"
               >
                 <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover:scale-105 transition-transform">

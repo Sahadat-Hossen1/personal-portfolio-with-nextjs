@@ -35,7 +35,7 @@
     ".next/types/**/*.ts",
     "**/*.mts",
     ".next/dev/types/**/*.ts"
-  ],
+, ".tst"  ],
   "exclude": [
     "node_modules",
     "scripts/test-auth-phase3.ts",

@@ -7,99 +7,6 @@ import { Github } from "@/components/icons";
 import { trackProjectClick } from "@/lib/gtm";
 import type { ProjectData } from "@/types/portfolio";
 
-const defaultProjects: ProjectData[] = [
-  {
-    id: "project-ecommerce-tracking",
-    title: "ShopFlow E-Commerce & Full Tracking",
-    description: "MERN Stack E-Commerce with GTM, GA4 & Meta Pixel",
-    longDesc:
-      "A complete full-stack e-commerce platform built with Next.js, Node.js, and MongoDB. Integrated with DataLayer, Google Analytics 4 (GA4) E-commerce tracking, and Meta Pixel Conversion API via Google Tag Manager.",
-    image: "/assets/images/projects/project-1.jpg",
-    tags: ["Next.js", "Node.js", "MongoDB", "GTM", "GA4", "Meta Pixel", "Tailwind CSS"],
-    github: "https://github.com",
-    live: "https://example.com",
-    emoji: "🛒",
-    featured: true,
-    stars: 48,
-    order: 1,
-  },
-  {
-    id: "project-analytics-dashboard",
-    title: "DevMetrics & Event Visualizer",
-    description: "Full-Stack Web App with Real-Time Event Tracking",
-    longDesc:
-      "A developer productivity and event metrics portal with interactive dashboards, custom event triggers, TikTok & LinkedIn Tag integration, and automated user journey tracking.",
-    image: "/assets/images/projects/project-2.jpg",
-    tags: ["React", "Express.js", "Tailwind CSS", "DataLayer", "GA4", "TikTok Pixel"],
-    github: "https://github.com",
-    live: "https://example.com",
-    emoji: "📊",
-    featured: true,
-    stars: 35,
-    order: 2,
-  },
-  {
-    id: "project-collabflow",
-    title: "CollabFlow Task Manager",
-    description: "Collaborative project board with real-time UI",
-    longDesc:
-      "Full-stack project management app with interactive boards, responsive UI, and custom analytics event tracking on task completion.",
-    image: "/assets/images/projects/project-3.jpg",
-    tags: ["React", "Node.js", "MongoDB", "Tailwind CSS"],
-    github: "https://github.com",
-    live: "https://example.com",
-    emoji: "🚀",
-    featured: false,
-    stars: 24,
-    order: 3,
-  },
-  {
-    id: "project-authkit",
-    title: "Auth & User Management",
-    description: "JWT Authentication & Custom Event Logging",
-    longDesc:
-      "Secure authentication system supporting JWT, OAuth, and conversion tracking for user signups and login flows.",
-    image: "/assets/images/projects/project-4.jpg",
-    tags: ["Node.js", "Express", "JWT", "GTM"],
-    github: "https://github.com",
-    live: "https://example.com",
-    emoji: "🔐",
-    featured: false,
-    stars: 19,
-    order: 4,
-  },
-  {
-    id: "project-foodsearch",
-    title: "Food Discovery & Recipe App",
-    description: "Interactive Recipe Finder with Filter Tracking",
-    longDesc:
-      "A responsive React application featuring real-time search, category filtering, and button click event tracking.",
-    image: "/assets/images/projects/project-5.jpg",
-    tags: ["React", "REST API", "Tailwind CSS", "Meta Pixel"],
-    github: "https://github.com",
-    live: "https://example.com",
-    emoji: "🍲",
-    featured: false,
-    stars: 15,
-    order: 5,
-  },
-  {
-    id: "project-weather-portal",
-    title: "Live Weather & Utility App",
-    description: "Location-based real-time weather application",
-    longDesc:
-      "Weather app fetching live meteorological data with interactive UI widgets and search analytics tracking.",
-    image: "/assets/images/projects/project-6.jpg",
-    tags: ["JavaScript", "OpenWeather API", "CSS3", "GA4"],
-    github: "https://github.com",
-    live: "https://example.com",
-    emoji: "🌤️",
-    featured: false,
-    stars: 12,
-    order: 6,
-  },
-];
-
 interface DevProjectsProps {
   projects?: ProjectData[];
   githubEnabled?: boolean;
@@ -112,8 +19,7 @@ export default function DevProjects({
   githubUrl = "",
 }: DevProjectsProps) {
   const sectionRef = useRef<HTMLElement>(null);
-  const activeProjects =
-    propProjects !== undefined ? propProjects : defaultProjects;
+  const activeProjects = propProjects || [];
 
 
   useEffect(() => {
