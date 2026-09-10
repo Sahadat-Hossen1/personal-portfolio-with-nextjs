@@ -9,7 +9,6 @@ import { GET as meHandler } from "@/app/api/auth/me/route";
 import { NextRequest } from "next/server";
 import User from "@/models/User";
 import Profile from "@/models/Profile";
-import Admin from "@/models/Admin";
 import { USER_COOKIE_NAME, ADMIN_COOKIE_NAME, verifyUserToken } from "@/lib/auth";
 
 // Load environment

@@ -267,13 +267,13 @@ function RegisterForm() {
             </p>
           </div>
 
-          {/* Back to public site */}
+          {/* Back to home */}
           <div className="text-center mt-4">
             <Link
               href="/"
               className="text-xs text-muted-foreground hover:text-foreground transition-colors"
             >
-              ← Back to public site
+              ← Back to home
             </Link>
           </div>
         </div>

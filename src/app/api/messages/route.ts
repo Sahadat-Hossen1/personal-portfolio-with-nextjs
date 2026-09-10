@@ -30,85 +30,43 @@ export async function POST(request: Request) {
 
     let recipientOwnerId: Types.ObjectId | null = null;
 
-    // Phase 11 & 17: Public tenant portfolio contact resolution (/p/[username])
-    if (username !== undefined) {
-      if (typeof username !== "string" || !username.trim()) {
-        return NextResponse.json(
-          { success: false, error: "A valid username is required" },
-          { status: 400 }
-        );
-      }
-
-      const normalizedUsername = username.trim().toLowerCase();
-      const targetUser = await User.findOne({ username: normalizedUsername })
-        .select("_id accountStatus")
-        .lean();
-
-      if (!targetUser || targetUser.accountStatus === "suspended") {
-        return NextResponse.json(
-          { success: false, error: "Recipient portfolio not found" },
-          { status: 404 }
-        );
-      }
-
-      // Phase 17: Verify recipient portfolio is published
-      const targetProfile = await Profile.findOne({ ownerId: targetUser._id })
-        .select("publicationStatus")
-        .lean();
-
-      const publicationStatus =
-        targetProfile?.publicationStatus === "unpublished"
-          ? "unpublished"
-          : "published";
-
-      if (publicationStatus === "unpublished") {
-        return NextResponse.json(
-          { success: false, error: "Recipient portfolio not found" },
-          { status: 404 }
-        );
-      }
-
-      recipientOwnerId = targetUser._id as Types.ObjectId;
-    } else {
-      // Legacy root "/" compatibility fallback: resolve to system default owner (superadmin)
-      const defaultOwner =
-        (await User.findOne({ role: "superadmin" })) ||
-        (await User.findOne().sort({ createdAt: 1 }));
-
-      if (defaultOwner) {
-        if (defaultOwner.accountStatus === "suspended") {
-          return NextResponse.json(
-            { success: false, error: "Recipient portfolio not found" },
-            { status: 404 }
-          );
-        }
-
-        const defaultProfile = await Profile.findOne({ ownerId: defaultOwner._id })
-          .select("publicationStatus")
-          .lean();
-
-        const defaultPubStatus =
-          defaultProfile?.publicationStatus === "unpublished"
-            ? "unpublished"
-            : "published";
-
-        if (defaultPubStatus === "unpublished") {
-          return NextResponse.json(
-            { success: false, error: "Recipient portfolio not found" },
-            { status: 404 }
-          );
-        }
-
-        recipientOwnerId = defaultOwner._id as Types.ObjectId;
-      }
-    }
-
-    if (!recipientOwnerId) {
+    if (!username || typeof username !== "string" || !username.trim()) {
       return NextResponse.json(
-        { success: false, error: "Unable to determine message recipient" },
-        { status: 500 }
+        { success: false, error: "A valid recipient username is required" },
+        { status: 400 }
       );
     }
+
+    const normalizedUsername = username.trim().toLowerCase();
+    const targetUser = await User.findOne({ username: normalizedUsername })
+      .select("_id accountStatus")
+      .lean();
+
+    if (!targetUser || targetUser.accountStatus === "suspended") {
+      return NextResponse.json(
+        { success: false, error: "Recipient portfolio not found" },
+        { status: 404 }
+      );
+    }
+
+    // Phase 17: Verify recipient portfolio is published
+    const targetProfile = await Profile.findOne({ ownerId: targetUser._id })
+      .select("publicationStatus")
+      .lean();
+
+    const publicationStatus =
+      targetProfile?.publicationStatus === "unpublished"
+        ? "unpublished"
+        : "published";
+
+    if (publicationStatus === "unpublished") {
+      return NextResponse.json(
+        { success: false, error: "Recipient portfolio not found" },
+        { status: 404 }
+      );
+    }
+
+    recipientOwnerId = targetUser._id as Types.ObjectId;
 
     // SECURITY: Client-supplied ownerId and userId are NEVER trusted, accepted, or stored.
     const newMessage = await Message.create({

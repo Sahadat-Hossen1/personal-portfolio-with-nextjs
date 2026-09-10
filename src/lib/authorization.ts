@@ -2,10 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { Types } from "mongoose";
 import { connectToDatabase } from "@/lib/mongodb";
 import {
-  verifyUserRequest,
-  verifyAdminRequest,
   getUserSession,
-  getAdminSession,
+  verifyUserRequest,
 } from "@/lib/auth";
 import User, { UserRole } from "@/models/User";
 import type { FeatureKey } from "@/lib/entitlements/features";
@@ -81,7 +79,6 @@ export function sanitizeRequestBody<T extends Record<string, unknown>>(
 export async function getAuthenticatedUser(
   request?: NextRequest
 ): Promise<AuthenticatedUser | null> {
-  // 1. Check modern User session first
   const userPayload = request
     ? await verifyUserRequest(request)
     : await getUserSession();
@@ -95,37 +92,6 @@ export async function getAuthenticatedUser(
       username: userPayload.username,
       isLegacyAdmin: false,
     };
-  }
-
-  // 2. Fallback to legacy Admin session (Compatibility Bridge)
-  const adminPayload = request
-    ? await verifyAdminRequest(request)
-    : await getAdminSession();
-
-  if (adminPayload) {
-    await connectToDatabase();
-    let superadminUser = null;
-
-    if (Types.ObjectId.isValid(adminPayload.id)) {
-      superadminUser = await User.findById(adminPayload.id);
-    }
-    if (!superadminUser && adminPayload.username) {
-      superadminUser = await User.findOne({ username: adminPayload.username });
-    }
-    if (!superadminUser) {
-      superadminUser = await User.findOne({ role: "superadmin" });
-    }
-
-    if (superadminUser) {
-      return {
-        userId: superadminUser._id.toString(),
-        ownerId: superadminUser._id as Types.ObjectId,
-        role: superadminUser.role,
-        email: superadminUser.email,
-        username: superadminUser.username,
-        isLegacyAdmin: true,
-      };
-    }
   }
 
   return null;

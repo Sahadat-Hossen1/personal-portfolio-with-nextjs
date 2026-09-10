@@ -17,15 +17,12 @@ const MONGODB_URI = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/portfo
 // Models
 import User from "@/models/User";
 import Profile from "@/models/Profile";
-import Admin from "@/models/Admin";
 
 // Auth utilities
 import {
   signUserToken,
-  signAdminToken,
   hashPassword,
   USER_COOKIE_NAME,
-  ADMIN_COOKIE_NAME,
 } from "@/lib/auth";
 
 // Template utilities
@@ -101,7 +98,7 @@ export async function runTemplateAccessPhase10Tests() {
     await Profile.deleteMany({ ownerId: { $in: existingUserIds } });
     await User.deleteMany({ _id: { $in: existingUserIds } });
   }
-  await Admin.deleteMany({ username: "admin_phase10" });
+  await User.deleteMany({ username: "admin_phase10" });
 
   const hashedPassword = await hashPassword(testPassword);
 
@@ -129,11 +126,14 @@ export async function runTemplateAccessPhase10Tests() {
     allowedTemplates: ["video-editor"],
   });
 
-  // Isolated Superadmin
-  const superadmin = await Admin.create({
+  // Isolated Superadmin (modern User model)
+  const superadmin = await User.create({
+    name: "Superadmin Phase 10",
+    email: "admin_phase10@example.com",
     username: "admin_phase10",
     passwordHash: hashedPassword,
     role: "superadmin",
+    profession: "developer",
   });
 
   // Generate tokens
@@ -153,14 +153,17 @@ export async function runTemplateAccessPhase10Tests() {
     profession: userB.profession,
   });
 
-  const adminToken = await signAdminToken({
+  const adminToken = await signUserToken({
     id: superadmin._id.toString(),
+    email: superadmin.email,
+    role: "superadmin",
     username: superadmin.username,
+    profession: "developer",
   });
 
   const cookiesA = { [USER_COOKIE_NAME]: tokenA };
   const cookiesB = { [USER_COOKIE_NAME]: tokenB };
-  const cookiesAdmin = { [ADMIN_COOKIE_NAME]: adminToken };
+  const cookiesAdmin = { [USER_COOKIE_NAME]: adminToken };
 
   // Seed Profiles
   await Profile.create({
@@ -649,8 +652,7 @@ export async function runTemplateAccessPhase10Tests() {
   // --- 24. Clean Up Test Artifacts ---
   console.log("\n--- Cleaning Up Temporary Phase 10 Test Records ---");
   await Profile.deleteMany({ ownerId: { $in: [userA._id, userB._id, superadmin._id] } });
-  await User.deleteMany({ _id: { $in: [userA._id, userB._id] } });
-  await Admin.deleteMany({ _id: superadmin._id });
+  await User.deleteMany({ _id: { $in: [userA._id, userB._id, superadmin._id] } });
   console.log("✓ Cleanup finished. Real portfolio records remain untouched.\n");
 
   record(

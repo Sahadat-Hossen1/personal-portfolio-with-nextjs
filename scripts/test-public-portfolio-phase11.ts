@@ -462,23 +462,23 @@ export async function runPublicPortfolioPhase11Tests() {
     );
   }
 
-  // --- 16. Legacy Root Contact Fallback ---
+  // --- 16. Contact Message Username Enforcement ---
   {
-    // When username is omitted (legacy root route submission), it should fall back to superadmin
+    // When username is omitted, it must be rejected with HTTP 400 (legacy root fallback removed in Phase 19)
     const req = createMockRequest("POST", "/api/messages", {
       name: "Legacy Visitor",
       email: "legacy@example.com",
       subject: "Legacy Contact",
-      message: "Testing legacy root fallback",
+      message: "Testing legacy root fallback removal",
     });
 
     const res = await postMessage(req);
     const json = await res.json();
 
     record(
-      "Legacy Compatibility",
-      "16. POST /api/messages with omitted username falls back to default owner for legacy /",
-      res.status === 201 && Boolean(json.data?.id)
+      "Contact Validation",
+      "16. POST /api/messages with omitted username is strictly rejected with HTTP 400",
+      res.status === 400 && json.success === false
     );
   }
 

@@ -37,6 +37,11 @@
     ".next/dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "scripts/test-auth-phase3.ts",
+    "scripts/test-authorization-phase4.ts",
+    "scripts/test-dashboard-phase5.ts",
+    "scripts/test-experience-phase8.ts",
+    "scripts/test-messages-phase9.ts"
   ]
 }

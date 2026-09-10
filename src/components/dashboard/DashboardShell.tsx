@@ -15,12 +15,12 @@ import {
   ExternalLink,
   Menu,
   X,
-  Sparkles,
   Layers,
   Code2,
   Video,
   TrendingUp,
   Stethoscope,
+  ShieldCheck,
 } from "lucide-react";
 import { ModeToggle } from "@/components/mode-toggle";
 
@@ -44,18 +44,17 @@ const navItems = [
   { label: "Settings", href: "/dashboard/settings", icon: Sliders },
 ];
 
-function getProfessionIcon(profession: string) {
+function renderProfessionIcon(profession: string, size: number, className?: string) {
   switch (profession) {
-    case "developer":
-      return Code2;
     case "video-editor":
-      return Video;
+      return <Video size={size} className={className} />;
     case "digital-marketer":
-      return TrendingUp;
+      return <TrendingUp size={size} className={className} />;
     case "doctor":
-      return Stethoscope;
+      return <Stethoscope size={size} className={className} />;
+    case "developer":
     default:
-      return Code2;
+      return <Code2 size={size} className={className} />;
   }
 }
 
@@ -70,8 +69,6 @@ export default function DashboardShell({
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-
-  const ProfessionIcon = getProfessionIcon(user.profession);
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
@@ -92,7 +89,7 @@ export default function DashboardShell({
       <header className="lg:hidden flex items-center justify-between p-4 border-b border-border bg-card/80 backdrop-blur-md sticky top-0 z-40">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-md">
-            <ProfessionIcon size={18} className="text-white" />
+            {renderProfessionIcon(user.profession, 18, "text-white")}
           </div>
           <div className="flex flex-col">
             <span className="font-bold text-sm tracking-tight text-foreground">
@@ -125,7 +122,7 @@ export default function DashboardShell({
         <div className="p-5 border-b border-border flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-              <ProfessionIcon size={20} className="text-white" />
+              {renderProfessionIcon(user.profession, 20, "text-white")}
             </div>
             <div className="min-w-0">
               <div className="font-bold text-sm tracking-tight text-foreground truncate flex items-center gap-1.5">
@@ -170,6 +167,25 @@ export default function DashboardShell({
 
         {/* Navigation Links */}
         <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
+          {/* Superadmin Platform Control Plane Navigation */}
+          {user.role === "superadmin" && (
+            <div className="pb-2 mb-2 border-b border-border/60">
+              <Link
+                href="/admin"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-indigo-500/15 via-purple-500/15 to-indigo-500/5 text-indigo-400 dark:text-indigo-300 border border-indigo-500/30 hover:border-indigo-500/60 shadow-sm transition-all duration-200"
+              >
+                <div className="flex items-center gap-3">
+                  <ShieldCheck size={18} className="text-indigo-400" />
+                  <span>Platform Admin</span>
+                </div>
+                <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300">
+                  Control
+                </span>
+              </Link>
+            </div>
+          )}
+
           {navItems.map((item) => {
             const active = pathname === item.href;
             const Icon = item.icon;

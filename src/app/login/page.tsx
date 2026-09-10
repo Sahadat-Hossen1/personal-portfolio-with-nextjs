@@ -43,8 +43,8 @@ export default function LoginPage() {
       // Route authenticated user to dashboard
       router.push("/dashboard");
       router.refresh();
-    } catch (err: any) {
-      setError(err.message || "Invalid credentials");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Invalid credentials");
     } finally {
       setLoading(false);
     }
@@ -168,13 +168,13 @@ export default function LoginPage() {
             </p>
           </div>
 
-          {/* Back to public site */}
+          {/* Back to home */}
           <div className="text-center mt-4">
             <Link
               href="/"
               className="text-xs text-muted-foreground hover:text-foreground transition-colors"
             >
-              ← Back to public site
+              ← Back to home
             </Link>
           </div>
         </div>

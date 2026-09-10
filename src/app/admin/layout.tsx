@@ -2,15 +2,9 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   LayoutDashboard,
-  User,
-  FolderGit2,
-  Cpu,
-  Briefcase,
-  Mail,
-  Sliders,
   LogOut,
   ExternalLink,
   Menu,
@@ -19,22 +13,14 @@ import {
   ShieldCheck,
   Users,
   BarChart3,
+  ArrowLeft,
 } from "lucide-react";
 import { ModeToggle } from "@/components/mode-toggle";
 
 const platformNavItems = [
-  { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
+  { label: "Platform Overview", href: "/admin", icon: LayoutDashboard },
   { label: "Tenant Users", href: "/admin/users", icon: Users },
   { label: "Platform Stats", href: "/admin/stats", icon: BarChart3 },
-];
-
-const portfolioNavItems = [
-  { label: "Hero & About", href: "/admin/hero-about", icon: User },
-  { label: "Projects", href: "/admin/projects", icon: FolderGit2 },
-  { label: "Skills & Tags", href: "/admin/skills", icon: Cpu },
-  { label: "Experience", href: "/admin/experience", icon: Briefcase },
-  { label: "Messages", href: "/admin/messages", icon: Mail },
-  { label: "Settings", href: "/admin/settings", icon: Sliders },
 ];
 
 export default function AdminLayout({
@@ -46,36 +32,14 @@ export default function AdminLayout({
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const [unreadCount, setUnreadCount] = useState<number>(0);
 
   const isLoginPage = pathname === "/admin/login";
-
-  // Fetch unread messages count periodically if logged in
-  useEffect(() => {
-    if (isLoginPage) return;
-    const fetchUnread = async () => {
-      try {
-        const res = await fetch("/api/messages");
-        if (res.status === 401) {
-          router.push("/admin/login");
-          return;
-        }
-        const data = await res.json();
-        if (data.success && typeof data.unreadCount === "number") {
-          setUnreadCount(data.unreadCount);
-        }
-      } catch {
-        // ignore
-      }
-    };
-    fetchUnread();
-  }, [pathname, isLoginPage, router]);
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
     try {
       await fetch("/api/auth/logout", { method: "POST" });
-      router.push("/admin/login");
+      router.push("/login");
       router.refresh();
     } catch (err) {
       console.error(err);
@@ -96,7 +60,7 @@ export default function AdminLayout({
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-md">
             <ShieldCheck size={18} className="text-white" />
           </div>
-          <span className="font-bold text-base gradient-text">Portfolio Admin</span>
+          <span className="font-bold text-base gradient-text">Platform Admin</span>
         </div>
         <div className="flex items-center gap-2">
           <ModeToggle />
@@ -124,12 +88,12 @@ export default function AdminLayout({
             </div>
             <div>
               <div className="font-bold text-sm tracking-tight text-foreground flex items-center gap-1.5">
-                Admin Center
+                Control Plane
                 <Sparkles size={12} className="text-amber-400" />
               </div>
               <div className="text-[11px] text-muted-foreground flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                MongoDB Connected
+                Superadmin Mode
               </div>
             </div>
           </div>
@@ -179,54 +143,31 @@ export default function AdminLayout({
             })}
           </div>
 
-          {/* Creator Portfolio Section */}
-          <div className="space-y-1 pt-2 border-t border-border/50">
-            <div className="px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70">
-              Creator Portfolio (Legacy)
-            </div>
-            {portfolioNavItems.map((item) => {
-              const active = pathname === item.href;
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setMobileOpen(false)}
-                  className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
-                    active
-                      ? "bg-gradient-to-r from-indigo-500/20 to-purple-500/20 text-foreground border border-indigo-500/40 shadow-sm"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <Icon
-                      size={18}
-                      className={active ? "text-indigo-400" : "text-muted-foreground"}
-                    />
-                    <span>{item.label}</span>
-                  </div>
-                  {item.href === "/admin/messages" && unreadCount > 0 && (
-                    <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30 animate-pulse">
-                      {unreadCount}
-                    </span>
-                  )}
-                </Link>
-              );
-            })}
+          {/* Quick Return to Personal Dashboard */}
+          <div className="pt-2 border-t border-border/50">
+            <Link
+              href="/dashboard"
+              onClick={() => setMobileOpen(false)}
+              className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-200"
+            >
+              <ArrowLeft size={18} className="text-indigo-400" />
+              <span>Return to My Portfolio Dashboard</span>
+            </Link>
           </div>
         </nav>
 
         {/* Bottom Footer Actions */}
         <div className="p-3 border-t border-border space-y-1 bg-muted/20">
+
           <a
             href="/"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            className="flex items-center justify-between px-3.5 py-2 rounded-xl text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
           >
             <span className="flex items-center gap-2">
               <ExternalLink size={15} />
-              View Live Website
+              SaaS Landing Page
             </span>
             <span className="text-[10px] text-muted-foreground/60">Opens tab</span>
           </a>
@@ -234,7 +175,7 @@ export default function AdminLayout({
           <button
             onClick={handleLogout}
             disabled={isLoggingOut}
-            className="w-full flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-medium text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors"
+            className="w-full flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-medium text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors cursor-pointer"
           >
             <LogOut size={15} />
             <span>{isLoggingOut ? "Logging out..." : "Sign Out"}</span>

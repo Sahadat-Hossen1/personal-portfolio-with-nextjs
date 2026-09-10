@@ -3,9 +3,7 @@ import { connectToDatabase } from "@/lib/mongodb";
 import {
   comparePassword,
   signUserToken,
-  signAdminToken,
   USER_COOKIE_NAME,
-  ADMIN_COOKIE_NAME,
 } from "@/lib/auth";
 import User from "@/models/User";
 
@@ -98,24 +96,6 @@ export async function POST(request: Request) {
       path: "/",
       maxAge: 7 * 24 * 60 * 60, // 7 days
     });
-
-    // Compatibility bridge: if user is Superadmin, also set legacy admin cookie
-    // to maintain seamless access to existing admin routes during transition
-    if (user.role === "superadmin") {
-      const adminToken = await signAdminToken({
-        id: user._id.toString(),
-        username: user.username,
-      });
-      response.cookies.set({
-        name: ADMIN_COOKIE_NAME,
-        value: adminToken,
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        path: "/",
-        maxAge: 7 * 24 * 60 * 60,
-      });
-    }
 
     return response;
   } catch (error) {
