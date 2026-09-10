@@ -31,16 +31,23 @@ export default async function OpenGraphImage({ params }: OpenGraphImageProps) {
         .lean();
 
       if (user && user.accountStatus !== "suspended") {
-        name = user.name || name;
-        profession = user.profession
-          ? user.profession.replace(/-/g, " ")
-          : profession;
-
         const profile = await Profile.findOne({ ownerId: user._id })
-          .select("bioBlurb roles statusText")
+          .select("bioBlurb roles statusText publicationStatus")
           .lean();
 
-        if (profile) {
+        // Legacy profiles without publicationStatus resolve to "published"
+        const publicationStatus =
+          profile?.publicationStatus === "unpublished"
+            ? "unpublished"
+            : "published";
+
+        // Phase 17: If unpublished, do not populate tenant identity/bio/status — return generic fallback
+        if (profile && publicationStatus !== "unpublished") {
+          name = user.name || name;
+          profession = user.profession
+            ? user.profession.replace(/-/g, " ")
+            : profession;
+
           if (Array.isArray(profile.roles) && profile.roles.length > 0) {
             primaryRole = profile.roles[0];
           }

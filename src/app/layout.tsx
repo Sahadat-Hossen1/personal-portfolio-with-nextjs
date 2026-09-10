@@ -15,32 +15,32 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const baseUrl = "https://sahadathossen.dev";
+const baseUrl =
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, "") ||
+  "https://sahadathossen.dev";
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: {
-    default: "Sahadat Hossen — Full Stack MERN Developer",
-    template: "%s | Sahadat Hossen",
+    default: "PortfolioOS — Multi-Tenant SaaS Portfolio Platform",
+    template: "%s | PortfolioOS",
   },
   description:
-    "Full Stack MERN Developer specializing in building scalable web applications with MongoDB, Express.js, React, Node.js, Next.js, and TypeScript.",
+    "Build, customize, and publish your professional portfolio in minutes. Purpose-built presentation templates for Software Developers, Video Editors, Digital Marketers, and Medical Doctors.",
   keywords: [
-    "Sahadat Hossen",
-    "Full Stack Developer",
-    "MERN Stack Developer",
-    "React Developer",
-    "Next.js Developer",
-    "Node.js Engineer",
-    "MongoDB Architect",
-    "TypeScript Developer",
-    "Web Application Developer",
-    "Freelance Developer Dhaka",
-    "Remote MERN Stack Developer",
+    "Portfolio Platform",
+    "SaaS Portfolio",
+    "Multi-Tenant Portfolio",
+    "Developer Portfolio",
+    "Video Editor Portfolio",
+    "Digital Marketer Portfolio",
+    "Doctor Portfolio",
+    "Professional Showcase",
+    "Online Portfolio Builder",
   ],
-  authors: [{ name: "Sahadat Hossen", url: baseUrl }],
-  creator: "Sahadat Hossen",
-  publisher: "Sahadat Hossen",
+  authors: [{ name: "PortfolioOS Platform", url: baseUrl }],
+  creator: "PortfolioOS",
+  publisher: "PortfolioOS",
   formatDetection: {
     email: false,
     address: false,
@@ -50,17 +50,17 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   openGraph: {
-    title: "Sahadat Hossen — Full Stack MERN Developer",
+    title: "PortfolioOS — Multi-Tenant SaaS Portfolio Platform",
     description:
-      "Building scalable, high-performance web applications with MongoDB, Express.js, React, Node.js, Next.js, and TypeScript.",
+      "Build, customize, and publish your professional portfolio in minutes. Purpose-built presentation templates for Software Developers, Video Editors, Digital Marketers, and Medical Doctors.",
     url: baseUrl,
-    siteName: "Sahadat Hossen Portfolio",
+    siteName: "PortfolioOS",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Sahadat Hossen — Full Stack MERN Developer",
+        alt: "PortfolioOS — Multi-Tenant SaaS Portfolio Platform",
       },
     ],
     locale: "en_US",
@@ -68,11 +68,11 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Sahadat Hossen — Full Stack MERN Developer",
+    title: "PortfolioOS — Multi-Tenant SaaS Portfolio Platform",
     description:
-      "Building scalable, high-performance web applications with MongoDB, Express, React, Node.js, Next.js, and TypeScript.",
+      "Build, customize, and publish your professional portfolio in minutes. Purpose-built presentation templates for Software Developers, Video Editors, Digital Marketers, and Medical Doctors.",
     images: ["/og-image.png"],
-    creator: "@SahadatHossen",
+    creator: "@PortfolioOS",
   },
   robots: {
     index: true,
@@ -87,14 +87,18 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/profile.jpg", type: "image/jpeg" },
+      { url: "/icon.jpg", type: "image/jpeg" },
     ],
-    shortcut: "/profile.jpg",
-    apple: "/profile.jpg",
+    shortcut: "/icon.jpg",
+    apple: "/icon.jpg",
   },
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html
       lang="en"

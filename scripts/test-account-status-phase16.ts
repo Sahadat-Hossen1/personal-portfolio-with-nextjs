@@ -803,7 +803,10 @@ export async function runPhase16AccountStatusTests() {
 }
 
 // Execute directly if run via CLI
-if (require.main === module) {
+if (
+  require.main === module ||
+  process.argv[1]?.includes("test-account-status-phase16")
+) {
   runPhase16AccountStatusTests().catch((err) => {
     console.error("Fatal error running Phase 16 tests:", err);
     process.exit(1);

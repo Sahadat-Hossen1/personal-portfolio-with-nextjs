@@ -57,7 +57,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     const [profile, projectCount, skillCount, experienceCount, messageCount] =
       await Promise.all([
         Profile.findOne({ ownerId: user._id })
-          .select("selectedTemplate bioBlurb roles avatarUrl location statusText updatedAt")
+          .select("selectedTemplate bioBlurb roles avatarUrl location statusText publicationStatus updatedAt")
           .lean(),
         Project.countDocuments({ ownerId: user._id }),
         Skill.countDocuments({ ownerId: user._id }),
@@ -67,6 +67,9 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
     const featureOverrides = extractNormalizedOverrides(user.featureOverrides);
     const effectiveEntitlements = resolveEffectiveEntitlements(user);
+
+    const publicationStatus =
+      profile?.publicationStatus === "unpublished" ? "unpublished" : "published";
 
     return NextResponse.json({
       success: true,
@@ -83,6 +86,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
           featureOverrides,
           effectiveEntitlements,
           accountStatus: user.accountStatus || "active",
+          publicationStatus,
           createdAt: user.createdAt,
           updatedAt: user.updatedAt,
         },
@@ -94,6 +98,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
               avatarUrl: profile.avatarUrl || "",
               location: profile.location || "",
               statusText: profile.statusText || "",
+              publicationStatus,
               updatedAt: profile.updatedAt,
             }
           : null,
@@ -324,11 +329,44 @@ async function handleUpdate(
       modified = true;
     }
 
+    // 5. Validate and apply 'publicationStatus'
+    let updatedPublicationStatus: "published" | "unpublished" | undefined = undefined;
+    if ("publicationStatus" in rawBody && rawBody.publicationStatus !== undefined) {
+      const pubStatus = rawBody.publicationStatus;
+      if (pubStatus !== "published" && pubStatus !== "unpublished") {
+        return NextResponse.json(
+          {
+            success: false,
+            error:
+              "Invalid publication status. Supported values: 'published', 'unpublished'.",
+          },
+          { status: 400 }
+        );
+      }
+
+      let profileDoc = await Profile.findOne({ ownerId: userDoc._id });
+      if (!profileDoc) {
+        profileDoc = await Profile.create({
+          ownerId: userDoc._id,
+          name: userDoc.name,
+          email: userDoc.email,
+          phone: userDoc.phone,
+          publicationStatus: pubStatus,
+        });
+      } else {
+        profileDoc.publicationStatus = pubStatus;
+        await profileDoc.save();
+      }
+      updatedPublicationStatus = pubStatus;
+      modified = true;
+    }
+
     if (!modified) {
       return NextResponse.json(
         {
           success: false,
-          error: "No valid management fields ('plan', 'allowedTemplates', 'featureOverrides', or 'accountStatus') provided for update.",
+          error:
+            "No valid management fields ('plan', 'allowedTemplates', 'featureOverrides', 'accountStatus', or 'publicationStatus') provided for update.",
         },
         { status: 400 }
       );
@@ -352,6 +390,16 @@ async function handleUpdate(
     const updatedFeatureOverrides = extractNormalizedOverrides(userDoc.featureOverrides);
     const updatedEffectiveEntitlements = resolveEffectiveEntitlements(userDoc);
 
+    if (updatedPublicationStatus === undefined) {
+      const existingProfile = await Profile.findOne({ ownerId: userDoc._id })
+        .select("publicationStatus")
+        .lean();
+      updatedPublicationStatus =
+        existingProfile?.publicationStatus === "unpublished"
+          ? "unpublished"
+          : "published";
+    }
+
     return NextResponse.json({
       success: true,
       message: "User entitlements updated successfully.",
@@ -368,6 +416,7 @@ async function handleUpdate(
           featureOverrides: updatedFeatureOverrides,
           effectiveEntitlements: updatedEffectiveEntitlements,
           accountStatus: userDoc.accountStatus || "active",
+          publicationStatus: updatedPublicationStatus,
           updatedAt: userDoc.updatedAt,
         },
       },

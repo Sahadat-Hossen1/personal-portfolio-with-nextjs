@@ -55,9 +55,22 @@ export async function generateMetadata(
       };
     }
 
+    // Phase 17: Check publication status — do NOT expose identity/content for unpublished portfolios
     const profile = await Profile.findOne({ ownerId: user._id })
-      .select("bioBlurb roles avatarUrl")
+      .select("bioBlurb roles avatarUrl publicationStatus")
       .lean();
+
+    // Legacy profiles without publicationStatus resolve to "published"
+    const publicationStatus =
+      profile?.publicationStatus === "unpublished" ? "unpublished" : "published";
+
+    if (publicationStatus === "unpublished") {
+      // Privacy: Do NOT reveal that the portfolio exists or any personal details
+      return {
+        title: "Portfolio Not Found",
+        description: "The requested portfolio could not be found.",
+      };
+    }
 
     const professionFormatted = user.profession
       ? user.profession
@@ -135,6 +148,23 @@ export default async function PublicPortfolioPage(
     .lean();
 
   if (!user || user.accountStatus === "suspended") {
+    notFound();
+  }
+
+  // Phase 17: Enforce publication status — unpublished portfolios are not publicly accessible
+  // Query parameters (?preview=true, ?published=true, ?status=published, etc.) are strictly
+  // IGNORED because searchParams is not read here — only Profile.publicationStatus is authoritative.
+  const profilePublicationDoc = await Profile.findOne({ ownerId: user._id })
+    .select("publicationStatus")
+    .lean();
+
+  // Legacy profiles without publicationStatus resolve to "published"
+  const publicationStatus =
+    profilePublicationDoc?.publicationStatus === "unpublished"
+      ? "unpublished"
+      : "published";
+
+  if (publicationStatus === "unpublished") {
     notFound();
   }
 

@@ -6,6 +6,7 @@ import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/models/User";
 import Profile from "@/models/Profile";
 import TemplateSwitcher from "@/components/dashboard/TemplateSwitcher";
+import PublicationControl from "@/components/dashboard/PublicationControl";
 import { SUPPORTED_TEMPLATE_IDS } from "@/templates/index";
 import type { TemplateId } from "@/types/portfolio";
 
@@ -26,8 +27,11 @@ export default async function DashboardSettingsPage() {
   }
 
   const profileDoc = await Profile.findOne({ ownerId: authUser.ownerId })
-    .select("selectedTemplate")
+    .select("selectedTemplate publicationStatus")
     .lean();
+
+  const publicationStatus =
+    profileDoc?.publicationStatus === "unpublished" ? "unpublished" : "published";
 
   // Superadmins have access to all supported templates; normal users are authorized via userDoc.allowedTemplates
   const allowedTemplates: TemplateId[] = (
@@ -68,6 +72,12 @@ export default async function DashboardSettingsPage() {
           </p>
         </div>
       </div>
+
+      {/* Publication Control */}
+      <PublicationControl
+        initialStatus={publicationStatus}
+        username={userDoc.username}
+      />
 
       {/* Interactive Template Switcher */}
       <TemplateSwitcher

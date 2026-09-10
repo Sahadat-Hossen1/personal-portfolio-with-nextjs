@@ -81,6 +81,10 @@ export interface ProfileData {
   // Active template selection
   selectedTemplate: TemplateId;
 
+  // Phase 17: Portfolio publication control (portfolio/Profile domain, not User/auth domain)
+  // Optional: missing/legacy records resolve to "published"
+  publicationStatus?: "published" | "unpublished";
+
   // Metadata
   _id?: string;
   ownerId?: string;

@@ -30,6 +30,7 @@ interface AdminUser {
   allowedTemplates: string[];
   selectedTemplate: string;
   accountStatus?: "active" | "suspended";
+  publicationStatus?: "published" | "unpublished";
   featureOverrides?: Partial<Record<FeatureKey, boolean>>;
   effectiveEntitlements?: Record<FeatureKey, boolean>;
   createdAt: string;
@@ -52,6 +53,7 @@ interface UserDetailResponse {
     avatarUrl: string;
     location: string;
     statusText: string;
+    publicationStatus?: "published" | "unpublished";
     updatedAt: string;
   } | null;
   counts: UserDetailCounts;
@@ -84,6 +86,7 @@ export default function AdminUsersPage() {
   const [modalLoading, setModalLoading] = useState(false);
   const [modalDetails, setModalDetails] = useState<UserDetailResponse | null>(null);
   const [editAccountStatus, setEditAccountStatus] = useState<"active" | "suspended">("active");
+  const [editPublicationStatus, setEditPublicationStatus] = useState<"published" | "unpublished">("published");
   const [editPlan, setEditPlan] = useState<"free" | "premium">("free");
   const [editAllowedTemplates, setEditAllowedTemplates] = useState<string[]>([]);
   const [editFeatureOverrides, setEditFeatureOverrides] = useState<
@@ -167,6 +170,7 @@ export default function AdminUsersPage() {
   const handleOpenModal = async (user: AdminUser) => {
     setActiveUser(user);
     setEditAccountStatus(user.accountStatus || "active");
+    setEditPublicationStatus(user.publicationStatus || "published");
     setEditPlan(user.plan);
     setEditAllowedTemplates([...user.allowedTemplates]);
 
@@ -198,6 +202,11 @@ export default function AdminUsersPage() {
         setModalDetails(data.data);
         if (data.data.user?.accountStatus) {
           setEditAccountStatus(data.data.user.accountStatus);
+        }
+        if (data.data.profile?.publicationStatus) {
+          setEditPublicationStatus(data.data.profile.publicationStatus);
+        } else if (data.data.user?.publicationStatus) {
+          setEditPublicationStatus(data.data.user.publicationStatus);
         }
         if (data.data.user?.featureOverrides) {
           const fetchedOverrides = { ...initialOverrides };
@@ -259,6 +268,7 @@ export default function AdminUsersPage() {
           allowedTemplates: editAllowedTemplates,
           featureOverrides: editFeatureOverrides,
           accountStatus: editAccountStatus,
+          publicationStatus: editPublicationStatus,
         }),
       });
 
@@ -281,6 +291,7 @@ export default function AdminUsersPage() {
                 plan: editPlan,
                 allowedTemplates: editAllowedTemplates,
                 accountStatus: editAccountStatus,
+                publicationStatus: editPublicationStatus,
                 featureOverrides: Object.fromEntries(
                   Object.entries(editFeatureOverrides).filter(
                     ([, v]) => typeof v === "boolean"
@@ -440,6 +451,7 @@ export default function AdminUsersPage() {
                 <th className="py-3 px-4">Plan</th>
                 <th className="py-3 px-4">Role</th>
                 <th className="py-3 px-4">Status</th>
+                <th className="py-3 px-4">Visibility</th>
                 <th className="py-3 px-4">Selected Template</th>
                 <th className="py-3 px-4">Allowed</th>
                 <th className="py-3 px-4">Registered</th>
@@ -449,14 +461,14 @@ export default function AdminUsersPage() {
             <tbody className="divide-y divide-border">
               {loading ? (
                 <tr>
-                  <td colSpan={10} className="py-12 text-center text-muted-foreground">
+                  <td colSpan={11} className="py-12 text-center text-muted-foreground">
                     <Loader2 size={24} className="animate-spin mx-auto text-indigo-400 mb-2" />
                     <span>Loading platform users...</span>
                   </td>
                 </tr>
               ) : users.length === 0 ? (
                 <tr>
-                  <td colSpan={10} className="py-12 text-center text-muted-foreground">
+                  <td colSpan={11} className="py-12 text-center text-muted-foreground">
                     No platform users found matching criteria.
                   </td>
                 </tr>
@@ -543,6 +555,19 @@ export default function AdminUsersPage() {
                         }`}
                       >
                         {user.accountStatus || "active"}
+                      </span>
+                    </td>
+
+                    {/* Visibility */}
+                    <td className="py-3.5 px-4">
+                      <span
+                        className={`capitalize px-2 py-0.5 rounded-full text-[10px] font-bold border ${
+                          user.publicationStatus === "unpublished"
+                            ? "bg-amber-500/10 text-amber-400 border-amber-500/30"
+                            : "bg-indigo-500/10 text-indigo-400 border-indigo-500/30"
+                        }`}
+                      >
+                        {user.publicationStatus === "unpublished" ? "Unpublished" : "Published"}
                       </span>
                     </td>
 
@@ -740,6 +765,58 @@ export default function AdminUsersPage() {
                       </div>
                       <p className="text-[11px] text-muted-foreground">
                         Suspend login, dashboard, and public portfolio
+                      </p>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Portfolio Publication Status */}
+                <div>
+                  <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                    Portfolio Publication Status
+                  </label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setEditPublicationStatus("published")}
+                      className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+                        editPublicationStatus === "published"
+                          ? "bg-emerald-500/10 border-emerald-500/50 text-foreground shadow-sm"
+                          : "bg-muted/20 border-border text-muted-foreground hover:bg-muted/40"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-bold text-xs text-emerald-400">Published</span>
+                        {editPublicationStatus === "published" && (
+                          <div className="w-4 h-4 rounded-full bg-emerald-500 text-white flex items-center justify-center">
+                            <Check size={10} />
+                          </div>
+                        )}
+                      </div>
+                      <p className="text-[11px] text-muted-foreground">
+                        Publicly visible at /p/{activeUser?.username} when account is active
+                      </p>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setEditPublicationStatus("unpublished")}
+                      className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+                        editPublicationStatus === "unpublished"
+                          ? "bg-amber-500/10 border-amber-500/50 text-foreground shadow-sm"
+                          : "bg-muted/20 border-border text-muted-foreground hover:bg-muted/40"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-bold text-xs text-amber-400">Unpublished</span>
+                        {editPublicationStatus === "unpublished" && (
+                          <div className="w-4 h-4 rounded-full bg-amber-500 text-white flex items-center justify-center">
+                            <Check size={10} />
+                          </div>
+                        )}
+                      </div>
+                      <p className="text-[11px] text-muted-foreground">
+                        Hidden from public view (returns 404), preserved in dashboard
                       </p>
                     </button>
                   </div>

@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
   Lock,
@@ -24,13 +24,20 @@ const PROFESSIONS = [
   { value: "doctor", label: "Medical Doctor" },
 ];
 
-export default function RegisterPage() {
+function RegisterForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const rawProfession = searchParams.get("profession")?.trim().toLowerCase();
+  const initialProfession =
+    rawProfession && PROFESSIONS.some((p) => p.value === rawProfession)
+      ? rawProfession
+      : "developer";
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
-    profession: "developer",
+    profession: initialProfession,
     password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
@@ -58,8 +65,12 @@ export default function RegisterPage() {
       // Registration issues session cookie, creates zero-state profile, and directs to onboarding
       router.push("/onboarding");
       router.refresh();
-    } catch (err: any) {
-      setError(err.message || "Registration failed. Please try again.");
+    } catch (err: unknown) {
+      const msg =
+        err instanceof Error
+          ? err.message
+          : "Registration failed. Please try again.";
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -268,5 +279,19 @@ export default function RegisterPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-background text-foreground">
+          <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+        </div>
+      }
+    >
+      <RegisterForm />
+    </Suspense>
   );
 }

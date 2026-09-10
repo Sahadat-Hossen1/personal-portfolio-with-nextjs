@@ -65,6 +65,7 @@ function createCleanProfileData(
       floatingChat: false,
     },
     selectedTemplate: defaultTemplate,
+    publicationStatus: "published" as const,
   };
 }
 
@@ -80,7 +81,14 @@ export async function GET(request: NextRequest) {
       const cleanData = createCleanProfileData(auth.user.ownerId, user);
       profile = await Profile.create(cleanData);
     }
-    return NextResponse.json({ success: true, data: profile });
+    const profileData = profile.toObject ? profile.toObject() : { ...profile };
+    // Legacy profiles without publicationStatus resolve to "published"
+    if (!profileData.publicationStatus) {
+      profileData.publicationStatus = "published";
+    }
+    delete (profileData as any).__v;
+
+    return NextResponse.json({ success: true, data: profileData });
   } catch (error) {
     console.error("GET Profile error:", error);
     return NextResponse.json(
@@ -108,6 +116,23 @@ export async function PUT(request: NextRequest) {
     const body = sanitizeRequestBody(
       rawBody && typeof rawBody === "object" ? (rawBody as Record<string, unknown>) : {}
     );
+
+    // Enforce publicationStatus validation
+    if (body.publicationStatus !== undefined) {
+      if (
+        body.publicationStatus !== "published" &&
+        body.publicationStatus !== "unpublished"
+      ) {
+        return NextResponse.json(
+          {
+            success: false,
+            error:
+              "Invalid publicationStatus. Supported values: 'published', 'unpublished'.",
+          },
+          { status: 400 }
+        );
+      }
+    }
 
     let userDoc = null;
 
@@ -253,4 +278,6 @@ export async function PUT(request: NextRequest) {
     );
   }
 }
+
+export const PATCH = PUT;
 

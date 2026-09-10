@@ -1,5 +1,7 @@
 import mongoose, { Schema, Document, Model, Types } from "mongoose";
 
+export type PortfolioPublicationStatus = "published" | "unpublished";
+
 export interface IFloatingBadge {
   label: string;
   color: string;
@@ -72,6 +74,10 @@ export interface IProfile extends Document {
   socials: ISocialItem[];
   sections: ISectionVisibility;
   selectedTemplate?: TemplateId;
+
+  // Phase 17: Portfolio publication control (portfolio/Profile domain, not User/auth domain)
+  publicationStatus?: PortfolioPublicationStatus;
+
   updatedAt: Date;
 }
 
@@ -174,6 +180,13 @@ const ProfileSchema = new Schema<IProfile>(
       type: String,
       enum: ["developer", "video-editor", "digital-marketer", "doctor"],
       default: "developer",
+    },
+    // Phase 17: Independent portfolio publication status.
+    // Default = "published" so legacy records without this field resolve correctly.
+    publicationStatus: {
+      type: String,
+      enum: ["published", "unpublished"],
+      default: "published",
     },
   },
   { timestamps: true }

@@ -4,6 +4,7 @@ import { connectToDatabase } from "@/lib/mongodb";
 import { requireAuth } from "@/lib/authorization";
 import Message from "@/models/Message";
 import User from "@/models/User";
+import Profile from "@/models/Profile";
 
 // Public endpoint: Contact form submission
 export async function POST(request: Request) {
@@ -29,7 +30,7 @@ export async function POST(request: Request) {
 
     let recipientOwnerId: Types.ObjectId | null = null;
 
-    // Phase 11: Public tenant portfolio contact resolution (/p/[username])
+    // Phase 11 & 17: Public tenant portfolio contact resolution (/p/[username])
     if (username !== undefined) {
       if (typeof username !== "string" || !username.trim()) {
         return NextResponse.json(
@@ -50,6 +51,23 @@ export async function POST(request: Request) {
         );
       }
 
+      // Phase 17: Verify recipient portfolio is published
+      const targetProfile = await Profile.findOne({ ownerId: targetUser._id })
+        .select("publicationStatus")
+        .lean();
+
+      const publicationStatus =
+        targetProfile?.publicationStatus === "unpublished"
+          ? "unpublished"
+          : "published";
+
+      if (publicationStatus === "unpublished") {
+        return NextResponse.json(
+          { success: false, error: "Recipient portfolio not found" },
+          { status: 404 }
+        );
+      }
+
       recipientOwnerId = targetUser._id as Types.ObjectId;
     } else {
       // Legacy root "/" compatibility fallback: resolve to system default owner (superadmin)
@@ -58,6 +76,29 @@ export async function POST(request: Request) {
         (await User.findOne().sort({ createdAt: 1 }));
 
       if (defaultOwner) {
+        if (defaultOwner.accountStatus === "suspended") {
+          return NextResponse.json(
+            { success: false, error: "Recipient portfolio not found" },
+            { status: 404 }
+          );
+        }
+
+        const defaultProfile = await Profile.findOne({ ownerId: defaultOwner._id })
+          .select("publicationStatus")
+          .lean();
+
+        const defaultPubStatus =
+          defaultProfile?.publicationStatus === "unpublished"
+            ? "unpublished"
+            : "published";
+
+        if (defaultPubStatus === "unpublished") {
+          return NextResponse.json(
+            { success: false, error: "Recipient portfolio not found" },
+            { status: 404 }
+          );
+        }
+
         recipientOwnerId = defaultOwner._id as Types.ObjectId;
       }
     }

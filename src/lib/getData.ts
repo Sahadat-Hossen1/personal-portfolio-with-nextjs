@@ -104,6 +104,11 @@ export async function getPortfolioDataByOwnerId(
         floatingChat: parsedProfile.sections?.floatingChat === true,
       },
       selectedTemplate: parsedProfile.selectedTemplate || "developer",
+      // Phase 17: Safely resolve legacy records (missing field) to "published"
+      publicationStatus:
+        parsedProfile.publicationStatus === "unpublished"
+          ? "unpublished"
+          : "published",
       createdAt: parsedProfile.createdAt,
       updatedAt: parsedProfile.updatedAt,
     };
@@ -164,6 +169,10 @@ export async function getPortfolioData(): Promise<PortfolioData> {
           ...initialProfile,
           ...parsedProfile,
           selectedTemplate: parsedProfile.selectedTemplate || "developer",
+          publicationStatus:
+            parsedProfile.publicationStatus === "unpublished"
+              ? "unpublished"
+              : "published",
           sections: {
             ...initialProfile.sections,
             ...(parsedProfile.sections || {}),

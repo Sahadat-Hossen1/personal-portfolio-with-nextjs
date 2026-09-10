@@ -18,6 +18,7 @@ import Project from "@/models/Project";
 import Skill from "@/models/Skill";
 import Experience from "@/models/Experience";
 import Message from "@/models/Message";
+import PublicationControl from "@/components/dashboard/PublicationControl";
 
 export default async function DashboardPage() {
   const authUser = await getAuthenticatedUser();
@@ -36,8 +37,11 @@ export default async function DashboardPage() {
   }
 
   const profileDoc = await Profile.findOne({ ownerId: authUser.ownerId })
-    .select("selectedTemplate bioBlurb aboutTitle")
+    .select("selectedTemplate bioBlurb aboutTitle publicationStatus")
     .lean();
+
+  const publicationStatus =
+    profileDoc?.publicationStatus === "unpublished" ? "unpublished" : "published";
 
   const [projectCount, skillCount, experienceCount, messageCount, unreadMessageCount] =
     await Promise.all([
@@ -86,6 +90,12 @@ export default async function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* Portfolio Publication Control */}
+      <PublicationControl
+        initialStatus={publicationStatus}
+        username={userDoc.username}
+      />
 
       {/* Metric Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">

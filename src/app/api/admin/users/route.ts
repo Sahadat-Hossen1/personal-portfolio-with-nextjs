@@ -89,16 +89,21 @@ export async function GET(request: NextRequest) {
         .lean(),
     ]);
 
-    // 6. Enrich with selectedTemplate from Profile
+    // 6. Enrich with selectedTemplate and publicationStatus from Profile
     const userIds = userDocs.map((u) => u._id);
     const profileDocs = await Profile.find({ ownerId: { $in: userIds } })
-      .select("ownerId selectedTemplate")
+      .select("ownerId selectedTemplate publicationStatus")
       .lean();
 
     const profileTemplateMap = new Map<string, string>();
+    const profilePublicationMap = new Map<string, string>();
     for (const p of profileDocs) {
       if (p.ownerId) {
         profileTemplateMap.set(p.ownerId.toString(), p.selectedTemplate || "developer");
+        profilePublicationMap.set(
+          p.ownerId.toString(),
+          p.publicationStatus === "unpublished" ? "unpublished" : "published"
+        );
       }
     }
 
@@ -111,6 +116,8 @@ export async function GET(request: NextRequest) {
       role: u.role,
       plan: u.plan,
       accountStatus: u.accountStatus || "active",
+      publicationStatus:
+        profilePublicationMap.get(u._id.toString()) || "published",
       allowedTemplates: u.allowedTemplates || [u.profession || "developer"],
       selectedTemplate:
         profileTemplateMap.get(u._id.toString()) ||

@@ -215,6 +215,7 @@ export async function POST(request: Request) {
             floatingChat: false,
           },
           selectedTemplate: defaultTemplate,
+          publicationStatus: "published",
         });
 
         await profileDoc.save(session ? { session } : undefined);
